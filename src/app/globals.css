@@ -119,6 +119,7 @@
   }
 }
 
+/* Awal CSS untuk Not Found Page */
 @custom-variant dark (&:is(.dark *));
 
 @keyframes glitch-1 {
@@ -170,3 +171,4 @@
   animation: glitch-3 3s infinite;
   animation-delay: -2s;
 }
+/* Akhir CSS untuk Not Found Page */
