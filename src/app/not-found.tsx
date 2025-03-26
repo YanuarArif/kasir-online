@@ -19,12 +19,23 @@ export default function NotFound() {
           Mungkin tersesat di lubang hitam atau belum pernah ada.
         </p>
 
-        {/* Tombol Kembali */}
-        <Link href="/">
-          <button className="mt-6 px-6 py-3 bg-white text-indigo-600 font-semibold rounded-full shadow-lg hover:bg-indigo-100 transition-all duration-300 cursor-pointer">
-            Kembali ke Bumi
+        {/* Tombol */}
+        <div className="mt-6 flex flex-col md:flex-row gap-4 justify-center">
+          {/* Tombol Kembali ke Halaman Sebelumnya */}
+          <button
+            onClick={() => window.history.back()}
+            className="px-6 py-3 bg-white text-indigo-600 font-semibold rounded-full shadow-lg hover:bg-indigo-100 transition-all duration-300 cursor-pointer"
+          >
+            Kembali ke Halaman Sebelumnya
           </button>
-        </Link>
+
+          {/* Tombol Kembali ke Home */}
+          <Link href="/">
+            <button className="px-6 py-3 bg-white text-indigo-600 font-semibold rounded-full shadow-lg hover:bg-indigo-100 transition-all duration-300 cursor-pointer">
+              Kembali ke Bumi
+            </button>
+          </Link>
+        </div>
 
         {/* Elemen Dekoratif */}
         <div className="mt-12 flex justify-center gap-4">
