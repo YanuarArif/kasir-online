@@ -1,5 +1,4 @@
 import { Navbar } from "@/components/layout/navbar";
-import ThemeSwitcher from "@/components/ui/theme-switcher";
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -8,7 +7,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
         <Navbar />
       </div>
       <div className="absolute bottom-10 left-10 z-10">
-        <ThemeSwitcher />
+        {/* <ThemeSwitcher /> */}
       </div>
       {/* Background Radial */}
       <div
