@@ -2,8 +2,7 @@
 
 import { getUserByEmail } from "@/data/user";
 import { getVerificationTokenByToken } from "@/data/validate-token";
-import { database } from "@/lib/database";
-import { compare } from "bcryptjs";
+import { db } from "@/lib/prisma";
 
 // Security improvement: Custom error class
 class TokenError extends Error {
@@ -40,13 +39,13 @@ export const validateToken = async (email: string, token: string) => {
     }
 
     // Update user telah verifikasi email
-    await database.user.update({
+    await db.user.update({
       where: { id: existingUser.id },
       data: { emailVerified: new Date() },
     });
 
     // Hapus token dari db
-    await database.verificationToken.delete({
+    await db.verificationToken.delete({
       where: { id: existingToken.id },
     });
 
