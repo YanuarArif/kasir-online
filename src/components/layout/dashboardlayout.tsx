@@ -2,6 +2,7 @@
 "use client";
 import React, { useState, Fragment, type ReactNode } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation"; // Import usePathname
 import { Transition, Dialog } from "@headlessui/react"; // For smooth mobile sidebar transitions
 import {
   Bars3Icon,
@@ -20,38 +21,33 @@ interface DashboardLayoutProps {
   pageTitle?: string; // Optional title for the header
 }
 
-// Define your navigation items
+// Define your navigation items (remove 'current' property)
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: HomeIcon, current: true }, // Example: Mark current page
+  { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
   {
     name: "Penjualan",
     href: "/dashboard/sales",
     icon: CurrencyDollarIcon,
-    current: false,
   },
   {
     name: "Pembelian",
     href: "/dashboard/purchases",
     icon: TruckIcon,
-    current: false,
   },
   {
     name: "Produk",
     href: "/dashboard/products",
     icon: CubeIcon,
-    current: false,
   },
   {
     name: "Laporan",
     href: "/dashboard/reports",
     icon: ChartBarIcon,
-    current: false,
   },
   {
     name: "Pengaturan",
     href: "/dashboard/settings",
     icon: Cog6ToothIcon,
-    current: false,
   },
 ];
 
@@ -64,6 +60,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   pageTitle = "Dashboard",
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = usePathname(); // Get current path
 
   return (
     <>
@@ -139,30 +136,36 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   {/* Navigation (Mobile) */}
                   <div className="mt-5 h-0 flex-1 overflow-y-auto">
                     <nav className="space-y-1 px-2">
-                      {navigation.map((item) => (
-                        <Link
-                          key={item.name}
-                          href={item.href}
-                          className={classNames(
-                            item.current
-                              ? "bg-gray-900 text-white"
-                              : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                            "group flex items-center rounded-md px-2 py-2 text-base font-medium"
-                          )}
-                          onClick={() => setSidebarOpen(false)} // Close sidebar on navigation
-                        >
-                          <item.icon
+                      {navigation.map((item) => {
+                        const isCurrent =
+                          item.href === "/dashboard"
+                            ? pathname === item.href // Exact match for Dashboard
+                            : pathname.startsWith(item.href); // StartsWith for others
+                        return (
+                          <Link
+                            key={item.name}
+                            href={item.href}
                             className={classNames(
-                              item.current
-                                ? "text-gray-300"
-                                : "text-gray-400 group-hover:text-gray-300",
-                              "mr-4 h-6 w-6 flex-shrink-0"
+                              isCurrent
+                                ? "bg-gray-900 text-white"
+                                : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                              "group flex items-center rounded-md px-2 py-2 text-base font-medium"
                             )}
-                            aria-hidden="true"
-                          />
-                          {item.name}
-                        </Link>
-                      ))}
+                            onClick={() => setSidebarOpen(false)} // Close sidebar on navigation
+                          >
+                            <item.icon
+                              className={classNames(
+                                isCurrent
+                                  ? "text-gray-300"
+                                  : "text-gray-400 group-hover:text-gray-300",
+                                "mr-4 h-6 w-6 flex-shrink-0"
+                              )}
+                              aria-hidden="true"
+                            />
+                            {item.name}
+                          </Link>
+                        );
+                      })}
                     </nav>
                   </div>
                 </Dialog.Panel>
@@ -187,29 +190,35 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             {/* Navigation (Desktop) */}
             <div className="mt-5 flex flex-1 flex-col">
               <nav className="flex-1 space-y-1 px-2 pb-4">
-                {navigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className={classNames(
-                      item.current
-                        ? "bg-gray-900 text-white"
-                        : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                      "group flex items-center rounded-md px-2 py-2 text-sm font-medium"
-                    )}
-                  >
-                    <item.icon
+                {navigation.map((item) => {
+                  const isCurrent =
+                    item.href === "/dashboard"
+                      ? pathname === item.href // Exact match for Dashboard
+                      : pathname.startsWith(item.href); // StartsWith for others
+                  return (
+                    <Link
+                      key={item.name}
+                      href={item.href}
                       className={classNames(
-                        item.current
-                          ? "text-gray-300"
-                          : "text-gray-400 group-hover:text-gray-300",
-                        "mr-3 h-6 w-6 flex-shrink-0"
+                        isCurrent
+                          ? "bg-gray-900 text-white"
+                          : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                        "group flex items-center rounded-md px-2 py-2 text-sm font-medium"
                       )}
-                      aria-hidden="true"
-                    />
-                    {item.name}
-                  </Link>
-                ))}
+                    >
+                      <item.icon
+                        className={classNames(
+                          isCurrent
+                            ? "text-gray-300"
+                            : "text-gray-400 group-hover:text-gray-300",
+                          "mr-3 h-6 w-6 flex-shrink-0"
+                        )}
+                        aria-hidden="true"
+                      />
+                      {item.name}
+                    </Link>
+                  );
+                })}
               </nav>
             </div>
           </div>
