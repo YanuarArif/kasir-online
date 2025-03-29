@@ -8,6 +8,7 @@ import {
   XMarkIcon,
   HomeIcon,
   ChartBarIcon,
+  TruckIcon,
   CubeIcon, // Example for Products
   Cog6ToothIcon, // Example for Settings
   CurrencyDollarIcon, // Example for Sales/Transactions
@@ -26,6 +27,12 @@ const navigation = [
     name: "Penjualan",
     href: "/dashboard/sales",
     icon: CurrencyDollarIcon,
+    current: false,
+  },
+  {
+    name: "Pembelian",
+    href: "/dashboard/purchases",
+    icon: TruckIcon,
     current: false,
   },
   {
