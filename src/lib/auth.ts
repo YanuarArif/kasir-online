@@ -40,15 +40,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return true;
     },
 
-    // Simpan role ke JWT
+    // Add user ID and role to the JWT
     jwt({ token, user }) {
-      if (user) token.role = user.role;
+      // Ensure user and user.id exist before assigning
+      if (user?.id) {
+        token.sub = user.id; // 'sub' is the standard JWT claim for subject (user ID)
+        token.role = user.role; // Add role if it exists on the user object
+      }
       return token;
     },
 
-    // Simpan role ke session
+    // Add user ID and role to the session object from the JWT
     session({ session, token }) {
-      session.user.role = token.role;
+      if (token.sub && session.user) {
+        session.user.id = token.sub; // Add ID to session.user
+      }
+      if (token.role && session.user) {
+        session.user.role = token.role as string; // Add role to session.user
+      }
       return session;
     },
 

@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,7 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// --- Authentication Models (Your Existing Schema) ---
+// --- Authentication Models ---
 
 model User {
   id            String    @id @default(cuid())
@@ -16,16 +19,19 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  password      String? // Remember to HASH this securely!
+  password      String? // HASHED password!
   provider      String?   @default("credentials")
-  role          String?   @default("user") // Consider an Enum for roles if you have fixed roles
+  role          String?   @default("user") // Consider Enum Role
   token         String?   @unique
   accounts      Account[]
   sessions      Session[]
 
-  // --- Relationships to Business Logic Models ---
-  sales     Sale[] // Sales recorded by this user
-  purchases Purchase[] // Purchases recorded by this user
+  // --- User's Own Data ---
+  products   Product[] // User's products
+  categories Category[] // User's categories
+  suppliers  Supplier[] // User's suppliers
+  sales      Sale[] // Sales recorded by this user
+  purchases  Purchase[] // Purchases recorded by this user
 
   @@map("users")
 }
@@ -36,132 +42,130 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text // Use @db.Text if tokens can be long
-  access_token      String? @db.Text // Use @db.Text if tokens can be long
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text // Use @db.Text if tokens can be long
+  id_token          String? @db.Text
   session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascade delete accounts if user is deleted
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
-  @@index([userId]) // Added index for faster lookup by userId
+  @@index([userId])
   @@map("accounts")
 }
 
 model Session {
-  id           String   @id @default(cuid()) // Changed to CUID for consistency, or keep UUID if preferred
+  id           String   @id @default(cuid())
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascade delete sessions if user is deleted
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId]) // Added index for faster lookup by userId
+  @@index([userId])
   @@map("sessions")
 }
 
 model VerificationToken {
-  // Using identifier/token structure might be more common for next-auth patterns
-  // But keeping your structure:
   id        String   @id @default(cuid())
-  email     String // If used for email verification, needs to link back to user or just be identifier
-  token     String   @unique // Token must be unique
+  email     String
+  token     String   @unique
   expires   DateTime
   createdAt DateTime @default(now())
 
-  // @@unique([identifier, token]) // Standard pattern if using identifier
-  @@unique([email, token]) // Your unique constraint
+  @@unique([email, token])
   @@map("verification_tokens")
 }
 
-// --- Business Logic Models (Derived from Dashboard Layout) ---
+// --- Business Logic Models (Scoped per User) ---
 
-// Product model (from "Produk" navigation)
 model Product {
   id          String   @id @default(cuid())
   name        String
   description String?
-  sku         String?  @unique // Stock Keeping Unit
-  price       Decimal  @db.Decimal(10, 2) // Selling price (e.g., up to 10 digits, 2 decimal places)
-  cost        Decimal? @db.Decimal(10, 2) // Purchase cost
-  stock       Int      @default(0) // Current stock quantity
+  sku         String? // Stock Keeping Unit - Made unique *per user* below
+  price       Decimal  @db.Decimal(10, 2)
+  cost        Decimal? @db.Decimal(10, 2)
+  stock       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relationships
-  saleItems     SaleItem[] // Products included in sales
-  purchaseItems PurchaseItem[] // Products included in purchases
-  categoryId    String? // Foreign key for optional category
-  category      Category?      @relation(fields: [categoryId], references: [id])
+  userId        String // Foreign key to User
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade) // Relation to User
+  saleItems     SaleItem[]
+  purchaseItems PurchaseItem[]
+  categoryId    String? // Foreign key for Category
+  category      Category?      @relation(fields: [categoryId], references: [id]) // Relation to Category
 
+  @@unique([userId, sku]) // SKU is unique for a specific user
+  @@index([userId]) // Index for user lookup
   @@index([categoryId])
   @@map("products")
 }
 
-// Optional: Product Category
 model Category {
-  id        String    @id @default(cuid())
-  name      String    @unique
-  products  Product[] // Products within this category
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id        String   @id @default(cuid())
+  name      String // Category name - Made unique *per user* below
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  // Relationships
+  userId   String // <<<< CORRECTED: Just the scalar foreign key type
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade) // <<<< CORRECTED: @relation is here
+  products Product[]
+
+  @@unique([userId, name]) // Category name is unique for a specific user
+  @@index([userId]) // Index for user lookup
   @@map("categories")
 }
 
-// Sale model (from "Penjualan" navigation)
 model Sale {
   id          String   @id @default(cuid())
-  saleDate    DateTime @default(now()) // Date of the sale transaction
-  totalAmount Decimal  @db.Decimal(12, 2) // Total amount for the sale (e.g., up to 12 digits, 2 decimal places)
+  saleDate    DateTime @default(now())
+  totalAmount Decimal  @db.Decimal(12, 2)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relationships
   userId String // Foreign key to the User who made the sale
-  user   User       @relation(fields: [userId], references: [id])
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   items  SaleItem[] // List of items in this sale
-  // Optional: Link to a customer
-  // customerId  String?
-  // customer    Customer? @relation(fields: [customerId], references: [id])
 
   @@index([userId])
-  // @@index([customerId]) // Add if using Customer model
   @@map("sales")
 }
 
-// Represents a single item within a Sale
 model SaleItem {
   id          String   @id @default(cuid())
   quantity    Int
-  priceAtSale Decimal  @db.Decimal(10, 2) // Price per unit AT THE TIME of sale
+  priceAtSale Decimal  @db.Decimal(10, 2)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relationships
   saleId    String // Foreign key to the Sale
-  sale      Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade) // If sale is deleted, delete items
+  sale      Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
   productId String // Foreign key to the Product sold
-  product   Product @relation(fields: [productId], references: [id]) // Don't cascade delete product if sale item is deleted
+  product   Product @relation(fields: [productId], references: [id])
 
   @@index([saleId])
   @@index([productId])
   @@map("sale_items")
 }
 
-// Purchase model (from "Pembelian" navigation)
 model Purchase {
   id           String   @id @default(cuid())
-  purchaseDate DateTime @default(now()) // Date of the purchase transaction
-  totalAmount  Decimal  @db.Decimal(12, 2) // Total amount for the purchase
-  invoiceRef   String? // Optional reference number (e.g., supplier invoice)
+  purchaseDate DateTime @default(now())
+  totalAmount  Decimal  @db.Decimal(12, 2)
+  invoiceRef   String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   // Relationships
   userId     String // Foreign key to the User who recorded the purchase
-  user       User           @relation(fields: [userId], references: [id])
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   items      PurchaseItem[] // List of items in this purchase
   supplierId String? // Foreign key for optional supplier
   supplier   Supplier?      @relation(fields: [supplierId], references: [id])
@@ -171,31 +175,29 @@ model Purchase {
   @@map("purchases")
 }
 
-// Represents a single item within a Purchase
 model PurchaseItem {
   id             String   @id @default(cuid())
   quantity       Int
-  costAtPurchase Decimal  @db.Decimal(10, 2) // Cost per unit AT THE TIME of purchase
+  costAtPurchase Decimal  @db.Decimal(10, 2)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
   // Relationships
   purchaseId String // Foreign key to the Purchase
-  purchase   Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade) // If purchase is deleted, delete items
+  purchase   Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
   productId  String // Foreign key to the Product purchased
-  product    Product  @relation(fields: [productId], references: [id]) // Don't cascade delete product if purchase item is deleted
+  product    Product  @relation(fields: [productId], references: [id])
 
   @@index([purchaseId])
   @@index([productId])
   @@map("purchase_items")
 }
 
-// Optional: Supplier model (implied by Purchases)
 model Supplier {
   id          String   @id @default(cuid())
   name        String
   contactName String?
-  email       String?  @unique // Consider making unique if it's a primary contact method
+  email       String? // Made unique *per user* below
   phone       String?
   address     String?
   notes       String?  @db.Text
@@ -203,15 +205,11 @@ model Supplier {
   updatedAt   DateTime @updatedAt
 
   // Relationships
-  purchases Purchase[] // List of purchases from this supplier
+  userId    String // <<<< CORRECTED: Just the scalar foreign key type
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade) // <<<< CORRECTED: @relation is here
+  purchases Purchase[]
 
+  @@unique([userId, email]) // Supplier email is unique for a specific user (if not null)
+  @@index([userId]) // Index for user lookup
   @@map("suppliers")
 }
-
-// Example Enum for User Roles (if you want more structured roles)
-// enum Role {
-//   USER
-//   ADMIN
-//   MANAGER
-// }
-// Then in User model: role Role @default(USER)

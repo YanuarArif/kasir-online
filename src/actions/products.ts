@@ -3,9 +3,19 @@
 import { z } from "zod";
 import { ProductSchema } from "@/schemas/zod";
 import { db } from "@/lib/prisma";
-import { revalidatePath } from "next/cache"; // Import revalidatePath
+import { revalidatePath } from "next/cache";
+import { auth } from "@/lib/auth"; // Import auth to get session
 
 export const addProduct = async (values: z.infer<typeof ProductSchema>) => {
+  // Get current session
+  const session = await auth();
+  const user = session?.user;
+
+  if (!user || !user.id) {
+    return { error: "Tidak terautentikasi!" };
+  }
+  const userId = user.id;
+
   // 1. Validate input server-side
   const validatedFields = ProductSchema.safeParse(values);
 
@@ -29,7 +39,8 @@ export const addProduct = async (values: z.infer<typeof ProductSchema>) => {
         price,
         cost,
         stock,
-        // categoryId: null, // Explicitly set if needed, otherwise Prisma handles optional
+        userId: userId, // Add the userId
+        // categoryId: null,
       },
     });
 
@@ -45,10 +56,13 @@ export const addProduct = async (values: z.infer<typeof ProductSchema>) => {
       "code" in error &&
       (error as any).code === "P2002"
     ) {
-      // Assuming P2002 is the unique constraint violation code for your DB (common in Prisma)
-      // Check if the target includes 'sku'
+      // Assuming P2002 is the unique constraint violation code for your DB
+      // The target for @@unique([userId, sku]) might be reported differently,
+      // adjust if needed based on actual error messages.
+      // Often it's reported as ['userId', 'sku'] or similar.
+      // Let's keep the general message for now unless specific handling is required.
       if ((error as any).meta?.target?.includes("sku")) {
-        return { error: "SKU sudah digunakan!" };
+        return { error: "SKU sudah digunakan untuk pengguna ini!" };
       }
     }
     return { error: "Gagal menambahkan produk ke database." };
