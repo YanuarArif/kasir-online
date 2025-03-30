@@ -5,56 +5,35 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import DashboardLayout from "@/components/layout/dashboardlayout";
 import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
-import React, { useState } from "react";
-import Link from "next/link"; // <--- Import Link
+import React from "react"; // Removed useState
+import Link from "next/link";
 
-// --- Mock Product Data Type ---
+// --- Define the type for the products prop ---
+// This should match the structure of serializedProducts from page.tsx
 interface Product {
   id: string;
   name: string;
-  category: string;
-  price: number;
+  description: string | null;
+  sku: string | null;
+  price: number; // Was Decimal, now number
+  cost: number | null; // Was Decimal, now number or null
   stock: number;
-  image?: string;
+  createdAt: Date; // Keep as Date or convert to string if needed for display formatting
+  updatedAt: Date;
+  categoryId: string | null;
+  // Add category name if you include it in Prisma query later
+  // category?: { name: string } | null;
+}
+
+interface ProductsPageProps {
+  products: Product[]; // Accept products as a prop
 }
 // --- ---
 
-const ProductsPage: NextPage = () => {
-  // Keep the product data state if you want the main list to be dynamic
-  const [productsData, setProductsData] = useState<Product[]>([
-    {
-      id: "P001",
-      name: "Kopi Susu Gula Aren",
-      category: "Minuman",
-      price: 18000,
-      stock: 50,
-      image: "/placeholder-image.png",
-    },
-    {
-      id: "P002",
-      name: "Croissant Coklat",
-      category: "Roti",
-      price: 15000,
-      stock: 35,
-      image: "/placeholder-image.png",
-    },
-    {
-      id: "P003",
-      name: "Teh Melati",
-      category: "Minuman",
-      price: 10000,
-      stock: 100,
-      image: "/placeholder-image.png",
-    },
-    {
-      id: "P004",
-      name: "Nasi Goreng Spesial",
-      category: "Makanan",
-      price: 25000,
-      stock: 20,
-      image: "/placeholder-image.png",
-    },
-  ]);
+// Update component signature to accept props
+const ProductsPage: NextPage<ProductsPageProps> = ({ products }) => {
+  // Remove the useState for mock data
+  // const [productsData, setProductsData] = useState<Product[]>(...);
 
   return (
     <DashboardLayout pageTitle="Produk">
@@ -129,8 +108,8 @@ const ProductsPage: NextPage = () => {
             </thead>
             {/* ... tbody ... */}
             <tbody className="divide-y divide-gray-200 bg-white">
-              {productsData.map((product) => (
-                // ... table rows as before ...
+              {/* Use the products prop here */}
+              {products.map((product) => (
                 <tr key={product.id}>
                   <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                     <div className="flex items-center">
@@ -152,10 +131,13 @@ const ProductsPage: NextPage = () => {
                     </div>
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    {product.category}
+                    {/* Display category if available, otherwise maybe SKU or placeholder */}
+                    {product.sku || "-"}{" "}
+                    {/* Example: Display SKU if no category */}
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    Rp {product.price.toLocaleString("id-ID")}
+                    Rp {product.price.toLocaleString("id-ID")}{" "}
+                    {/* Price is now number */}
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     {product.stock > 0 ? (

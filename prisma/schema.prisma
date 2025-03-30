@@ -7,6 +7,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// --- Authentication Models (Your Existing Schema) ---
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -14,12 +16,16 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  password      String?
+  password      String? // Remember to HASH this securely!
   provider      String?   @default("credentials")
-  role          String?   @default("user")
+  role          String?   @default("user") // Consider an Enum for roles if you have fixed roles
   token         String?   @unique
   accounts      Account[]
   sessions      Session[]
+
+  // --- Relationships to Business Logic Models ---
+  sales     Sale[] // Sales recorded by this user
+  purchases Purchase[] // Purchases recorded by this user
 
   @@map("users")
 }
@@ -30,36 +36,182 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String?
-  access_token      String?
+  refresh_token     String? @db.Text // Use @db.Text if tokens can be long
+  access_token      String? @db.Text // Use @db.Text if tokens can be long
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String?
+  id_token          String? @db.Text // Use @db.Text if tokens can be long
   session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascade delete accounts if user is deleted
 
   @@unique([provider, providerAccountId])
+  @@index([userId]) // Added index for faster lookup by userId
   @@map("accounts")
 }
 
 model Session {
-  id           String   @id @default(uuid())
+  id           String   @id @default(cuid()) // Changed to CUID for consistency, or keep UUID if preferred
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id])
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascade delete sessions if user is deleted
 
+  @@index([userId]) // Added index for faster lookup by userId
   @@map("sessions")
 }
 
 model VerificationToken {
+  // Using identifier/token structure might be more common for next-auth patterns
+  // But keeping your structure:
   id        String   @id @default(cuid())
-  email     String
-  token     String
+  email     String // If used for email verification, needs to link back to user or just be identifier
+  token     String   @unique // Token must be unique
   expires   DateTime
   createdAt DateTime @default(now())
 
-  @@unique([email, token])
+  // @@unique([identifier, token]) // Standard pattern if using identifier
+  @@unique([email, token]) // Your unique constraint
   @@map("verification_tokens")
 }
+
+// --- Business Logic Models (Derived from Dashboard Layout) ---
+
+// Product model (from "Produk" navigation)
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  sku         String?  @unique // Stock Keeping Unit
+  price       Decimal  @db.Decimal(10, 2) // Selling price (e.g., up to 10 digits, 2 decimal places)
+  cost        Decimal? @db.Decimal(10, 2) // Purchase cost
+  stock       Int      @default(0) // Current stock quantity
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  saleItems     SaleItem[] // Products included in sales
+  purchaseItems PurchaseItem[] // Products included in purchases
+  categoryId    String? // Foreign key for optional category
+  category      Category?      @relation(fields: [categoryId], references: [id])
+
+  @@index([categoryId])
+  @@map("products")
+}
+
+// Optional: Product Category
+model Category {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  products  Product[] // Products within this category
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("categories")
+}
+
+// Sale model (from "Penjualan" navigation)
+model Sale {
+  id          String   @id @default(cuid())
+  saleDate    DateTime @default(now()) // Date of the sale transaction
+  totalAmount Decimal  @db.Decimal(12, 2) // Total amount for the sale (e.g., up to 12 digits, 2 decimal places)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  userId String // Foreign key to the User who made the sale
+  user   User       @relation(fields: [userId], references: [id])
+  items  SaleItem[] // List of items in this sale
+  // Optional: Link to a customer
+  // customerId  String?
+  // customer    Customer? @relation(fields: [customerId], references: [id])
+
+  @@index([userId])
+  // @@index([customerId]) // Add if using Customer model
+  @@map("sales")
+}
+
+// Represents a single item within a Sale
+model SaleItem {
+  id          String   @id @default(cuid())
+  quantity    Int
+  priceAtSale Decimal  @db.Decimal(10, 2) // Price per unit AT THE TIME of sale
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  saleId    String // Foreign key to the Sale
+  sale      Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade) // If sale is deleted, delete items
+  productId String // Foreign key to the Product sold
+  product   Product @relation(fields: [productId], references: [id]) // Don't cascade delete product if sale item is deleted
+
+  @@index([saleId])
+  @@index([productId])
+  @@map("sale_items")
+}
+
+// Purchase model (from "Pembelian" navigation)
+model Purchase {
+  id           String   @id @default(cuid())
+  purchaseDate DateTime @default(now()) // Date of the purchase transaction
+  totalAmount  Decimal  @db.Decimal(12, 2) // Total amount for the purchase
+  invoiceRef   String? // Optional reference number (e.g., supplier invoice)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relationships
+  userId     String // Foreign key to the User who recorded the purchase
+  user       User           @relation(fields: [userId], references: [id])
+  items      PurchaseItem[] // List of items in this purchase
+  supplierId String? // Foreign key for optional supplier
+  supplier   Supplier?      @relation(fields: [supplierId], references: [id])
+
+  @@index([userId])
+  @@index([supplierId])
+  @@map("purchases")
+}
+
+// Represents a single item within a Purchase
+model PurchaseItem {
+  id             String   @id @default(cuid())
+  quantity       Int
+  costAtPurchase Decimal  @db.Decimal(10, 2) // Cost per unit AT THE TIME of purchase
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relationships
+  purchaseId String // Foreign key to the Purchase
+  purchase   Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade) // If purchase is deleted, delete items
+  productId  String // Foreign key to the Product purchased
+  product    Product  @relation(fields: [productId], references: [id]) // Don't cascade delete product if purchase item is deleted
+
+  @@index([purchaseId])
+  @@index([productId])
+  @@map("purchase_items")
+}
+
+// Optional: Supplier model (implied by Purchases)
+model Supplier {
+  id          String   @id @default(cuid())
+  name        String
+  contactName String?
+  email       String?  @unique // Consider making unique if it's a primary contact method
+  phone       String?
+  address     String?
+  notes       String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  purchases Purchase[] // List of purchases from this supplier
+
+  @@map("suppliers")
+}
+
+// Example Enum for User Roles (if you want more structured roles)
+// enum Role {
+//   USER
+//   ADMIN
+//   MANAGER
+// }
+// Then in User model: role Role @default(USER)
