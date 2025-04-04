@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, Fragment, type ReactNode } from "react";
+import React, { useState, useEffect, Fragment, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Transition, Dialog, Menu } from "@headlessui/react";
@@ -14,6 +14,8 @@ import {
   CubeIcon,
   Cog6ToothIcon,
   CurrencyDollarIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 } from "@heroicons/react/24/outline";
 
 interface DashboardLayoutProps {
@@ -39,9 +41,25 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   pageTitle = "Dashboard",
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState<boolean | undefined>(
+    undefined
+  ); // Initially undefined
   const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+
+  // Set initial collapsed state from localStorage only on client-side
+  useEffect(() => {
+    const savedState = localStorage.getItem("sidebarCollapsed");
+    setIsCollapsed(savedState ? JSON.parse(savedState) : false);
+  }, []);
+
+  // Save collapsed state to localStorage when it changes
+  useEffect(() => {
+    if (isCollapsed !== undefined) {
+      localStorage.setItem("sidebarCollapsed", JSON.stringify(isCollapsed));
+    }
+  }, [isCollapsed]);
 
   const handleLogout = () => {
     startTransition(() => {
@@ -49,9 +67,19 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     });
   };
 
+  const toggleCollapse = () => {
+    setIsCollapsed((prev) => !prev);
+  };
+
+  // Don't render the sidebar until isCollapsed is defined (client-side)
+  if (isCollapsed === undefined) {
+    return null; // Or a loading state if preferred
+  }
+
   return (
     <>
       <div className="min-h-screen flex bg-gray-100">
+        {/* Mobile Sidebar */}
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
             as="div"
@@ -87,11 +115,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                       className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
                       onClick={() => setSidebarOpen(false)}
                     >
-                      {/* <span className="sr-only">Tutup sidebar</span>
+                      <span className="sr-only">Tutup sidebar</span>
                       <XMarkIcon
                         className="h-6 w-6 text-white"
                         aria-hidden="true"
-                      /> */}
+                      />
                     </button>
                   </div>
                   <div className="flex flex-shrink-0 items-center px-4">
@@ -140,12 +168,25 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           </Dialog>
         </Transition.Root>
 
-        <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
+        {/* Desktop Sidebar */}
+        <div
+          className={classNames(
+            "hidden md:fixed md:inset-y-0 md:flex md:flex-col transition-all duration-300",
+            isCollapsed ? "md:w-16" : "md:w-64"
+          )}
+        >
           <div className="flex flex-grow flex-col overflow-y-auto bg-gray-800 pt-5">
-            <div className="flex flex-shrink-0 items-center px-4">
-              <span className="text-white text-xl font-semibold">
-                Kasir Online
-              </span>
+            <div
+              className={classNames(
+                "flex flex-shrink-0 items-center px-4",
+                isCollapsed ? "justify-center" : ""
+              )}
+            >
+              {!isCollapsed && (
+                <span className="text-white text-xl font-semibold">
+                  Kasir Online
+                </span>
+              )}
             </div>
             <div className="mt-5 flex flex-1 flex-col">
               <nav className="flex-1 space-y-1 px-2 pb-4">
@@ -162,7 +203,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                         isCurrent
                           ? "bg-gray-900 text-white"
                           : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                        "group flex items-center rounded-md px-2 py-2 text-sm font-medium"
+                        "group flex items-center rounded-md px-2 py-2 text-sm font-medium",
+                        isCollapsed ? "justify-center" : ""
                       )}
                     >
                       <item.icon
@@ -170,20 +212,39 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                           isCurrent
                             ? "text-gray-300"
                             : "text-gray-400 group-hover:text-gray-300",
-                          "mr-3 h-6 w-6 flex-shrink-0"
+                          "h-6 w-6 flex-shrink-0",
+                          isCollapsed ? "mx-auto" : "mr-3"
                         )}
                         aria-hidden="true"
                       />
-                      {item.name}
+                      {!isCollapsed && item.name}
                     </Link>
                   );
                 })}
               </nav>
+              <div className="px-2 pb-4">
+                <button
+                  onClick={toggleCollapse}
+                  className="w-full flex justify-center items-center h-10 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md"
+                >
+                  {isCollapsed ? (
+                    <ChevronRightIcon className="h-6 w-6" aria-hidden="true" />
+                  ) : (
+                    <ChevronLeftIcon className="h-6 w-6" aria-hidden="true" />
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-1 flex-col md:pl-64">
+        {/* Main Content */}
+        <div
+          className={classNames(
+            "flex flex-1 flex-col transition-all duration-300",
+            isCollapsed ? "md:pl-16" : "md:pl-64"
+          )}
+        >
           <div className="sticky top-0 z-10 flex h-16 flex-shrink-0 bg-white shadow">
             <button
               type="button"
