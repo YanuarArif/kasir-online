@@ -235,7 +235,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         {/* Main Content */}
         <div
           className={classNames(
-            "flex flex-1 flex-col transition-all duration-300",
+            "flex flex-1 flex-col transition-all duration-300 h-screen overflow-hidden", // Added h-screen and overflow-hidden
             isCollapsed ? "md:pl-16" : "md:pl-64"
           )}
         >
@@ -313,7 +313,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               </div>
             </div>
           </div>
-          <main className="flex-1">
+          <main className="flex-1 overflow-y-auto">
+            {" "}
+            {/* Added overflow-y-auto */}
             <div className="py-6">
               <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
                 {children}
