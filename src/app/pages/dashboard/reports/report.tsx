@@ -3,6 +3,14 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import DashboardLayout from "@/components/layout/dashboardlayout"; // Adjust path if needed
 import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"; // Assuming Card component exists
+// Removed import for Select as it's not found
+import {
   ArrowTrendingUpIcon,
   ShoppingBagIcon,
   UsersIcon,
@@ -16,126 +24,122 @@ const ReportsPage: NextPage = () => {
       </Head>
 
       {/* Page Content */}
-      <div className="space-y-8">
-        {/* Date Range Selector (Placeholder) */}
-        <div className="flex justify-end">
-          <select className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-            <option>Hari Ini</option>
-            <option>7 Hari Terakhir</option>
-            <option selected>30 Hari Terakhir</option>
-            <option>Bulan Ini</option>
-            <option>Tahun Ini</option>
-            <option>Custom</option>
+      <div className="container mx-auto px-4 py-8 space-y-8">
+        {/* Header and Date Range */}
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <h1 className="text-2xl font-semibold text-gray-900">Laporan</h1>
+          {/* Date Range Selector - Reverted to styled HTML select */}
+          <select
+            defaultValue="30d"
+            className="w-full sm:w-auto rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          >
+            <option value="today">Hari Ini</option>
+            <option value="7d">7 Hari Terakhir</option>
+            <option value="30d">30 Hari Terakhir</option>
+            <option value="month">Bulan Ini</option>
+            <option value="year">Tahun Ini</option>
+            <option value="custom">Custom</option>
           </select>
         </div>
 
         {/* Report Cards Grid */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {/* Sales Summary Card */}
-          <div className="overflow-hidden rounded-lg bg-white p-6 shadow transition hover:shadow-md">
-            <dt>
-              <div className="absolute rounded-md bg-indigo-500 p-3">
-                <ArrowTrendingUpIcon
-                  className="h-6 w-6 text-white"
-                  aria-hidden="true"
-                />
-              </div>
-              <p className="ml-16 truncate text-sm font-medium text-gray-500">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {/* Sales Summary Card - Using ShadCN Card */}
+          <Card className="flex flex-col transition hover:shadow-lg">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-500">
                 Ringkasan Penjualan
-              </p>
-            </dt>
-            <dd className="ml-16 flex items-baseline pb-6 sm:pb-7">
-              <p className="text-2xl font-semibold text-gray-900">
+              </CardTitle>
+              <div className="flex-shrink-0 rounded-md bg-indigo-100 text-indigo-600 p-2">
+                <ArrowTrendingUpIcon className="h-5 w-5" aria-hidden="true" />
+              </div>
+            </CardHeader>
+            <CardContent className="flex-grow">
+              <div className="text-2xl font-bold text-gray-900">
                 Rp 15.750.000
-              </p>
-              <p className="ml-2 flex items-baseline text-sm font-semibold text-green-600">
-                {/* Example trend */}
-                +12%
-              </p>
-              <div className="absolute inset-x-0 bottom-0 bg-gray-50 px-4 py-4 sm:px-6">
-                <div className="text-sm">
-                  <a
-                    href="#"
-                    className="font-medium text-indigo-600 hover:text-indigo-500"
-                  >
-                    Lihat Detail Laporan
-                    <span className="sr-only"> Ringkasan Penjualan</span>
-                  </a>
-                </div>
               </div>
-            </dd>
-          </div>
+              <p className="text-xs text-green-600 flex items-baseline mt-1">
+                +12% dari bulan lalu
+              </p>
+            </CardContent>
+            <CardFooter className="text-sm">
+              <a
+                href="#"
+                className="font-medium text-indigo-600 hover:text-indigo-800"
+              >
+                Lihat Detail
+              </a>
+            </CardFooter>
+          </Card>
 
-          {/* Top Products Card */}
-          <div className="overflow-hidden rounded-lg bg-white p-6 shadow transition hover:shadow-md">
-            <dt>
-              <div className="absolute rounded-md bg-indigo-500 p-3">
-                <ShoppingBagIcon
-                  className="h-6 w-6 text-white"
-                  aria-hidden="true"
-                />
-              </div>
-              <p className="ml-16 truncate text-sm font-medium text-gray-500">
+          {/* Top Products Card - Using ShadCN Card */}
+          <Card className="flex flex-col transition hover:shadow-lg">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-500">
                 Produk Terlaris
-              </p>
-            </dt>
-            <dd className="ml-16 block">
-              <ul className="space-y-1 text-sm text-gray-900 mb-4">
+              </CardTitle>
+              <div className="flex-shrink-0 rounded-md bg-indigo-100 text-indigo-600 p-2">
+                <ShoppingBagIcon className="h-5 w-5" aria-hidden="true" />
+              </div>
+            </CardHeader>
+            <CardContent className="flex-grow">
+              <ul className="mt-1 space-y-1 text-sm text-gray-900">
                 <li>1. Kopi Susu Gula Aren (150)</li>
                 <li>2. Croissant Coklat (95)</li>
                 <li>3. Nasi Goreng Spesial (70)</li>
+                {/* Add more or fetch dynamically */}
               </ul>
-              <div className="absolute inset-x-0 bottom-0 bg-gray-50 px-4 py-4 sm:px-6">
-                <div className="text-sm">
-                  <a
-                    href="#"
-                    className="font-medium text-indigo-600 hover:text-indigo-500"
-                  >
-                    Lihat Laporan Produk
-                    <span className="sr-only"> Produk Terlaris</span>
-                  </a>
-                </div>
-              </div>
-            </dd>
-          </div>
+            </CardContent>
+            <CardFooter className="text-sm">
+              <a
+                href="#"
+                className="font-medium text-indigo-600 hover:text-indigo-800"
+              >
+                Lihat Laporan Produk
+              </a>
+            </CardFooter>
+          </Card>
 
-          {/* Customer Insights Card (Placeholder) */}
-          <div className="overflow-hidden rounded-lg bg-white p-6 shadow transition hover:shadow-md">
-            <dt>
-              <div className="absolute rounded-md bg-indigo-500 p-3">
-                <UsersIcon className="h-6 w-6 text-white" aria-hidden="true" />
-              </div>
-              <p className="ml-16 truncate text-sm font-medium text-gray-500">
+          {/* Customer Insights Card - Using ShadCN Card */}
+          <Card className="flex flex-col transition hover:shadow-lg">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-500">
                 Wawasan Pelanggan
-              </p>
-            </dt>
-            <dd className="ml-16 flex items-baseline pb-6 sm:pb-7">
-              <p className="text-2xl font-semibold text-gray-900">50</p>
-              <p className="ml-2 text-sm text-gray-500">Pelanggan Baru</p>
-              <div className="absolute inset-x-0 bottom-0 bg-gray-50 px-4 py-4 sm:px-6">
-                <div className="text-sm">
-                  <a
-                    href="#"
-                    className="font-medium text-indigo-600 hover:text-indigo-500"
-                  >
-                    Lihat Laporan Pelanggan
-                    <span className="sr-only"> Wawasan Pelanggan</span>
-                  </a>
-                </div>
+              </CardTitle>
+              <div className="flex-shrink-0 rounded-md bg-indigo-100 text-indigo-600 p-2">
+                <UsersIcon className="h-5 w-5" aria-hidden="true" />
               </div>
-            </dd>
-          </div>
+            </CardHeader>
+            <CardContent className="flex-grow">
+              <div className="text-2xl font-bold text-gray-900">50</div>
+              <p className="text-xs text-gray-500 mt-1">
+                Pelanggan Baru bulan ini
+              </p>
+            </CardContent>
+            <CardFooter className="text-sm">
+              <a
+                href="#"
+                className="font-medium text-indigo-600 hover:text-indigo-800"
+              >
+                Lihat Laporan Pelanggan
+              </a>
+            </CardFooter>
+          </Card>
         </div>
 
-        {/* Chart Placeholder */}
-        <div className="rounded-lg border border-dashed border-gray-300 bg-white p-6 shadow">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">
-            Grafik Penjualan Bulanan
-          </h3>
-          <div className="h-64 flex items-center justify-center text-gray-500">
-            (Placeholder untuk Grafik)
-          </div>
-        </div>
+        {/* Chart Placeholder - Improved Styling */}
+        <Card className="transition hover:shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-lg font-medium">
+              Grafik Penjualan Bulanan
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64 flex items-center justify-center rounded-md border-2 border-dashed border-gray-300 bg-gray-50 text-gray-500 text-center p-4">
+              (Placeholder: Grafik Penjualan akan ditampilkan di sini)
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </DashboardLayout>
   );
