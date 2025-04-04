@@ -1,10 +1,10 @@
 "use client";
 import React, { useState, Fragment, type ReactNode } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation"; // Added useRouter
+import { usePathname, useRouter } from "next/navigation";
 import { Transition, Dialog, Menu } from "@headlessui/react";
-import { logout } from "@/actions/logout"; // Added logout import
-import { useTransition } from "react"; // Added useTransition
+import { logout } from "@/actions/logout";
+import { useTransition } from "react";
 import {
   Bars3Icon,
   XMarkIcon,
@@ -40,14 +40,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
-  const router = useRouter(); // Added router
-  const [isPending, startTransition] = useTransition(); // Added transition state
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   const handleLogout = () => {
     startTransition(() => {
-      logout(); // Call the logout action
-      // Optionally redirect after logout if needed
-      // router.push('/login');
+      logout();
     });
   };
 
@@ -83,29 +81,19 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 leaveTo="-translate-x-full"
               >
                 <Dialog.Panel className="relative flex w-full max-w-xs flex-1 flex-col bg-gray-800 pb-4 pt-5">
-                  <Transition.Child
-                    as={Fragment}
-                    enter="ease-in-out duration-300"
-                    enterFrom="opacity-0"
-                    enterTo="opacity-100"
-                    leave="ease-in-out duration-300"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                  >
-                    <div className="absolute right-0 top-0 -mr-12 pt-2">
-                      <button
-                        type="button"
-                        className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-                        onClick={() => setSidebarOpen(false)}
-                      >
-                        <span className="sr-only">Tutup sidebar</span>
-                        <XMarkIcon
-                          className="h-6 w-6 text-white"
-                          aria-hidden="true"
-                        />
-                      </button>
-                    </div>
-                  </Transition.Child>
+                  <div className="absolute right-0 top-0 -mr-12 pt-2">
+                    <button
+                      type="button"
+                      className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                      onClick={() => setSidebarOpen(false)}
+                    >
+                      {/* <span className="sr-only">Tutup sidebar</span>
+                      <XMarkIcon
+                        className="h-6 w-6 text-white"
+                        aria-hidden="true"
+                      /> */}
+                    </button>
+                  </div>
                   <div className="flex flex-shrink-0 items-center px-4">
                     <span className="text-white text-xl font-semibold">
                       Kasir Online
