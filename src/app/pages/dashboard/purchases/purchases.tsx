@@ -97,55 +97,43 @@ const PurchasesPage: React.FC<PurchasesPageProps> = ({ purchases }) => {
       </div>
 
       {/* Purchases List */}
-      <div className="space-y-4 sm:shadow sm:ring-1 sm:ring-black sm:ring-opacity-5 sm:rounded-lg">
-        {/* Table for larger screens */}
-        <div className="hidden sm:block overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-300">
-            <thead className="bg-gray-50">
+      <div className="space-y-4">
+        {/* Desktop Table View - shadcn style */}
+        <div className="relative overflow-x-auto border border-gray-200 rounded-lg hidden sm:block">
+          <table className="w-full text-sm text-left text-gray-500">
+            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
               <tr>
-                <th
-                  scope="col"
-                  className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-                >
+                <th scope="col" className="px-6 py-3">
                   ID Pembelian
                 </th>
-                <th
-                  scope="col"
-                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                >
+                <th scope="col" className="px-6 py-3">
                   Tanggal
                 </th>
-                <th
-                  scope="col"
-                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                >
+                <th scope="col" className="px-6 py-3">
                   Supplier
                 </th>
-                <th
-                  scope="col"
-                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                >
+                <th scope="col" className="px-6 py-3">
                   Invoice
                 </th>
-                <th
-                  scope="col"
-                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                >
+                <th scope="col" className="px-6 py-3">
                   Total
                 </th>
-                <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                <th scope="col" className="px-6 py-3 text-right">
                   <span className="sr-only">Aksi</span>
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {filteredPurchases.length > 0 ? (
                 filteredPurchases.map((purchase) => (
-                  <tr key={purchase.id}>
-                    <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                  <tr
+                    key={purchase.id}
+                    className="bg-white border-b hover:bg-gray-50"
+                  >
+                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                       {purchase.id}
                     </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       {new Date(purchase.purchaseDate).toLocaleDateString(
                         "id-ID",
                         {
@@ -155,21 +143,21 @@ const PurchasesPage: React.FC<PurchasesPageProps> = ({ purchases }) => {
                         }
                       )}
                     </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       {purchase.supplier?.name || "-"}
                     </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       {purchase.invoiceRef || "-"}
                     </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       Rp {purchase.totalAmount.toLocaleString("id-ID")}
                     </td>
-                    <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                    <td className="px-6 py-4 text-right whitespace-nowrap">
                       <Link
                         href={`/dashboard/purchases/${purchase.id}`}
                         legacyBehavior
                       >
-                        <a className="text-indigo-600 hover:text-indigo-900">
+                        <a className="text-indigo-600 hover:text-indigo-900 font-medium">
                           Detail
                         </a>
                       </Link>
@@ -180,7 +168,7 @@ const PurchasesPage: React.FC<PurchasesPageProps> = ({ purchases }) => {
                 <tr>
                   <td
                     colSpan={6}
-                    className="whitespace-nowrap px-3 py-4 text-center text-sm text-gray-500"
+                    className="px-6 py-4 text-center text-gray-500"
                   >
                     {searchTerm
                       ? "Tidak ada pembelian yang sesuai dengan pencarian."
