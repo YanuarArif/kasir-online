@@ -78,9 +78,30 @@ export const addPurchase = async (values: z.infer<typeof PurchaseSchema>) => {
     // 3. Revalidate the purchases page cache
     revalidatePath("/dashboard/purchases");
 
+    // Serialize the result to convert Decimal to number and Date to string
+    const serializedResult = {
+      id: result.id,
+      purchaseDate: result.purchaseDate.toISOString(),
+      totalAmount: result.totalAmount.toNumber(),
+      invoiceRef: result.invoiceRef,
+      createdAt: result.createdAt.toISOString(),
+      updatedAt: result.updatedAt.toISOString(),
+      userId: result.userId,
+      supplierId: result.supplierId,
+      items: result.items.map((item) => ({
+        id: item.id,
+        quantity: item.quantity,
+        costAtPurchase: item.costAtPurchase.toNumber(),
+        purchaseId: item.purchaseId,
+        productId: item.productId,
+        createdAt: item.createdAt.toISOString(),
+        updatedAt: item.updatedAt.toISOString(),
+      })),
+    };
+
     return {
       success: "Pembelian berhasil dicatat!",
-      data: result,
+      data: serializedResult,
     };
   } catch (error) {
     console.error("Database Error:", error);
@@ -119,15 +140,41 @@ export const getPurchases = async () => {
       },
     });
 
-    // Convert Decimal to number for serialization
-    const serializedPurchases = purchases.map((purchase) => ({
-      ...purchase,
-      totalAmount: purchase.totalAmount.toNumber(),
-      items: purchase.items.map((item) => ({
-        ...item,
-        costAtPurchase: item.costAtPurchase.toNumber(),
-      })),
-    }));
+    // Convert Decimal to number and Date to string for serialization
+    const serializedPurchases = purchases.map((purchase) => {
+      // Explicitly create a new plain object
+      const plainPurchase: any = {
+        id: purchase.id,
+        purchaseDate: purchase.purchaseDate.toISOString(), // Convert Date to ISO string
+        totalAmount: purchase.totalAmount.toNumber(), // Convert Decimal to number
+        invoiceRef: purchase.invoiceRef,
+        createdAt: purchase.createdAt.toISOString(), // Convert Date to ISO string
+        updatedAt: purchase.updatedAt.toISOString(), // Convert Date to ISO string
+        userId: purchase.userId,
+        supplierId: purchase.supplierId,
+        // Explicitly handle supplier (it's already plain or null)
+        supplier: purchase.supplier
+          ? {
+              id: purchase.supplier.id,
+              name: purchase.supplier.name,
+            }
+          : null,
+        items: purchase.items.map((item) => ({
+          id: item.id,
+          quantity: item.quantity,
+          costAtPurchase: item.costAtPurchase.toNumber(), // Convert Decimal to number
+          purchaseId: item.purchaseId,
+          productId: item.productId,
+          createdAt: item.createdAt.toISOString(), // Convert Date to ISO string
+          updatedAt: item.updatedAt.toISOString(), // Convert Date to ISO string
+          // Explicitly handle product name (already plain)
+          product: {
+            name: item.product.name,
+          },
+        })),
+      };
+      return plainPurchase;
+    });
 
     return { purchases: serializedPurchases };
   } catch (error) {

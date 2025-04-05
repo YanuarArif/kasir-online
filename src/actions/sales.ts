@@ -68,9 +68,9 @@ export const addSale = async (values: z.infer<typeof SaleSchema>) => {
     // 3. Revalidate the sales page cache
     revalidatePath("/dashboard/sales");
 
-    return { 
+    return {
       success: "Penjualan berhasil dicatat!",
-      data: result
+      data: result,
     };
   } catch (error) {
     console.error("Database Error:", error);
