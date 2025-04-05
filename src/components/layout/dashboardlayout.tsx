@@ -18,6 +18,9 @@ import {
   CurrencyDollarIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  UserIcon,
+  ReceiptRefundIcon,
+  ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 
 interface DashboardLayoutProps {
@@ -260,22 +263,22 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               <div className="ml-4 flex items-center md:ml-6">
                 <Menu as="div" className="relative ml-3">
                   <div>
-                    <Menu.Button className="flex max-w-xs items-center rounded-full bg-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 p-1">
+                    <Menu.Button className="flex max-w-xs items-center rounded-full bg-white border-2 border-indigo-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 p-0.5 shadow-sm hover:shadow transition-all duration-200">
                       <span className="sr-only">Buka menu pengguna</span>
                       {session?.user?.image ? (
-                        <div className="inline-block h-8 w-8 overflow-hidden rounded-full bg-gray-100">
+                        <div className="inline-block h-9 w-9 overflow-hidden rounded-full bg-gray-100">
                           <Image
                             src={session.user.image}
                             alt={session.user.name || "User profile"}
-                            width={32}
-                            height={32}
+                            width={36}
+                            height={36}
                             className="h-full w-full object-cover"
                           />
                         </div>
                       ) : (
-                        <span className="inline-block h-8 w-8 overflow-hidden rounded-full bg-gray-100">
+                        <span className="inline-block h-9 w-9 overflow-hidden rounded-full bg-indigo-50">
                           <svg
-                            className="h-full w-full text-gray-300"
+                            className="h-full w-full text-indigo-300"
                             fill="currentColor"
                             viewBox="0 0 24 24"
                           >
@@ -294,34 +297,95 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     leaveFrom="transform opacity-100 scale-100"
                     leaveTo="transform opacity-0 scale-95"
                   >
-                    <Menu.Items className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            href="/dashboard/profile"
-                            className={classNames(
-                              active ? "bg-gray-100" : "",
-                              "block px-4 py-2 text-sm text-gray-700"
-                            )}
-                          >
-                            Profil
-                          </Link>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <button
-                            onClick={handleLogout}
-                            disabled={isPending}
-                            className={classNames(
-                              active ? "bg-gray-100" : "",
-                              "block w-full text-left px-4 py-2 text-sm text-gray-700 disabled:opacity-50"
-                            )}
-                          >
-                            {isPending ? "Logging out..." : "Keluar"}
-                          </button>
-                        )}
-                      </Menu.Item>
+                    <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right rounded-lg bg-white py-2 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-gray-100">
+                      {/* User info section */}
+                      <div className="px-4 py-3">
+                        <p className="text-sm font-medium text-gray-900 truncate">
+                          {session?.user?.name ||
+                            session?.user?.username ||
+                            "User"}
+                        </p>
+                        <p className="text-xs text-gray-500 truncate mt-1">
+                          {session?.user?.email || ""}
+                        </p>
+                      </div>
+
+                      {/* Menu items */}
+                      <div className="py-1">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link
+                              href="/dashboard/profile"
+                              className={classNames(
+                                active ? "bg-gray-50" : "",
+                                "flex items-center px-4 py-2 text-sm text-gray-700 hover:text-indigo-600"
+                              )}
+                            >
+                              <UserIcon
+                                className="mr-3 h-5 w-5 text-gray-400"
+                                aria-hidden="true"
+                              />
+                              Profil
+                            </Link>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link
+                              href="/dashboard/billing"
+                              className={classNames(
+                                active ? "bg-gray-50" : "",
+                                "flex items-center px-4 py-2 text-sm text-gray-700 hover:text-indigo-600"
+                              )}
+                            >
+                              <ReceiptRefundIcon
+                                className="mr-3 h-5 w-5 text-gray-400"
+                                aria-hidden="true"
+                              />
+                              Tagihan
+                            </Link>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link
+                              href="/dashboard/settings"
+                              className={classNames(
+                                active ? "bg-gray-50" : "",
+                                "flex items-center px-4 py-2 text-sm text-gray-700 hover:text-indigo-600"
+                              )}
+                            >
+                              <Cog6ToothIcon
+                                className="mr-3 h-5 w-5 text-gray-400"
+                                aria-hidden="true"
+                              />
+                              Pengaturan
+                            </Link>
+                          )}
+                        </Menu.Item>
+                      </div>
+
+                      {/* Logout section */}
+                      <div className="py-1">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              onClick={handleLogout}
+                              disabled={isPending}
+                              className={classNames(
+                                active ? "bg-gray-50" : "",
+                                "flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-red-600 disabled:opacity-50"
+                              )}
+                            >
+                              <ArrowRightOnRectangleIcon
+                                className="mr-3 h-5 w-5 text-gray-400"
+                                aria-hidden="true"
+                              />
+                              {isPending ? "Logging out..." : "Keluar"}
+                            </button>
+                          )}
+                        </Menu.Item>
+                      </div>
                     </Menu.Items>
                   </Transition>
                 </Menu>
