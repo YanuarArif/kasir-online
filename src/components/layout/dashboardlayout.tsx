@@ -1,10 +1,12 @@
 "use client";
 import React, { useState, useEffect, Fragment, type ReactNode } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { Transition, Dialog, Menu } from "@headlessui/react";
 import { logout } from "@/actions/logout";
 import { useTransition } from "react";
+import { useSession } from "next-auth/react";
 import {
   Bars3Icon,
   XMarkIcon,
@@ -47,6 +49,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const { data: session } = useSession();
 
   // Set initial collapsed state from localStorage only on client-side
   useEffect(() => {
@@ -259,15 +262,27 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   <div>
                     <Menu.Button className="flex max-w-xs items-center rounded-full bg-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 p-1">
                       <span className="sr-only">Buka menu pengguna</span>
-                      <span className="inline-block h-8 w-8 overflow-hidden rounded-full bg-gray-100">
-                        <svg
-                          className="h-full w-full text-gray-300"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                      </span>
+                      {session?.user?.image ? (
+                        <div className="inline-block h-8 w-8 overflow-hidden rounded-full bg-gray-100">
+                          <Image
+                            src={session.user.image}
+                            alt={session.user.name || "User profile"}
+                            width={32}
+                            height={32}
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <span className="inline-block h-8 w-8 overflow-hidden rounded-full bg-gray-100">
+                          <svg
+                            className="h-full w-full text-gray-300"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                          </svg>
+                        </span>
+                      )}
                     </Menu.Button>
                   </div>
                   <Transition
