@@ -120,7 +120,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                       type="button"
                       className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
                       onClick={() => setSidebarOpen(false)}
-                    ></button>
+                    >
+                      <span className="sr-only">Tutup sidebar</span>
+                      <XMarkIcon
+                        className="h-6 w-6 text-white"
+                        aria-hidden="true"
+                      />
+                    </button>
                   </div>
                   <div className="flex flex-shrink-0 items-center px-4">
                     <span className="text-white text-xl font-semibold">
@@ -302,7 +308,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                       <div className="px-4 py-3">
                         <p className="text-sm font-medium text-gray-900 truncate">
                           {session?.user?.name ||
-                            session?.user?.username ||
+                            session?.user?.email ||
                             "User"}
                         </p>
                         <p className="text-xs text-gray-500 truncate mt-1">
