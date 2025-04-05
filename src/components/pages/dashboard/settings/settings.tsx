@@ -57,23 +57,23 @@ const SettingsPage: NextPage<SettingsPageProps> = ({ user }) => {
         <title>Pengaturan - Kasir Online</title>
       </Head>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
         {/* Profile Settings Section */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-5 border-b border-gray-100 flex items-center gap-3">
-            <UserCircleIcon className="h-6 w-6 text-gray-500" />
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl">
+          <div className="px-6 py-5 border-b border-gray-100 flex items-center gap-4 bg-gradient-to-r from-gray-50 to-white">
+            <UserCircleIcon className="h-7 w-7 text-indigo-600" />
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-xl font-bold text-gray-900">
                 Profil Pengguna
               </h2>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-600">
                 Kelola informasi pribadi dan preferensi akun Anda
               </p>
             </div>
           </div>
 
           <form
-            className="p-6"
+            className="p-6 space-y-6"
             onSubmit={async (e) => {
               e.preventDefault();
               setIsProfileLoading(true);
@@ -91,14 +91,7 @@ const SettingsPage: NextPage<SettingsPageProps> = ({ user }) => {
                   setProfileError(result.error);
                 } else {
                   setProfileSuccess("Profil berhasil diperbarui!");
-                  // Update the session to reflect the new profile data
-                  await update({
-                    ...user,
-                    name,
-                    username,
-                    image: imageUrl,
-                  });
-                  // Refresh the page to show the updated data
+                  await update({ ...user, name, username, image: imageUrl });
                   router.refresh();
                 }
               } catch (err) {
@@ -109,11 +102,11 @@ const SettingsPage: NextPage<SettingsPageProps> = ({ user }) => {
               }
             }}
           >
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div className="md:col-span-2">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div className="space-y-2">
                 <label
                   htmlFor="name"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-gray-700"
                 >
                   Nama Lengkap
                 </label>
@@ -121,17 +114,17 @@ const SettingsPage: NextPage<SettingsPageProps> = ({ user }) => {
                   type="text"
                   name="name"
                   id="name"
-                  autoComplete="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-gray-50 hover:bg-white"
                   placeholder="Masukkan nama lengkap"
                 />
               </div>
-              <div className="md:col-span-2">
+
+              <div className="space-y-2">
                 <label
                   htmlFor="username"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-gray-700"
                 >
                   Username
                 </label>
@@ -139,17 +132,17 @@ const SettingsPage: NextPage<SettingsPageProps> = ({ user }) => {
                   type="text"
                   name="username"
                   id="username"
-                  autoComplete="username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-gray-50 hover:bg-white"
                   placeholder="Masukkan username"
                 />
               </div>
-              <div className="md:col-span-2">
+
+              <div className="space-y-2 sm:col-span-2">
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-gray-700"
                 >
                   Alamat Email
                 </label>
@@ -157,20 +150,19 @@ const SettingsPage: NextPage<SettingsPageProps> = ({ user }) => {
                   id="email"
                   name="email"
                   type="email"
-                  autoComplete="email"
                   value={user.email || ""}
                   disabled
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-gray-50 text-gray-500 cursor-not-allowed"
-                  placeholder="Alamat email tidak dapat diubah"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed transition-colors duration-200"
                 />
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="text-xs text-gray-500">
                   Email tidak dapat diubah
                 </p>
               </div>
-              <div className="md:col-span-2">
+
+              <div className="space-y-2 sm:col-span-2">
                 <label
                   htmlFor="image"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-gray-700"
                 >
                   URL Foto Profil
                 </label>
@@ -180,71 +172,57 @@ const SettingsPage: NextPage<SettingsPageProps> = ({ user }) => {
                   id="image"
                   value={imageUrl}
                   onChange={(e) => setImageUrl(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-gray-50 hover:bg-white"
                   placeholder="https://example.com/image.jpg"
                 />
-                <p className="mt-1 text-xs text-gray-500">
-                  Masukkan URL gambar dari internet untuk foto profil Anda
+                <p className="text-xs text-gray-500">
+                  Masukkan URL gambar untuk foto profil Anda
                 </p>
               </div>
 
-              {/* Preview image if URL is provided */}
               {imageUrl && (
-                <div className="md:col-span-2 flex justify-center">
-                  <div className="mt-2 h-24 w-24 overflow-hidden rounded-full bg-gray-100">
+                <div className="sm:col-span-2 flex justify-center">
+                  <div className="mt-4 h-32 w-32 overflow-hidden rounded-full bg-gray-100 ring-2 ring-indigo-100 transition-all duration-300 hover:ring-indigo-300">
                     <Image
                       src={imageUrl}
                       alt="Preview foto profil"
-                      width={96}
-                      height={96}
+                      width={128}
+                      height={128}
                       className="h-full w-full object-cover"
-                      onError={() => {
-                        // Handle error by setting a state variable instead
+                      onError={() =>
                         setImageUrl(
                           "https://via.placeholder.com/150?text=Error"
-                        );
-                      }}
+                        )
+                      }
                     />
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Success message */}
             {profileSuccess && (
-              <div className="mt-4 rounded-md bg-green-50 p-4">
-                <div className="flex">
-                  <CheckCircleIcon
-                    className="h-5 w-5 text-green-400"
-                    aria-hidden="true"
-                  />
-                  <div className="ml-3">
-                    <p className="text-sm font-medium text-green-800">
-                      {profileSuccess}
-                    </p>
-                  </div>
+              <div className="rounded-lg bg-green-50 p-4 animate-fade-in">
+                <div className="flex items-center">
+                  <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                  <p className="ml-3 text-sm font-medium text-green-800">
+                    {profileSuccess}
+                  </p>
                 </div>
               </div>
             )}
 
-            {/* Error message */}
             {profileError && (
-              <div className="mt-4 rounded-md bg-red-50 p-4">
-                <div className="flex">
-                  <ExclamationCircleIcon
-                    className="h-5 w-5 text-red-400"
-                    aria-hidden="true"
-                  />
-                  <div className="ml-3">
-                    <p className="text-sm font-medium text-red-800">
-                      {profileError}
-                    </p>
-                  </div>
+              <div className="rounded-lg bg-red-50 p-4 animate-fade-in">
+                <div className="flex items-center">
+                  <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
+                  <p className="ml-3 text-sm font-medium text-red-800">
+                    {profileError}
+                  </p>
                 </div>
               </div>
             )}
 
-            <div className="mt-6 flex justify-end gap-4">
+            <div className="flex justify-end gap-4 pt-4">
               <button
                 type="button"
                 onClick={() => {
@@ -254,15 +232,17 @@ const SettingsPage: NextPage<SettingsPageProps> = ({ user }) => {
                   setProfileSuccess(null);
                   setProfileError(null);
                 }}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all duration-200 hover:shadow-sm"
               >
                 Reset
               </button>
               <button
                 type="submit"
                 disabled={isProfileLoading}
-                className={`px-6 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all ${
-                  isProfileLoading ? "opacity-60 cursor-not-allowed" : ""
+                className={`px-6 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-200 transition-all duration-200 ${
+                  isProfileLoading
+                    ? "opacity-70 cursor-not-allowed"
+                    : "hover:shadow-md"
                 }`}
               >
                 {isProfileLoading ? "Menyimpan..." : "Simpan Perubahan"}
@@ -272,21 +252,19 @@ const SettingsPage: NextPage<SettingsPageProps> = ({ user }) => {
         </div>
 
         {/* Password Change Section */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-5 border-b border-gray-100 flex items-center gap-3">
-            <KeyIcon className="h-6 w-6 text-gray-500" />
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl">
+          <div className="px-6 py-5 border-b border-gray-100 flex items-center gap-4 bg-gradient-to-r from-gray-50 to-white">
+            <KeyIcon className="h-7 w-7 text-indigo-600" />
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">
-                Ubah Password
-              </h2>
-              <p className="mt-1 text-sm text-gray-500">
+              <h2 className="text-xl font-bold text-gray-900">Ubah Password</h2>
+              <p className="mt-1 text-sm text-gray-600">
                 Perbarui password akun Anda
               </p>
             </div>
           </div>
 
           <form
-            className="p-6"
+            className="p-6 space-y-6"
             onSubmit={async (e) => {
               e.preventDefault();
               setIsPasswordLoading(true);
@@ -304,7 +282,6 @@ const SettingsPage: NextPage<SettingsPageProps> = ({ user }) => {
                   setPasswordError(result.error);
                 } else {
                   setPasswordSuccess("Password berhasil diperbarui!");
-                  // Clear form fields
                   setCurrentPassword("");
                   setNewPassword("");
                   setConfirmPassword("");
@@ -319,11 +296,11 @@ const SettingsPage: NextPage<SettingsPageProps> = ({ user }) => {
               }
             }}
           >
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div className="md:col-span-2">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div className="space-y-2 sm:col-span-2">
                 <label
                   htmlFor="current-password"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-gray-700"
                 >
                   Password Saat Ini
                 </label>
@@ -333,15 +310,16 @@ const SettingsPage: NextPage<SettingsPageProps> = ({ user }) => {
                   id="current-password"
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-gray-50 hover:bg-white"
                   placeholder="Masukkan password saat ini"
                   required
                 />
               </div>
-              <div className="md:col-span-2">
+
+              <div className="space-y-2">
                 <label
                   htmlFor="new-password"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-gray-700"
                 >
                   Password Baru
                 </label>
@@ -351,21 +329,20 @@ const SettingsPage: NextPage<SettingsPageProps> = ({ user }) => {
                   id="new-password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-gray-50 hover:bg-white"
                   placeholder="Masukkan password baru"
                   minLength={6}
                   required
                 />
-                <p className="mt-1 text-xs text-gray-500">
-                  Password minimal 6 karakter
-                </p>
+                <p className="text-xs text-gray-500">Minimal 6 karakter</p>
               </div>
-              <div className="md:col-span-2">
+
+              <div className="space-y-2">
                 <label
                   htmlFor="confirm-password"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-gray-700"
                 >
-                  Konfirmasi Password Baru
+                  Konfirmasi Password
                 </label>
                 <input
                   type="password"
@@ -373,48 +350,36 @@ const SettingsPage: NextPage<SettingsPageProps> = ({ user }) => {
                   id="confirm-password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                  placeholder="Masukkan kembali password baru"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-gray-50 hover:bg-white"
+                  placeholder="Konfirmasi password baru"
                   required
                 />
               </div>
             </div>
 
-            {/* Success message */}
             {passwordSuccess && (
-              <div className="mt-4 rounded-md bg-green-50 p-4">
-                <div className="flex">
-                  <CheckCircleIcon
-                    className="h-5 w-5 text-green-400"
-                    aria-hidden="true"
-                  />
-                  <div className="ml-3">
-                    <p className="text-sm font-medium text-green-800">
-                      {passwordSuccess}
-                    </p>
-                  </div>
+              <div className="rounded-lg bg-green-50 p-4 animate-fade-in">
+                <div className="flex items-center">
+                  <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                  <p className="ml-3 text-sm font-medium text-green-800">
+                    {passwordSuccess}
+                  </p>
                 </div>
               </div>
             )}
 
-            {/* Error message */}
             {passwordError && (
-              <div className="mt-4 rounded-md bg-red-50 p-4">
-                <div className="flex">
-                  <ExclamationCircleIcon
-                    className="h-5 w-5 text-red-400"
-                    aria-hidden="true"
-                  />
-                  <div className="ml-3">
-                    <p className="text-sm font-medium text-red-800">
-                      {passwordError}
-                    </p>
-                  </div>
+              <div className="rounded-lg bg-red-50 p-4 animate-fade-in">
+                <div className="flex items-center">
+                  <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
+                  <p className="ml-3 text-sm font-medium text-red-800">
+                    {passwordError}
+                  </p>
                 </div>
               </div>
             )}
 
-            <div className="mt-6 flex justify-end gap-4">
+            <div className="flex justify-end gap-4 pt-4">
               <button
                 type="button"
                 onClick={() => {
@@ -424,15 +389,17 @@ const SettingsPage: NextPage<SettingsPageProps> = ({ user }) => {
                   setPasswordSuccess(null);
                   setPasswordError(null);
                 }}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all duration-200 hover:shadow-sm"
               >
                 Reset
               </button>
               <button
                 type="submit"
                 disabled={isPasswordLoading}
-                className={`px-6 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all ${
-                  isPasswordLoading ? "opacity-60 cursor-not-allowed" : ""
+                className={`px-6 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-200 transition-all duration-200 ${
+                  isPasswordLoading
+                    ? "opacity-70 cursor-not-allowed"
+                    : "hover:shadow-md"
                 }`}
               >
                 {isPasswordLoading ? "Memperbarui..." : "Perbarui Password"}
@@ -441,6 +408,23 @@ const SettingsPage: NextPage<SettingsPageProps> = ({ user }) => {
           </form>
         </div>
       </div>
+
+      {/* Custom Animation Styles */}
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fade-in {
+          animation: fadeIn 0.3s ease-out;
+        }
+      `}</style>
     </DashboardLayout>
   );
 };
