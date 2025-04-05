@@ -169,17 +169,22 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           )}
         >
           <div className="flex flex-grow flex-col overflow-y-auto bg-gray-800 pt-5">
-            <div
-              className={classNames(
-                "flex flex-shrink-0 items-center px-4",
-                isCollapsed ? "justify-center" : ""
-              )}
-            >
+            <div className="flex items-center justify-between px-4">
               {!isCollapsed && (
                 <span className="text-white text-xl font-semibold">
                   Kasir Online
                 </span>
               )}
+              <button
+                onClick={toggleCollapse}
+                className="flex justify-center items-center h-10 w-10 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md"
+              >
+                {isCollapsed ? (
+                  <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+                ) : (
+                  <ChevronLeftIcon className="h-6 w-6" aria-hidden="true" />
+                )}
+              </button>
             </div>
             <div className="mt-5 flex flex-1 flex-col">
               <nav className="flex-1 space-y-1 px-2 pb-4">
@@ -215,18 +220,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   );
                 })}
               </nav>
-              <div className="px-2 pb-4">
-                <button
-                  onClick={toggleCollapse}
-                  className="w-full flex justify-center items-center h-10 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md"
-                >
-                  {isCollapsed ? (
-                    <ChevronRightIcon className="h-6 w-6" aria-hidden="true" />
-                  ) : (
-                    <ChevronLeftIcon className="h-6 w-6" aria-hidden="true" />
-                  )}
-                </button>
-              </div>
             </div>
           </div>
         </div>
@@ -234,7 +227,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         {/* Main Content */}
         <div
           className={classNames(
-            "flex flex-1 flex-col transition-all duration-300 h-screen overflow-hidden", // Added h-screen and overflow-hidden
+            "flex flex-1 flex-col transition-all duration-300 h-screen overflow-hidden",
             isCollapsed ? "md:pl-16" : "md:pl-64"
           )}
         >
