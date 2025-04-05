@@ -1,7 +1,7 @@
 import React from "react";
 import Head from "next/head";
 import DashboardLayout from "@/components/layout/dashboardlayout";
-import SalesPage from "@/app/pages/dashboard/sales/sales";
+import SalesPage from "@/components/pages/dashboard/sales/sales";
 import { auth } from "@/lib/auth";
 import { getSales } from "@/actions/sales";
 

@@ -1,4 +1,4 @@
-import AddProductPage from "@/app/pages/dashboard/products/new";
+import AddProductPage from "@/components/pages/dashboard/products/new";
 import React from "react";
 
 const AddProduct = () => {

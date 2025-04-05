@@ -1,4 +1,4 @@
-import ReportsPage from "@/app/pages/dashboard/reports/report";
+import ReportsPage from "@/components/pages/dashboard/reports/report";
 import React from "react";
 
 const Reports = () => {

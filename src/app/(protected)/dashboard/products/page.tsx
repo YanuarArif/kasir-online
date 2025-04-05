@@ -1,4 +1,4 @@
-import ProductsPage from "@/app/pages/dashboard/products/products";
+import ProductsPage from "@/components/pages/dashboard/products/products";
 import React from "react";
 import { db } from "@/lib/prisma";
 import { auth } from "@/lib/auth"; // Import auth

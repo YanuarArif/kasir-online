@@ -1,4 +1,4 @@
-import DashboardHomePage from "@/app/pages/dashboard";
+import DashboardHomePage from "@/components/pages/dashboard";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import React from "react";

@@ -1,7 +1,7 @@
 import React from "react";
 import Head from "next/head";
 import DashboardLayout from "@/components/layout/dashboardlayout";
-import NewPurchasePage from "@/app/pages/dashboard/purchases/new";
+import NewPurchasePage from "@/components/pages/dashboard/purchases/new";
 import { db } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
