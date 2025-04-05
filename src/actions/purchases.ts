@@ -27,7 +27,15 @@ export const addPurchase = async (values: z.infer<typeof PurchaseSchema>) => {
     return { error: "Input tidak valid!" };
   }
 
-  const { items, totalAmount, invoiceRef, supplierId } = validatedFields.data;
+  const {
+    items,
+    totalAmount,
+    invoiceRef,
+    supplierId: rawSupplierId,
+  } = validatedFields.data;
+
+  // Ensure supplierId is null if it's an empty string or nullish, otherwise use the ID
+  const supplierId = rawSupplierId ? rawSupplierId : null;
 
   try {
     // 2. Create purchase in database with transaction to ensure all operations succeed or fail together
@@ -70,9 +78,9 @@ export const addPurchase = async (values: z.infer<typeof PurchaseSchema>) => {
     // 3. Revalidate the purchases page cache
     revalidatePath("/dashboard/purchases");
 
-    return { 
+    return {
       success: "Pembelian berhasil dicatat!",
-      data: result
+      data: result,
     };
   } catch (error) {
     console.error("Database Error:", error);
