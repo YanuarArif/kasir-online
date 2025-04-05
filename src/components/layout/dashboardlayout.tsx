@@ -129,14 +129,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
   // --- Render Guard ---
   // Don't render the sidebar structure until isCollapsed is determined on the client
-  // This prevents hydration mismatch (server rendering doesn't know screen size or localStorage)
   if (isCollapsed === undefined) {
-    // Render a basic layout shell or null/loading indicator,
-    // avoiding elements whose classes depend on isCollapsed.
-    // Returning null for the whole layout might cause layout shifts.
-    // A better approach might be to render the layout but hide/skeleton the sidebar part.
-    // For simplicity here, we return null, but consider a loading state for better UX.
-    return null;
+    // Render a basic layout shell or null/loading indicator
+    return null; // Or a loading skeleton
   }
   // --- End Render Guard ---
 
@@ -145,7 +140,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       <div className="min-h-screen flex bg-gray-100">
         {/* --- Mobile Sidebar (No Changes Needed Here) --- */}
         <Transition.Root show={sidebarOpen} as={Fragment}>
-          {/* ... existing mobile sidebar code ... */}
           <Dialog
             as="div"
             className="relative z-40 md:hidden"
@@ -174,7 +168,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 leaveTo="-translate-x-full"
               >
                 <Dialog.Panel className="relative flex w-full max-w-xs flex-1 flex-col bg-gray-800 pb-4 pt-5">
-                  {/* Close button for mobile */}
                   <Transition.Child
                     as={Fragment}
                     enter="ease-in-out duration-300"
@@ -198,7 +191,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                       </button>
                     </div>
                   </Transition.Child>
-                  {/* End Close button */}
                   <div className="flex flex-shrink-0 items-center px-4">
                     <span className="text-white text-xl font-semibold">
                       Kasir Online
@@ -238,6 +230,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                       })}
                     </nav>
                   </div>
+                  {/* --- START: Add user profile at bottom of MOBILE sidebar --- */}
+                  {/* Optional: You could add a similar section here if desired for mobile */}
+                  {/* --- END: Add user profile at bottom of MOBILE sidebar --- */}
                 </Dialog.Panel>
               </Transition.Child>
               <div className="w-14 flex-shrink-0" aria-hidden="true">
@@ -249,28 +244,34 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         {/* --- End Mobile Sidebar --- */}
 
         {/* --- Desktop Sidebar (Changes Here) --- */}
-        {/* Use isCollapsed state for width */}
         <div
           className={classNames(
             "hidden md:fixed md:inset-y-0 md:flex md:flex-col transition-all duration-300",
             isCollapsed ? "md:w-16" : "md:w-64" // Width depends on state
           )}
         >
-          <div className="flex flex-grow flex-col overflow-y-auto bg-gray-800 pt-5">
-            <div
-              className={classNames(
-                "flex items-center flex-shrink-0 px-4",
-                isCollapsed ? "justify-center" : "justify-between" // Adjust alignment based on state
-              )}
-            >
+          {/* Sidebar component, swap this element with another sidebar if you like */}
+          <div className="flex min-h-0 flex-1 flex-col bg-gray-800">
+            {" "}
+            {/* Changed from flex-grow to min-h-0 flex-1 */}
+            {/* Top Section: Logo and Toggle */}
+            <div className="flex h-16 flex-shrink-0 items-center justify-between bg-gray-900 px-4">
+              {" "}
+              {/* Added fixed height and bg */}
               {!isCollapsed && (
                 <span className="text-white text-xl font-semibold">
                   Kasir Online
                 </span>
               )}
+              {/* Center toggle button if collapsed */}
               <button
                 onClick={toggleCollapse}
-                className="flex justify-center items-center h-10 w-10 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className={classNames(
+                  "flex justify-center items-center h-10 w-10 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500",
+                  // -- FIX HERE --
+                  isCollapsed ? "mx-auto" : "" // Use ternary operator
+                  // -- END FIX --
+                )}
                 aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
               >
                 {isCollapsed ? (
@@ -280,28 +281,30 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 )}
               </button>
             </div>
-            <div className="mt-5 flex flex-1 flex-col">
-              {/* Wrap the nav section with TooltipProvider */}
+            {/* Navigation Section */}
+            <div className="flex flex-1 flex-col overflow-y-auto">
+              {" "}
+              {/* Added overflow-y-auto here */}
               <TooltipProvider delayDuration={100}>
-                <nav className="flex-1 space-y-1 px-2 pb-4">
+                <nav className="flex-1 space-y-1 px-2 py-4">
+                  {" "}
+                  {/* Adjusted padding */}
                   {navigation.map((item) => {
                     const isCurrent =
                       item.href === "/dashboard"
                         ? pathname === item.href
                         : pathname.startsWith(item.href);
 
-                    // Conditionally render Tooltip wrapper or just the Link
                     return isCollapsed ? (
                       <Tooltip key={item.name}>
                         <TooltipTrigger asChild>
                           <Link
                             href={item.href}
-                            // No longer need the title attribute here
                             className={classNames(
                               isCurrent
                                 ? "bg-gray-900 text-white"
                                 : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                              "group flex items-center rounded-md px-2 py-2 text-sm font-medium justify-center" // Center icon when collapsed
+                              "group flex items-center rounded-md px-2 py-2 text-sm font-medium justify-center"
                             )}
                           >
                             <item.icon
@@ -309,11 +312,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                                 isCurrent
                                   ? "text-gray-300"
                                   : "text-gray-400 group-hover:text-gray-300",
-                                "h-6 w-6 flex-shrink-0 mx-auto" // Icon only when collapsed
+                                "h-6 w-6 flex-shrink-0 mx-auto"
                               )}
                               aria-hidden="true"
                             />
-                            {/* Add screen reader text for accessibility when collapsed */}
                             <span className="sr-only">{item.name}</span>
                           </Link>
                         </TooltipTrigger>
@@ -322,7 +324,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                         </TooltipContent>
                       </Tooltip>
                     ) : (
-                      // Render Link directly when not collapsed
                       <Link
                         key={item.name}
                         href={item.href}
@@ -330,7 +331,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                           isCurrent
                             ? "bg-gray-900 text-white"
                             : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                          "group flex items-center rounded-md px-2 py-2 text-sm font-medium" // Normal layout
+                          "group flex items-center rounded-md px-2 py-2 text-sm font-medium"
                         )}
                       >
                         <item.icon
@@ -338,11 +339,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                             isCurrent
                               ? "text-gray-300"
                               : "text-gray-400 group-hover:text-gray-300",
-                            "h-6 w-6 flex-shrink-0 mr-3" // Icon with margin
+                            "h-6 w-6 flex-shrink-0 mr-3"
                           )}
                           aria-hidden="true"
                         />
-                        {/* Show name only when not collapsed */}
                         <span className="truncate">{item.name}</span>
                       </Link>
                     );
@@ -350,19 +350,71 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 </nav>
               </TooltipProvider>
             </div>
+            {/* --- START: User Profile Section at Bottom --- */}
+            <div
+              className={classNames(
+                "flex-shrink-0 border-t border-gray-700 p-3", // Adjusted padding slightly
+                isCollapsed
+                  ? "flex justify-center"
+                  : "flex items-center space-x-3"
+              )}
+            >
+              {/* Avatar */}
+              <div className="flex-shrink-0">
+                <span className="sr-only">User menu</span>{" "}
+                {/* Added for screen readers */}
+                {session?.user?.image ? (
+                  <div className="inline-block h-9 w-9 overflow-hidden rounded-full bg-gray-600 ring-2 ring-white ring-opacity-50">
+                    {" "}
+                    {/* Added ring for visibility */}
+                    <Image
+                      src={session.user.image}
+                      alt={session.user.name || "User profile"}
+                      width={36}
+                      height={36}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <span className="inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gray-600 ring-2 ring-white ring-opacity-50">
+                    {" "}
+                    {/* Added ring */}
+                    <UserIcon className="h-6 w-6 text-gray-400" />{" "}
+                    {/* Simple user icon */}
+                  </span>
+                )}
+              </div>
+
+              {/* Name/Email (only when expanded) */}
+              {!isCollapsed && (
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-white truncate">
+                    {session?.user?.name || session?.user?.email || "User"}
+                  </p>
+                  {/* Optionally show email if different from name */}
+                  {session?.user?.email &&
+                    session.user.name &&
+                    session.user.email !== session.user.name && (
+                      <p className="text-xs font-medium text-gray-400 truncate">
+                        {session?.user?.email}
+                      </p>
+                    )}
+                </div>
+              )}
+            </div>
+            {/* --- END: User Profile Section at Bottom --- */}
           </div>
         </div>
         {/* --- End Desktop Sidebar --- */}
 
         {/* --- Main Content (Changes Here) --- */}
-        {/* Adjust padding based on isCollapsed state */}
         <div
           className={classNames(
             "flex flex-1 flex-col transition-all duration-300 h-screen overflow-hidden",
             isCollapsed ? "md:pl-16" : "md:pl-64" // Adjust left padding
           )}
         >
-          {/* --- Header / Top Bar (Changes for mobile toggle) --- */}
+          {/* --- Header / Top Bar (No changes needed here) --- */}
           <div className="sticky top-0 z-10 flex h-16 flex-shrink-0 bg-white shadow">
             {/* Mobile Menu Button */}
             <button
@@ -398,14 +450,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                           />
                         </div>
                       ) : (
-                        <span className="inline-block h-9 w-9 overflow-hidden rounded-full bg-indigo-50">
-                          <svg
-                            className="h-full w-full text-indigo-300"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                          </svg>
+                        // Using UserIcon for consistency with bottom profile placeholder
+                        <span className="inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-indigo-50">
+                          <UserIcon className="h-6 w-6 text-indigo-300" />
                         </span>
                       )}
                     </Menu.Button>
