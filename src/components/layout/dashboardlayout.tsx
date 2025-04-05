@@ -22,6 +22,12 @@ import {
   ReceiptRefundIcon,
   ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -41,6 +47,8 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
+const LG_BREAKPOINT = 1024; // Tailwind's default lg breakpoint
+
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children,
   pageTitle = "Dashboard",
@@ -48,24 +56,59 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState<boolean | undefined>(
     undefined
-  ); // Initially undefined
+  ); // Initially undefined for SSR/hydration safety
+  const [isManuallyToggled, setIsManuallyToggled] = useState(false); // Track if user explicitly toggled
   const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const { data: session } = useSession();
 
-  // Set initial collapsed state from localStorage only on client-side
+  // Effect 1: Initialize state based on screen size and localStorage on client-side mount
   useEffect(() => {
     const savedState = localStorage.getItem("sidebarCollapsed");
-    setIsCollapsed(savedState ? JSON.parse(savedState) : false);
-  }, []);
+    const initialIsLargeScreen = window.innerWidth >= LG_BREAKPOINT;
 
-  // Save collapsed state to localStorage when it changes
+    if (savedState !== null) {
+      // If there's a saved state, use it initially
+      setIsCollapsed(JSON.parse(savedState));
+      // Assume manual toggle if saved state conflicts with screen size default
+      setIsManuallyToggled(JSON.parse(savedState) === !initialIsLargeScreen);
+    } else {
+      // No saved state, set initial based on screen size
+      setIsCollapsed(!initialIsLargeScreen); // Collapse if screen is < lg
+    }
+  }, []); // Run only once on mount
+
+  // Effect 2: Listen for screen size changes and update state automatically *if not manually toggled*
   useEffect(() => {
+    // Ensure window is defined (runs only on client)
+    if (typeof window === "undefined") return;
+
+    const mediaQuery = window.matchMedia(`(min-width: ${LG_BREAKPOINT}px)`);
+
+    const handleResize = (event: MediaQueryListEvent) => {
+      // Only auto-update if the user hasn't manually toggled recently
+      // Or, simpler: let resize always dictate the default, manual toggle overrides until next resize change
+      setIsCollapsed(!event.matches); // Collapse if screen is < lg
+      setIsManuallyToggled(false); // Reset manual toggle on resize change
+    };
+
+    // Add listener using the modern method which includes the event object
+    mediaQuery.addEventListener("change", handleResize);
+
+    // Cleanup: remove listener when component unmounts
+    return () => {
+      mediaQuery.removeEventListener("change", handleResize);
+    };
+  }, []); // Run only once on mount to set up listener
+
+  // Effect 3: Save collapsed state to localStorage when it changes
+  useEffect(() => {
+    // Only save if the state is defined (initialized)
     if (isCollapsed !== undefined) {
       localStorage.setItem("sidebarCollapsed", JSON.stringify(isCollapsed));
     }
-  }, [isCollapsed]);
+  }, [isCollapsed]); // Run whenever isCollapsed changes
 
   const handleLogout = () => {
     startTransition(() => {
@@ -73,20 +116,36 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     });
   };
 
+  // Manual toggle function
   const toggleCollapse = () => {
-    setIsCollapsed((prev) => !prev);
+    setIsCollapsed((prev) => {
+      const newState = !prev;
+      // When manually toggling, update localStorage immediately via the state change + Effect 3
+      // Also mark that it was manually toggled
+      setIsManuallyToggled(true);
+      return newState;
+    });
   };
 
-  // Don't render the sidebar until isCollapsed is defined (client-side)
+  // --- Render Guard ---
+  // Don't render the sidebar structure until isCollapsed is determined on the client
+  // This prevents hydration mismatch (server rendering doesn't know screen size or localStorage)
   if (isCollapsed === undefined) {
-    return null; // Or a loading state if preferred
+    // Render a basic layout shell or null/loading indicator,
+    // avoiding elements whose classes depend on isCollapsed.
+    // Returning null for the whole layout might cause layout shifts.
+    // A better approach might be to render the layout but hide/skeleton the sidebar part.
+    // For simplicity here, we return null, but consider a loading state for better UX.
+    return null;
   }
+  // --- End Render Guard ---
 
   return (
     <>
       <div className="min-h-screen flex bg-gray-100">
-        {/* Mobile Sidebar */}
+        {/* --- Mobile Sidebar (No Changes Needed Here) --- */}
         <Transition.Root show={sidebarOpen} as={Fragment}>
+          {/* ... existing mobile sidebar code ... */}
           <Dialog
             as="div"
             className="relative z-40 md:hidden"
@@ -115,6 +174,31 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 leaveTo="-translate-x-full"
               >
                 <Dialog.Panel className="relative flex w-full max-w-xs flex-1 flex-col bg-gray-800 pb-4 pt-5">
+                  {/* Close button for mobile */}
+                  <Transition.Child
+                    as={Fragment}
+                    enter="ease-in-out duration-300"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="ease-in-out duration-300"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                  >
+                    <div className="absolute right-0 top-0 -mr-12 pt-2">
+                      <button
+                        type="button"
+                        className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                        onClick={() => setSidebarOpen(false)}
+                      >
+                        <span className="sr-only">Close sidebar</span>
+                        <XMarkIcon
+                          className="h-6 w-6 text-white"
+                          aria-hidden="true"
+                        />
+                      </button>
+                    </div>
+                  </Transition.Child>
+                  {/* End Close button */}
                   <div className="flex flex-shrink-0 items-center px-4">
                     <span className="text-white text-xl font-semibold">
                       Kasir Online
@@ -137,7 +221,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                                 : "text-gray-300 hover:bg-gray-700 hover:text-white",
                               "group flex items-center rounded-md px-2 py-2 text-base font-medium"
                             )}
-                            onClick={() => setSidebarOpen(false)}
+                            onClick={() => setSidebarOpen(false)} // Close mobile sidebar on nav
                           >
                             <item.icon
                               className={classNames(
@@ -156,20 +240,29 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   </div>
                 </Dialog.Panel>
               </Transition.Child>
-              <div className="w-14 flex-shrink-0" aria-hidden="true" />
+              <div className="w-14 flex-shrink-0" aria-hidden="true">
+                {/* Dummy element to force sidebar to shrink to fit close icon */}
+              </div>
             </div>
           </Dialog>
         </Transition.Root>
+        {/* --- End Mobile Sidebar --- */}
 
-        {/* Desktop Sidebar */}
+        {/* --- Desktop Sidebar (Changes Here) --- */}
+        {/* Use isCollapsed state for width */}
         <div
           className={classNames(
             "hidden md:fixed md:inset-y-0 md:flex md:flex-col transition-all duration-300",
-            isCollapsed ? "md:w-16" : "md:w-64"
+            isCollapsed ? "md:w-16" : "md:w-64" // Width depends on state
           )}
         >
           <div className="flex flex-grow flex-col overflow-y-auto bg-gray-800 pt-5">
-            <div className="flex items-center justify-between px-4">
+            <div
+              className={classNames(
+                "flex items-center flex-shrink-0 px-4",
+                isCollapsed ? "justify-center" : "justify-between" // Adjust alignment based on state
+              )}
+            >
               {!isCollapsed && (
                 <span className="text-white text-xl font-semibold">
                   Kasir Online
@@ -177,61 +270,101 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               )}
               <button
                 onClick={toggleCollapse}
-                className="flex justify-center items-center h-10 w-10 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md"
+                className="flex justify-center items-center h-10 w-10 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
               >
                 {isCollapsed ? (
-                  <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+                  <ChevronRightIcon className="h-6 w-6" aria-hidden="true" />
                 ) : (
                   <ChevronLeftIcon className="h-6 w-6" aria-hidden="true" />
                 )}
               </button>
             </div>
             <div className="mt-5 flex flex-1 flex-col">
-              <nav className="flex-1 space-y-1 px-2 pb-4">
-                {navigation.map((item) => {
-                  const isCurrent =
-                    item.href === "/dashboard"
-                      ? pathname === item.href
-                      : pathname.startsWith(item.href);
-                  return (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className={classNames(
-                        isCurrent
-                          ? "bg-gray-900 text-white"
-                          : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                        "group flex items-center rounded-md px-2 py-2 text-sm font-medium",
-                        isCollapsed ? "justify-center" : ""
-                      )}
-                    >
-                      <item.icon
+              {/* Wrap the nav section with TooltipProvider */}
+              <TooltipProvider delayDuration={100}>
+                <nav className="flex-1 space-y-1 px-2 pb-4">
+                  {navigation.map((item) => {
+                    const isCurrent =
+                      item.href === "/dashboard"
+                        ? pathname === item.href
+                        : pathname.startsWith(item.href);
+
+                    // Conditionally render Tooltip wrapper or just the Link
+                    return isCollapsed ? (
+                      <Tooltip key={item.name}>
+                        <TooltipTrigger asChild>
+                          <Link
+                            href={item.href}
+                            // No longer need the title attribute here
+                            className={classNames(
+                              isCurrent
+                                ? "bg-gray-900 text-white"
+                                : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                              "group flex items-center rounded-md px-2 py-2 text-sm font-medium justify-center" // Center icon when collapsed
+                            )}
+                          >
+                            <item.icon
+                              className={classNames(
+                                isCurrent
+                                  ? "text-gray-300"
+                                  : "text-gray-400 group-hover:text-gray-300",
+                                "h-6 w-6 flex-shrink-0 mx-auto" // Icon only when collapsed
+                              )}
+                              aria-hidden="true"
+                            />
+                            {/* Add screen reader text for accessibility when collapsed */}
+                            <span className="sr-only">{item.name}</span>
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" sideOffset={5}>
+                          <p>{item.name}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : (
+                      // Render Link directly when not collapsed
+                      <Link
+                        key={item.name}
+                        href={item.href}
                         className={classNames(
                           isCurrent
-                            ? "text-gray-300"
-                            : "text-gray-400 group-hover:text-gray-300",
-                          "h-6 w-6 flex-shrink-0",
-                          isCollapsed ? "mx-auto" : "mr-3"
+                            ? "bg-gray-900 text-white"
+                            : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                          "group flex items-center rounded-md px-2 py-2 text-sm font-medium" // Normal layout
                         )}
-                        aria-hidden="true"
-                      />
-                      {!isCollapsed && item.name}
-                    </Link>
-                  );
-                })}
-              </nav>
+                      >
+                        <item.icon
+                          className={classNames(
+                            isCurrent
+                              ? "text-gray-300"
+                              : "text-gray-400 group-hover:text-gray-300",
+                            "h-6 w-6 flex-shrink-0 mr-3" // Icon with margin
+                          )}
+                          aria-hidden="true"
+                        />
+                        {/* Show name only when not collapsed */}
+                        <span className="truncate">{item.name}</span>
+                      </Link>
+                    );
+                  })}
+                </nav>
+              </TooltipProvider>
             </div>
           </div>
         </div>
+        {/* --- End Desktop Sidebar --- */}
 
-        {/* Main Content */}
+        {/* --- Main Content (Changes Here) --- */}
+        {/* Adjust padding based on isCollapsed state */}
         <div
           className={classNames(
             "flex flex-1 flex-col transition-all duration-300 h-screen overflow-hidden",
-            isCollapsed ? "md:pl-16" : "md:pl-64"
+            isCollapsed ? "md:pl-16" : "md:pl-64" // Adjust left padding
           )}
         >
+          {/* --- Header / Top Bar (Changes for mobile toggle) --- */}
           <div className="sticky top-0 z-10 flex h-16 flex-shrink-0 bg-white shadow">
+            {/* Mobile Menu Button */}
             <button
               type="button"
               className="border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden"
@@ -240,12 +373,15 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               <span className="sr-only">Buka sidebar</span>
               <Bars3Icon className="h-6 w-6" aria-hidden="true" />
             </button>
+            {/* End Mobile Menu Button */}
+
             <div className="flex flex-1 justify-between px-4">
               <div className="flex flex-1 items-center">
                 <h1 className="text-xl font-semibold text-gray-900">
                   {pageTitle}
                 </h1>
               </div>
+              {/* --- User Menu (No Changes Needed Here) --- */}
               <div className="ml-4 flex items-center md:ml-6">
                 <Menu as="div" className="relative ml-3">
                   <div>
@@ -283,7 +419,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     leaveFrom="transform opacity-100 scale-100"
                     leaveTo="transform opacity-0 scale-95"
                   >
-                    <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right rounded-lg bg-white py-2 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-gray-100">
+                    <Menu.Items className="absolute right-0 z-20 mt-2 w-56 origin-top-right rounded-lg bg-white py-2 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-gray-100">
                       {/* User info section */}
                       <div className="px-4 py-3">
                         <p className="text-sm font-medium text-gray-900 truncate">
@@ -376,18 +512,23 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   </Transition>
                 </Menu>
               </div>
+              {/* --- End User Menu --- */}
             </div>
           </div>
+          {/* --- End Header / Top Bar --- */}
+
+          {/* --- Page Content --- */}
           <main className="flex-1 overflow-y-auto">
-            {" "}
-            {/* Added overflow-y-auto */}
             <div className="py-6">
               <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
+                {/* Page content goes here */}
                 {children}
               </div>
             </div>
           </main>
+          {/* --- End Page Content --- */}
         </div>
+        {/* --- End Main Content --- */}
       </div>
     </>
   );
