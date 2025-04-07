@@ -4,8 +4,12 @@ import { auth } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import ProductDetailPage from "@/components/pages/dashboard/products/detail";
 
+type Props = {
+  params: Promise<{ id: string }>;
+};
+
 // This is an async Server Component
-const ProductDetail = async ({ params }: { params: { id: string } }) => {
+export default async function ProductDetail(props: Props) {
   // Get current session
   const session = await auth();
   const userId = session?.user?.id;
@@ -15,10 +19,14 @@ const ProductDetail = async ({ params }: { params: { id: string } }) => {
     return <p>Error: User tidak ditemukan.</p>;
   }
 
+  // Get the id from params (which is now a Promise)
+  const params = await props.params;
+  const id = params.id;
+
   // Fetch the product with the given ID
   const product = await db.product.findUnique({
     where: {
-      id: params.id,
+      id: id,
       userId: userId, // Ensure the product belongs to the current user
     },
     include: {
@@ -39,6 +47,4 @@ const ProductDetail = async ({ params }: { params: { id: string } }) => {
   };
 
   return <ProductDetailPage product={serializedProduct} />;
-};
-
-export default ProductDetail;
+}
