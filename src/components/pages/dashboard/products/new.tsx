@@ -9,6 +9,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner"; // Assuming sonner is set up
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { uploadProductImage } from "@/actions/upload";
 
 import DashboardLayout from "@/components/layout/dashboardlayout";
 import { ProductSchema } from "@/schemas/zod";
@@ -37,6 +39,10 @@ type ProductFormValues = z.infer<typeof ProductSchema>;
 const AddProductPage: NextPage = () => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [imageUrl, setImageUrl] = React.useState<string>("");
+  const [isUploading, setIsUploading] = React.useState(false);
+  const [previewUrl, setPreviewUrl] = React.useState<string>("");
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(ProductSchema),
@@ -47,8 +53,44 @@ const AddProductPage: NextPage = () => {
       price: undefined, // Use undefined for optional number fields initially
       cost: undefined,
       stock: undefined,
+      image: "",
     },
   });
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Create a preview URL for the selected image
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewUrl(objectUrl);
+
+    // Upload the image to Vercel Blob
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const result = await uploadProductImage(formData);
+
+      if (result.success && result.url) {
+        setImageUrl(result.url);
+        form.setValue("image", result.url);
+        toast.success("Gambar berhasil diunggah");
+      } else {
+        toast.error(result.error || "Gagal mengunggah gambar");
+        // Clear the file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      }
+    } catch (error) {
+      console.error("Upload Error:", error);
+      toast.error("Gagal mengunggah gambar");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const onSubmit = (values: ProductFormValues) => {
     startTransition(async () => {
@@ -57,6 +99,8 @@ const AddProductPage: NextPage = () => {
         if (result.success) {
           toast.success(result.success);
           form.reset(); // Reset form on success
+          setImageUrl("");
+          setPreviewUrl("");
           // Optionally redirect after a short delay or immediately
           router.push("/dashboard/products");
         } else if (result.error) {
@@ -221,6 +265,51 @@ const AddProductPage: NextPage = () => {
                             disabled={isPending}
                           />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Image Upload */}
+                  <FormField
+                    control={form.control}
+                    name="image"
+                    render={({ field }) => (
+                      <FormItem className="md:col-span-2">
+                        <FormLabel>Gambar Produk (Opsional)</FormLabel>
+                        <div className="flex flex-col space-y-4">
+                          {/* Hidden field for the image URL */}
+                          <input type="hidden" {...field} />
+
+                          {/* File input for image upload */}
+                          <div className="flex items-center gap-4">
+                            <Input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleImageUpload}
+                              ref={fileInputRef}
+                              disabled={isPending || isUploading}
+                              className="max-w-md"
+                            />
+                            {isUploading && (
+                              <span className="text-sm text-gray-500">
+                                Mengunggah...
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Image preview */}
+                          {previewUrl && (
+                            <div className="mt-2 relative w-48 h-48 border rounded-md overflow-hidden">
+                              <Image
+                                src={previewUrl}
+                                alt="Preview"
+                                fill
+                                style={{ objectFit: "contain" }}
+                              />
+                            </div>
+                          )}
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}

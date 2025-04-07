@@ -24,6 +24,7 @@ export const ProductSchema = z.object({
     .number({ invalid_type_error: "Stok harus berupa angka" })
     .int({ message: "Stok harus berupa bilangan bulat" })
     .nonnegative({ message: "Stok tidak boleh negatif" }),
+  image: z.string().optional(),
 });
 
 // Schema for sale item (individual product in a sale)

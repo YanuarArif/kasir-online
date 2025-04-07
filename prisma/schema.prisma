@@ -89,6 +89,7 @@ model Product {
   price       Decimal  @db.Decimal(10, 2)
   cost        Decimal? @db.Decimal(10, 2)
   stock       Int      @default(0)
+  image       String? // URL to the product image stored in Vercel Blob
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

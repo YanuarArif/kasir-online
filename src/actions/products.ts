@@ -27,7 +27,8 @@ export const addProduct = async (values: z.infer<typeof ProductSchema>) => {
     return { error: "Input tidak valid!" };
   }
 
-  const { name, description, sku, price, cost, stock } = validatedFields.data;
+  const { name, description, sku, price, cost, stock, image } =
+    validatedFields.data;
 
   try {
     // 2. Create product in database
@@ -39,6 +40,7 @@ export const addProduct = async (values: z.infer<typeof ProductSchema>) => {
         price,
         cost,
         stock,
+        image,
         userId: userId, // Add the userId
         // categoryId: null,
       },
