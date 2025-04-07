@@ -30,6 +30,7 @@ model User {
   products   Product[] // User's products
   categories Category[] // User's categories
   suppliers  Supplier[] // User's suppliers
+  customers  Customer[] // User's customers
   sales      Sale[] // Sales recorded by this user
   purchases  Purchase[] // Purchases recorded by this user
 
@@ -212,4 +213,24 @@ model Supplier {
   @@unique([userId, email]) // Supplier email is unique for a specific user (if not null)
   @@index([userId]) // Index for user lookup
   @@map("suppliers")
+}
+
+model Customer {
+  id          String   @id @default(cuid())
+  name        String
+  contactName String?
+  email       String? // Made unique *per user* below
+  phone       String?
+  address     String?
+  notes       String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, email]) // Customer email is unique for a specific user (if not null)
+  @@index([userId]) // Index for user lookup
+  @@map("customers")
 }

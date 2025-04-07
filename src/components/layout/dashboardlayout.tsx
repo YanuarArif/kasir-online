@@ -21,6 +21,8 @@ import {
   UserIcon,
   ReceiptRefundIcon,
   ArrowRightOnRectangleIcon,
+  UsersIcon,
+  BuildingStorefrontIcon,
 } from "@heroicons/react/24/outline";
 import {
   Tooltip,
@@ -39,6 +41,12 @@ const navigation = [
   { name: "Penjualan", href: "/dashboard/sales", icon: CurrencyDollarIcon },
   { name: "Pembelian", href: "/dashboard/purchases", icon: TruckIcon },
   { name: "Produk", href: "/dashboard/products", icon: CubeIcon },
+  { name: "Daftar Customers", href: "/dashboard/customers", icon: UsersIcon },
+  {
+    name: "Suppliers",
+    href: "/dashboard/suppliers",
+    icon: BuildingStorefrontIcon,
+  },
   { name: "Laporan", href: "/dashboard/reports", icon: ChartBarIcon },
   { name: "Pengaturan", href: "/dashboard/settings", icon: Cog6ToothIcon },
 ];

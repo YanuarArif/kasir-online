@@ -1,5 +1,6 @@
 import NextTopLoader from "nextjs-toploader";
 import React from "react";
+import { Toaster } from "sonner";
 
 export default function ProtectedLayout({
   children,
@@ -19,6 +20,7 @@ export default function ProtectedLayout({
         speed={200}
         shadow="0 0 10px #f44336,0 0 5px #f44336" // Updated shadow color
       />
+      <Toaster position="top-right" richColors />
       {children}
     </>
   );
