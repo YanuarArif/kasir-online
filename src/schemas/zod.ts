@@ -15,16 +15,18 @@ export const ProductSchema = z.object({
   // Use coerce for string inputs from forms that should be numbers
   price: z.coerce
     .number({ invalid_type_error: "Harga jual harus berupa angka" })
-    .positive({ message: "Harga jual harus positif" }),
+    .nonnegative({ message: "Harga jual tidak boleh negatif" })
+    .default(0),
   cost: z.coerce
     .number({ invalid_type_error: "Harga beli harus berupa angka" })
     .nonnegative({ message: "Harga beli tidak boleh negatif" })
-    .optional(),
+    .default(0),
   stock: z.coerce
     .number({ invalid_type_error: "Stok harus berupa angka" })
     .int({ message: "Stok harus berupa bilangan bulat" })
-    .nonnegative({ message: "Stok tidak boleh negatif" }),
-  image: z.string().optional(),
+    .nonnegative({ message: "Stok tidak boleh negatif" })
+    .default(0),
+  image: z.string().optional().default(""),
 });
 
 // Schema for sale item (individual product in a sale)

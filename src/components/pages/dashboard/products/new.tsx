@@ -42,6 +42,7 @@ const AddProductPage: NextPage = () => {
   const [imageUrl, setImageUrl] = React.useState<string>("");
   const [isUploading, setIsUploading] = React.useState(false);
   const [previewUrl, setPreviewUrl] = React.useState<string>("");
+  const [fileInputKey, setFileInputKey] = React.useState<number>(0); // Add a key to force re-render
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const form = useForm<ProductFormValues>({
@@ -50,9 +51,9 @@ const AddProductPage: NextPage = () => {
       name: "",
       description: "",
       sku: "",
-      price: undefined, // Use undefined for optional number fields initially
-      cost: undefined,
-      stock: undefined,
+      price: 0, // Use 0 instead of undefined to ensure it's always controlled
+      cost: 0, // Use 0 instead of undefined
+      stock: 0, // Use 0 instead of undefined
       image: "",
     },
   });
@@ -98,10 +99,21 @@ const AddProductPage: NextPage = () => {
         const result = await addProduct(values);
         if (result.success) {
           toast.success(result.success);
-          form.reset(); // Reset form on success
+          // Reset form and state
+          form.reset({
+            name: "",
+            description: "",
+            sku: "",
+            price: 0,
+            cost: 0,
+            stock: 0,
+            image: "",
+          });
           setImageUrl("");
           setPreviewUrl("");
-          // Optionally redirect after a short delay or immediately
+          // Reset file input by incrementing the key
+          setFileInputKey((prev) => prev + 1);
+          // Redirect to products page
           router.push("/dashboard/products");
         } else if (result.error) {
           toast.error(result.error);
@@ -283,14 +295,17 @@ const AddProductPage: NextPage = () => {
 
                           {/* File input for image upload */}
                           <div className="flex items-center gap-4">
-                            <Input
-                              type="file"
-                              accept="image/*"
-                              onChange={handleImageUpload}
-                              ref={fileInputRef}
-                              disabled={isPending || isUploading}
-                              className="max-w-md"
-                            />
+                            <FormControl>
+                              <Input
+                                key={fileInputKey} // Use key to force re-render
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageUpload}
+                                ref={fileInputRef}
+                                disabled={isPending || isUploading}
+                                className="max-w-md"
+                              />
+                            </FormControl>
                             {isUploading && (
                               <span className="text-sm text-gray-500">
                                 Mengunggah...
