@@ -21,7 +21,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
 
 // Define the type for the form values
@@ -71,7 +77,17 @@ const NewSalePage = ({ products }: { products: Product[] }) => {
   const handleProductChange = (index: number, productId: string) => {
     const selectedProduct = products.find((p) => p.id === productId);
     if (selectedProduct) {
+      // Set the price for the selected product
       form.setValue(`items.${index}.priceAtSale`, selectedProduct.price);
+
+      // Force recalculation of total immediately
+      const currentItems = form.getValues("items");
+      const total = currentItems.reduce((sum, item) => {
+        return sum + (item.quantity || 0) * (item.priceAtSale || 0);
+      }, 0);
+
+      setTotalAmount(total);
+      form.setValue("totalAmount", total);
     }
   };
 
@@ -110,10 +126,7 @@ const NewSalePage = ({ products }: { products: Product[] }) => {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-6"
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               {/* Sale Items */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
@@ -227,10 +240,10 @@ const NewSalePage = ({ products }: { products: Product[] }) => {
                     <div className="col-span-10 md:col-span-1 flex items-center">
                       <p className="text-sm font-medium">
                         Rp{" "}
-                        {((items[index]?.quantity || 0) *
-                          (items[index]?.priceAtSale || 0)).toLocaleString(
-                          "id-ID"
-                        )}
+                        {(
+                          (items[index]?.quantity || 0) *
+                          (items[index]?.priceAtSale || 0)
+                        ).toLocaleString("id-ID")}
                       </p>
                     </div>
 

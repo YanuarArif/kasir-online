@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import {
   FunnelIcon,
   MagnifyingGlassIcon,
@@ -38,7 +38,7 @@ interface SalesPageProps {
 }
 
 const SalesPage: React.FC<SalesPageProps> = ({ sales }) => {
-  const router = useRouter();
+  // const router = useRouter();
   const [searchTerm, setSearchTerm] = React.useState("");
 
   // Filter sales based on search term
@@ -114,7 +114,8 @@ const SalesPage: React.FC<SalesPageProps> = ({ sales }) => {
                     className="bg-white border-b hover:bg-gray-50"
                   >
                     <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                      {sale.id}
+                      {sale.id.substring(0, 4)}-{sale.id.substring(4, 8)}-
+                      {sale.id.substring(8, 12)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {new Date(sale.saleDate).toLocaleDateString("id-ID", {
@@ -165,7 +166,10 @@ const SalesPage: React.FC<SalesPageProps> = ({ sales }) => {
                   <span className="font-medium text-gray-900">
                     ID Transaksi:
                   </span>
-                  <span className="text-gray-500">{sale.id}</span>
+                  <span className="text-gray-500">
+                    {sale.id.substring(0, 4)}-{sale.id.substring(4, 8)}-
+                    {sale.id.substring(8, 12)}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="font-medium text-gray-900">Tanggal:</span>
