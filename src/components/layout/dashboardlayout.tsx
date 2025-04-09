@@ -7,6 +7,7 @@ import { Transition, Dialog, Menu } from "@headlessui/react";
 import { logout } from "@/actions/logout";
 import { useTransition } from "react";
 import { useSession } from "next-auth/react";
+import { ThemeToggle } from "@/components/theme-toggle";
 import {
   Bars3Icon,
   XMarkIcon,
@@ -145,7 +146,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
   return (
     <>
-      <div className="min-h-screen flex bg-gray-100">
+      <div className="min-h-screen flex bg-gray-100 dark:bg-gray-900">
         {/* --- Mobile Sidebar (No Changes Needed Here) --- */}
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
@@ -361,7 +362,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             {/* --- START: User Profile Section at Bottom --- */}
             <div
               className={classNames(
-                "flex-shrink-0 border-t border-gray-700 p-3 bg-gray-900", // Added darker background for contrast
+                "flex-shrink-0 border-t border-gray-700 dark:border-gray-600 p-3 bg-gray-900 dark:bg-gray-800", // Added darker background for contrast
                 isCollapsed ? "flex justify-center" : "flex items-center"
               )}
             >
@@ -378,7 +379,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                         <Menu.Button className="flex items-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-800 rounded-full">
                           <span className="sr-only">Open user menu</span>
                           {session?.user?.image ? (
-                            <div className="inline-block h-9 w-9 overflow-hidden rounded-full bg-gray-600 ring-2 ring-white ring-opacity-50">
+                            <div className="inline-block h-9 w-9 overflow-hidden rounded-full bg-gray-600 dark:bg-gray-700 ring-2 ring-white dark:ring-gray-500 ring-opacity-50">
                               <Image
                                 src={session.user.image}
                                 alt={session.user.name || "User profile"}
@@ -388,8 +389,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                               />
                             </div>
                           ) : (
-                            <span className="inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gray-600 ring-2 ring-white ring-opacity-50">
-                              <UserIcon className="h-6 w-6 text-gray-400" />
+                            <span className="inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gray-600 dark:bg-gray-700 ring-2 ring-white dark:ring-gray-500 ring-opacity-50">
+                              <UserIcon className="h-6 w-6 text-gray-400 dark:text-gray-300" />
                             </span>
                           )}
                         </Menu.Button>
@@ -423,14 +424,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 {/* Name/Email (only when expanded) */}
                 {!isCollapsed && (
                   <div className="min-w-0 flex-1 ml-3 flex flex-col justify-center">
-                    <p className="text-sm font-medium text-white truncate leading-tight">
+                    <p className="text-sm font-medium text-white dark:text-gray-100 truncate leading-tight">
                       {session?.user?.name || session?.user?.email || "User"}
                     </p>
                     {/* Optionally show email if different from name */}
                     {session?.user?.email &&
                       session.user.name &&
                       session.user.email !== session.user.name && (
-                        <p className="text-xs font-medium text-gray-400 truncate mt-0.5 leading-tight">
+                        <p className="text-xs font-medium text-gray-400 dark:text-gray-300 truncate mt-0.5 leading-tight">
                           {session?.user?.email}
                         </p>
                       )}
@@ -447,13 +448,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   leaveFrom="transform opacity-100 scale-100"
                   leaveTo="transform opacity-0 scale-95"
                 >
-                  <Menu.Items className="absolute bottom-full left-0 mb-2 w-56 origin-bottom-left rounded-lg bg-white py-2 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-gray-100">
+                  <Menu.Items className="absolute bottom-full left-0 mb-2 w-56 origin-bottom-left rounded-lg bg-white dark:bg-gray-800 py-2 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-gray-100 dark:divide-gray-700">
                     {/* User info section */}
                     <div className="px-4 py-3">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                         {session?.user?.name || session?.user?.email || "User"}
                       </p>
-                      <p className="text-xs text-gray-500 truncate mt-1">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-1">
                         {session?.user?.email || ""}
                       </p>
                     </div>
@@ -465,12 +466,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                           <Link
                             href="/dashboard/profile"
                             className={classNames(
-                              active ? "bg-gray-50" : "",
-                              "flex items-center px-4 py-2 text-sm text-gray-700 hover:text-indigo-600"
+                              active ? "bg-gray-50 dark:bg-gray-700" : "",
+                              "flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
                             )}
                           >
                             <UserIcon
-                              className="mr-3 h-5 w-5 text-gray-400"
+                              className="mr-3 h-5 w-5 text-gray-400 dark:text-gray-300"
                               aria-hidden="true"
                             />
                             Lihat Profil
@@ -482,12 +483,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                           <Link
                             href="/dashboard/settings"
                             className={classNames(
-                              active ? "bg-gray-50" : "",
-                              "flex items-center px-4 py-2 text-sm text-gray-700 hover:text-indigo-600"
+                              active ? "bg-gray-50 dark:bg-gray-700" : "",
+                              "flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
                             )}
                           >
                             <Cog6ToothIcon
-                              className="mr-3 h-5 w-5 text-gray-400"
+                              className="mr-3 h-5 w-5 text-gray-400 dark:text-gray-300"
                               aria-hidden="true"
                             />
                             Pengaturan Akun
@@ -499,12 +500,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                           <Link
                             href="/dashboard/billing"
                             className={classNames(
-                              active ? "bg-gray-50" : "",
-                              "flex items-center px-4 py-2 text-sm text-gray-700 hover:text-indigo-600"
+                              active ? "bg-gray-50 dark:bg-gray-700" : "",
+                              "flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
                             )}
                           >
                             <ReceiptRefundIcon
-                              className="mr-3 h-5 w-5 text-gray-400"
+                              className="mr-3 h-5 w-5 text-gray-400 dark:text-gray-300"
                               aria-hidden="true"
                             />
                             Billing
@@ -521,12 +522,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                             onClick={handleLogout}
                             disabled={isPending}
                             className={classNames(
-                              active ? "bg-gray-50" : "",
-                              "flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-red-600 disabled:opacity-50"
+                              active ? "bg-gray-50 dark:bg-gray-700" : "",
+                              "flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 disabled:opacity-50"
                             )}
                           >
                             <ArrowRightOnRectangleIcon
-                              className="mr-3 h-5 w-5 text-gray-400"
+                              className="mr-3 h-5 w-5 text-gray-400 dark:text-gray-300"
                               aria-hidden="true"
                             />
                             {isPending ? "Logging out..." : "Logout"}
@@ -551,7 +552,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           )}
         >
           {/* --- Header / Top Bar (No changes needed here) --- */}
-          <div className="sticky top-0 z-10 flex h-16 flex-shrink-0 bg-white shadow">
+          <div className="sticky top-0 z-10 flex h-16 flex-shrink-0 bg-white dark:bg-gray-800 shadow">
             {/* Mobile Menu Button */}
             <button
               type="button"
@@ -565,15 +566,21 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
             <div className="flex flex-1 justify-between px-4">
               <div className="flex flex-1 items-center">
-                <h1 className="text-xl font-semibold text-gray-900">
+                <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                   {pageTitle}
                 </h1>
               </div>
-              {/* --- User Menu (No Changes Needed Here) --- */}
+              {/* --- User Menu and Theme Toggle --- */}
               <div className="ml-4 flex items-center md:ml-6">
+                {/* Theme Toggle Button */}
+                <div className="mr-3">
+                  <ThemeToggle />
+                </div>
+
+                {/* User Menu */}
                 <Menu as="div" className="relative ml-3">
                   <div>
-                    <Menu.Button className="flex max-w-xs items-center rounded-full bg-white border-2 border-indigo-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 p-0.5 shadow-sm hover:shadow transition-all duration-200">
+                    <Menu.Button className="flex max-w-xs items-center rounded-full bg-white dark:bg-gray-700 border-2 border-indigo-100 dark:border-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 p-0.5 shadow-sm hover:shadow transition-all duration-200">
                       <span className="sr-only">Buka menu pengguna</span>
                       {session?.user?.image ? (
                         <div className="inline-block h-9 w-9 overflow-hidden rounded-full bg-gray-100">
@@ -602,15 +609,15 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     leaveFrom="transform opacity-100 scale-100"
                     leaveTo="transform opacity-0 scale-95"
                   >
-                    <Menu.Items className="absolute right-0 z-20 mt-2 w-56 origin-top-right rounded-lg bg-white py-2 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-gray-100">
+                    <Menu.Items className="absolute right-0 z-20 mt-2 w-56 origin-top-right rounded-lg bg-white dark:bg-gray-800 py-2 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-gray-100 dark:divide-gray-700">
                       {/* User info section */}
                       <div className="px-4 py-3">
-                        <p className="text-sm font-medium text-gray-900 truncate">
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                           {session?.user?.name ||
                             session?.user?.email ||
                             "User"}
                         </p>
-                        <p className="text-xs text-gray-500 truncate mt-1">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-1">
                           {session?.user?.email || ""}
                         </p>
                       </div>
@@ -622,8 +629,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                             <Link
                               href="/dashboard/profile"
                               className={classNames(
-                                active ? "bg-gray-50" : "",
-                                "flex items-center px-4 py-2 text-sm text-gray-700 hover:text-indigo-600"
+                                active ? "bg-gray-50 dark:bg-gray-700" : "",
+                                "flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
                               )}
                             >
                               <UserIcon
@@ -639,8 +646,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                             <Link
                               href="/dashboard/billing"
                               className={classNames(
-                                active ? "bg-gray-50" : "",
-                                "flex items-center px-4 py-2 text-sm text-gray-700 hover:text-indigo-600"
+                                active ? "bg-gray-50 dark:bg-gray-700" : "",
+                                "flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
                               )}
                             >
                               <ReceiptRefundIcon
@@ -656,8 +663,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                             <Link
                               href="/dashboard/settings"
                               className={classNames(
-                                active ? "bg-gray-50" : "",
-                                "flex items-center px-4 py-2 text-sm text-gray-700 hover:text-indigo-600"
+                                active ? "bg-gray-50 dark:bg-gray-700" : "",
+                                "flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
                               )}
                             >
                               <Cog6ToothIcon
@@ -678,12 +685,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                               onClick={handleLogout}
                               disabled={isPending}
                               className={classNames(
-                                active ? "bg-gray-50" : "",
-                                "flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-red-600 disabled:opacity-50"
+                                active ? "bg-gray-50 dark:bg-gray-700" : "",
+                                "flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 disabled:opacity-50"
                               )}
                             >
                               <ArrowRightOnRectangleIcon
-                                className="mr-3 h-5 w-5 text-gray-400"
+                                className="mr-3 h-5 w-5 text-gray-400 dark:text-gray-300"
                                 aria-hidden="true"
                               />
                               {isPending ? "Logging out..." : "Keluar"}
