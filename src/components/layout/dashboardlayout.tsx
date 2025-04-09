@@ -361,54 +361,182 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             {/* --- START: User Profile Section at Bottom --- */}
             <div
               className={classNames(
-                "flex-shrink-0 border-t border-gray-700 p-3", // Adjusted padding slightly
-                isCollapsed
-                  ? "flex justify-center"
-                  : "flex items-center space-x-3"
+                "flex-shrink-0 border-t border-gray-700 p-3 bg-gray-900", // Added darker background for contrast
+                isCollapsed ? "flex justify-center" : "flex items-center"
               )}
             >
-              {/* Avatar */}
-              <div className="flex-shrink-0">
-                <span className="sr-only">User menu</span>{" "}
-                {/* Added for screen readers */}
-                {session?.user?.image ? (
-                  <div className="inline-block h-9 w-9 overflow-hidden rounded-full bg-gray-600 ring-2 ring-white ring-opacity-50">
-                    {" "}
-                    {/* Added ring for visibility */}
-                    <Image
-                      src={session.user.image}
-                      alt={session.user.name || "User profile"}
-                      width={36}
-                      height={36}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                ) : (
-                  <span className="inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gray-600 ring-2 ring-white ring-opacity-50">
-                    {" "}
-                    {/* Added ring */}
-                    <UserIcon className="h-6 w-6 text-gray-400" />{" "}
-                    {/* Simple user icon */}
-                  </span>
-                )}
-              </div>
-
-              {/* Name/Email (only when expanded) */}
-              {!isCollapsed && (
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-white truncate">
-                    {session?.user?.name || session?.user?.email || "User"}
-                  </p>
-                  {/* Optionally show email if different from name */}
-                  {session?.user?.email &&
-                    session.user.name &&
-                    session.user.email !== session.user.name && (
-                      <p className="text-xs font-medium text-gray-400 truncate">
-                        {session?.user?.email}
-                      </p>
-                    )}
+              {/* User Menu Dropdown */}
+              <Menu
+                as="div"
+                className="relative flex flex-row items-center w-full"
+              >
+                {/* User Avatar */}
+                <div className="flex-shrink-0">
+                  {isCollapsed ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Menu.Button className="flex items-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-800 rounded-full">
+                          <span className="sr-only">Open user menu</span>
+                          {session?.user?.image ? (
+                            <div className="inline-block h-9 w-9 overflow-hidden rounded-full bg-gray-600 ring-2 ring-white ring-opacity-50">
+                              <Image
+                                src={session.user.image}
+                                alt={session.user.name || "User profile"}
+                                width={36}
+                                height={36}
+                                className="h-full w-full object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <span className="inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gray-600 ring-2 ring-white ring-opacity-50">
+                              <UserIcon className="h-6 w-6 text-gray-400" />
+                            </span>
+                          )}
+                        </Menu.Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="right" sideOffset={5}>
+                        <p>User Menu</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <Menu.Button className="flex items-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-800 rounded-full">
+                      <span className="sr-only">Open user menu</span>
+                      {session?.user?.image ? (
+                        <div className="inline-block h-9 w-9 overflow-hidden rounded-full bg-gray-600 ring-2 ring-white ring-opacity-50">
+                          <Image
+                            src={session.user.image}
+                            alt={session.user.name || "User profile"}
+                            width={36}
+                            height={36}
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <span className="inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gray-600 ring-2 ring-white ring-opacity-50">
+                          <UserIcon className="h-6 w-6 text-gray-400" />
+                        </span>
+                      )}
+                    </Menu.Button>
+                  )}
                 </div>
-              )}
+
+                {/* Name/Email (only when expanded) */}
+                {!isCollapsed && (
+                  <div className="min-w-0 flex-1 ml-3 flex flex-col justify-center">
+                    <p className="text-sm font-medium text-white truncate leading-tight">
+                      {session?.user?.name || session?.user?.email || "User"}
+                    </p>
+                    {/* Optionally show email if different from name */}
+                    {session?.user?.email &&
+                      session.user.name &&
+                      session.user.email !== session.user.name && (
+                        <p className="text-xs font-medium text-gray-400 truncate mt-0.5 leading-tight">
+                          {session?.user?.email}
+                        </p>
+                      )}
+                  </div>
+                )}
+
+                {/* Dropup Menu */}
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95"
+                >
+                  <Menu.Items className="absolute bottom-full left-0 mb-2 w-56 origin-bottom-left rounded-lg bg-white py-2 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-gray-100">
+                    {/* User info section */}
+                    <div className="px-4 py-3">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        {session?.user?.name || session?.user?.email || "User"}
+                      </p>
+                      <p className="text-xs text-gray-500 truncate mt-1">
+                        {session?.user?.email || ""}
+                      </p>
+                    </div>
+
+                    {/* Menu items */}
+                    <div className="py-1">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link
+                            href="/dashboard/profile"
+                            className={classNames(
+                              active ? "bg-gray-50" : "",
+                              "flex items-center px-4 py-2 text-sm text-gray-700 hover:text-indigo-600"
+                            )}
+                          >
+                            <UserIcon
+                              className="mr-3 h-5 w-5 text-gray-400"
+                              aria-hidden="true"
+                            />
+                            Lihat Profil
+                          </Link>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link
+                            href="/dashboard/settings"
+                            className={classNames(
+                              active ? "bg-gray-50" : "",
+                              "flex items-center px-4 py-2 text-sm text-gray-700 hover:text-indigo-600"
+                            )}
+                          >
+                            <Cog6ToothIcon
+                              className="mr-3 h-5 w-5 text-gray-400"
+                              aria-hidden="true"
+                            />
+                            Pengaturan Akun
+                          </Link>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link
+                            href="/dashboard/billing"
+                            className={classNames(
+                              active ? "bg-gray-50" : "",
+                              "flex items-center px-4 py-2 text-sm text-gray-700 hover:text-indigo-600"
+                            )}
+                          >
+                            <ReceiptRefundIcon
+                              className="mr-3 h-5 w-5 text-gray-400"
+                              aria-hidden="true"
+                            />
+                            Billing
+                          </Link>
+                        )}
+                      </Menu.Item>
+                    </div>
+
+                    {/* Logout section */}
+                    <div className="py-1">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <button
+                            onClick={handleLogout}
+                            disabled={isPending}
+                            className={classNames(
+                              active ? "bg-gray-50" : "",
+                              "flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-red-600 disabled:opacity-50"
+                            )}
+                          >
+                            <ArrowRightOnRectangleIcon
+                              className="mr-3 h-5 w-5 text-gray-400"
+                              aria-hidden="true"
+                            />
+                            {isPending ? "Logging out..." : "Logout"}
+                          </button>
+                        )}
+                      </Menu.Item>
+                    </div>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
             </div>
             {/* --- END: User Profile Section at Bottom --- */}
           </div>
