@@ -139,12 +139,15 @@ const NewPurchasePage: React.FC<NewPurchasePageProps> = ({
                   name="invoiceRef"
                   render={({ field }) => (
                     <FormItem>
+                      {/* FormLabel likely handles dark mode */}
                       <FormLabel>Nomor Invoice/Referensi</FormLabel>
                       <FormControl>
+                        {/* Input likely handles dark mode, but ensure placeholder is visible */}
                         <Input
                           placeholder="Contoh: INV-2024-001"
                           {...field}
                           disabled={isPending}
+                          // className="dark:placeholder-gray-400" // Input component might handle this
                         />
                       </FormControl>
                       <FormMessage />
@@ -158,10 +161,12 @@ const NewPurchasePage: React.FC<NewPurchasePageProps> = ({
                   name="supplierId"
                   render={({ field }) => (
                     <FormItem>
+                      {/* FormLabel likely handles dark mode */}
                       <FormLabel>Supplier</FormLabel>
                       <FormControl>
+                        {/* Add dark mode styles to select */}
                         <select
-                          className="block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                          className="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm text-gray-900 dark:text-gray-100"
                           {...field}
                           disabled={isPending}
                         >
@@ -182,7 +187,11 @@ const NewPurchasePage: React.FC<NewPurchasePageProps> = ({
               {/* Purchase Items */}
               <div className="space-y-4 mt-6">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-medium">Item Pembelian</h3>
+                  {/* Add dark mode text color */}
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                    Item Pembelian
+                  </h3>
+                  {/* Button likely handles dark mode */}
                   <Button
                     type="button"
                     variant="outline"
@@ -200,7 +209,8 @@ const NewPurchasePage: React.FC<NewPurchasePageProps> = ({
                 {fields.map((field, index) => (
                   <div
                     key={field.id}
-                    className="grid grid-cols-12 gap-4 items-end border p-4 rounded-md"
+                    // Add dark mode border
+                    className="grid grid-cols-12 gap-4 items-end border dark:border-gray-700 p-4 rounded-md"
                   >
                     {/* Product Selection */}
                     <FormField
@@ -209,11 +219,16 @@ const NewPurchasePage: React.FC<NewPurchasePageProps> = ({
                       render={({ field }) => (
                         <FormItem className="col-span-12 md:col-span-5">
                           <FormLabel>
-                            Produk <span className="text-red-500">*</span>
+                            {/* Add dark mode to required indicator */}
+                            Produk{" "}
+                            <span className="text-red-500 dark:text-red-400">
+                              *
+                            </span>
                           </FormLabel>
                           <FormControl>
+                            {/* Add dark mode styles to select */}
                             <select
-                              className="block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                              className="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm text-gray-900 dark:text-gray-100"
                               {...field}
                               onChange={(e) => {
                                 field.onChange(e);
@@ -241,9 +256,14 @@ const NewPurchasePage: React.FC<NewPurchasePageProps> = ({
                       render={({ field }) => (
                         <FormItem className="col-span-4 md:col-span-2">
                           <FormLabel>
-                            Jumlah <span className="text-red-500">*</span>
+                            {/* Add dark mode to required indicator */}
+                            Jumlah{" "}
+                            <span className="text-red-500 dark:text-red-400">
+                              *
+                            </span>
                           </FormLabel>
                           <FormControl>
+                            {/* Input likely handles dark mode */}
                             <Input
                               type="number"
                               min="1"
@@ -268,12 +288,14 @@ const NewPurchasePage: React.FC<NewPurchasePageProps> = ({
                       render={({ field }) => (
                         <FormItem className="col-span-6 md:col-span-3">
                           <FormLabel>
+                            {/* Ensure dark mode on required indicator */}
                             Harga Beli (Rp){" "}
                             <span className="text-red-500 dark:text-red-400">
                               *
                             </span>
                           </FormLabel>
                           <FormControl>
+                            {/* Input likely handles dark mode */}
                             <Input
                               type="number"
                               min="0"
@@ -293,7 +315,8 @@ const NewPurchasePage: React.FC<NewPurchasePageProps> = ({
 
                     {/* Subtotal (calculated) */}
                     <div className="col-span-10 md:col-span-1 flex items-center">
-                      <p className="text-sm font-medium">
+                      {/* Add dark mode text color */}
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         Rp{" "}
                         {(
                           (items[index]?.quantity || 0) *
@@ -322,9 +345,12 @@ const NewPurchasePage: React.FC<NewPurchasePageProps> = ({
               </div>
 
               {/* Total Amount (Read-only) */}
+              {/* Add dark mode text colors */}
               <div className="flex justify-end items-center space-x-2 pt-4 border-t border-gray-200 dark:border-gray-700">
-                <span className="font-medium">Total:</span>
-                <span className="text-xl font-bold">
+                <span className="font-medium text-gray-700 dark:text-gray-300">
+                  Total:
+                </span>
+                <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
                   Rp {totalAmount.toLocaleString("id-ID")}
                 </span>
               </div>
@@ -337,6 +363,7 @@ const NewPurchasePage: React.FC<NewPurchasePageProps> = ({
               />
 
               {/* Submit Button */}
+              {/* Buttons likely handle dark mode */}
               <div className="flex justify-end space-x-2 pt-4">
                 <Button
                   type="button"

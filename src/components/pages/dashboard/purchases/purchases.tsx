@@ -74,7 +74,7 @@ const PurchasesPage: React.FC<PurchasesPageProps> = ({ purchases }) => {
           <input
             type="text"
             placeholder="Cari Pembelian (ID, Supplier, Invoice)"
-            className="block w-full rounded-md border border-gray-300 bg-white py-2 pl-10 pr-3 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+            className="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 py-2 pl-10 pr-3 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -82,13 +82,13 @@ const PurchasesPage: React.FC<PurchasesPageProps> = ({ purchases }) => {
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <button
             type="button"
-            className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 w-full sm:w-auto"
+            className="inline-flex items-center justify-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 w-full sm:w-auto"
           >
-            <FunnelIcon className="mr-2 h-5 w-5 text-gray-400" />
+            <FunnelIcon className="mr-2 h-5 w-5 text-gray-400 dark:text-gray-500" />
             Filter
           </button>
           <Link href="/dashboard/purchases/new" legacyBehavior>
-            <a className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 w-full sm:w-auto">
+            <a className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 dark:hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 w-full sm:w-auto">
               <PlusIcon className="mr-2 h-5 w-5" />
               Tambah Pembelian
             </a>
@@ -99,9 +99,9 @@ const PurchasesPage: React.FC<PurchasesPageProps> = ({ purchases }) => {
       {/* Purchases List */}
       <div className="space-y-4">
         {/* Desktop Table View - shadcn style */}
-        <div className="relative overflow-x-auto border border-gray-200 rounded-lg hidden sm:block">
-          <table className="w-full text-sm text-left text-gray-500">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+        <div className="relative overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg hidden sm:block">
+          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead className="text-xs text-gray-700 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-700">
               <tr>
                 <th scope="col" className="px-6 py-3">
                   ID Pembelian
@@ -128,9 +128,9 @@ const PurchasesPage: React.FC<PurchasesPageProps> = ({ purchases }) => {
                 filteredPurchases.map((purchase) => (
                   <tr
                     key={purchase.id}
-                    className="bg-white border-b hover:bg-gray-50"
+                    className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                   >
-                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                    <td className="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                       {purchase.id}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -157,7 +157,7 @@ const PurchasesPage: React.FC<PurchasesPageProps> = ({ purchases }) => {
                         href={`/dashboard/purchases/${purchase.id}`}
                         legacyBehavior
                       >
-                        <a className="text-indigo-600 hover:text-indigo-900 font-medium">
+                        <a className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 font-medium">
                           Detail
                         </a>
                       </Link>
@@ -168,7 +168,7 @@ const PurchasesPage: React.FC<PurchasesPageProps> = ({ purchases }) => {
                 <tr>
                   <td
                     colSpan={6}
-                    className="px-6 py-4 text-center text-gray-500"
+                    className="px-6 py-4 text-center text-gray-500 dark:text-gray-400"
                   >
                     {searchTerm
                       ? "Tidak ada pembelian yang sesuai dengan pencarian."
@@ -184,15 +184,24 @@ const PurchasesPage: React.FC<PurchasesPageProps> = ({ purchases }) => {
         <div className="sm:hidden space-y-4">
           {filteredPurchases.length > 0 ? (
             filteredPurchases.map((purchase) => (
-              <div key={purchase.id} className="bg-white p-4 rounded-lg shadow">
+              <div
+                key={purchase.id}
+                className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow dark:shadow-gray-700 border border-gray-200 dark:border-gray-700"
+              >
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="font-medium text-gray-900">ID:</span>
-                    <span className="text-gray-700">{purchase.id}</span>
+                    <span className="font-medium text-gray-900 dark:text-gray-100">
+                      ID:
+                    </span>
+                    <span className="text-gray-700 dark:text-gray-300">
+                      {purchase.id}
+                    </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-medium text-gray-900">Tanggal:</span>
-                    <span className="text-gray-700">
+                    <span className="font-medium text-gray-900 dark:text-gray-100">
+                      Tanggal:
+                    </span>
+                    <span className="text-gray-700 dark:text-gray-300">
                       {new Date(purchase.purchaseDate).toLocaleDateString(
                         "id-ID",
                         {
@@ -204,20 +213,26 @@ const PurchasesPage: React.FC<PurchasesPageProps> = ({ purchases }) => {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-medium text-gray-900">Supplier:</span>
-                    <span className="text-gray-700">
+                    <span className="font-medium text-gray-900 dark:text-gray-100">
+                      Supplier:
+                    </span>
+                    <span className="text-gray-700 dark:text-gray-300">
                       {purchase.supplier?.name || "-"}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-medium text-gray-900">Invoice:</span>
-                    <span className="text-gray-700">
+                    <span className="font-medium text-gray-900 dark:text-gray-100">
+                      Invoice:
+                    </span>
+                    <span className="text-gray-700 dark:text-gray-300">
                       {purchase.invoiceRef || "-"}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-medium text-gray-900">Total:</span>
-                    <span className="text-gray-700">
+                    <span className="font-medium text-gray-900 dark:text-gray-100">
+                      Total:
+                    </span>
+                    <span className="text-gray-700 dark:text-gray-300">
                       Rp {purchase.totalAmount.toLocaleString("id-ID")}
                     </span>
                   </div>
@@ -226,7 +241,7 @@ const PurchasesPage: React.FC<PurchasesPageProps> = ({ purchases }) => {
                       href={`/dashboard/purchases/${purchase.id}`}
                       legacyBehavior
                     >
-                      <a className="text-indigo-600 hover:text-indigo-900 text-sm">
+                      <a className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 text-sm">
                         Detail
                       </a>
                     </Link>
@@ -235,7 +250,7 @@ const PurchasesPage: React.FC<PurchasesPageProps> = ({ purchases }) => {
               </div>
             ))
           ) : (
-            <div className="bg-white p-4 rounded-lg shadow text-center text-gray-500">
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow dark:shadow-gray-700 border border-gray-200 dark:border-gray-700 text-center text-gray-500 dark:text-gray-400">
               {searchTerm
                 ? "Tidak ada pembelian yang sesuai dengan pencarian."
                 : "Belum ada data pembelian."}

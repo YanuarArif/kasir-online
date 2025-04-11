@@ -60,7 +60,7 @@ const SalesPage: React.FC<SalesPageProps> = ({ sales }) => {
           <input
             type="text"
             placeholder="Cari Transaksi (ID)"
-            className="block w-full rounded-md border border-gray-300 bg-white py-2 pl-10 pr-3 leading-5 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+            className="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 py-2 pl-10 pr-3 leading-5 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:border-indigo-500 focus:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -68,13 +68,13 @@ const SalesPage: React.FC<SalesPageProps> = ({ sales }) => {
         <div className="flex gap-2 w-full sm:w-auto">
           <button
             type="button"
-            className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 w-full sm:w-auto"
+            className="inline-flex items-center justify-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 w-full sm:w-auto"
           >
-            <FunnelIcon className="mr-2 h-5 w-5 text-gray-400" />
+            <FunnelIcon className="mr-2 h-5 w-5 text-gray-400 dark:text-gray-500" />
             Filter
           </button>
           <Link href="/dashboard/sales/new" legacyBehavior>
-            <a className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 w-full sm:w-auto">
+            <a className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 dark:hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 w-full sm:w-auto">
               <PlusIcon className="mr-2 h-5 w-5" />
               Tambah Penjualan
             </a>
@@ -85,9 +85,9 @@ const SalesPage: React.FC<SalesPageProps> = ({ sales }) => {
       {/* Sales Table/List */}
       <div className="overflow-x-auto">
         {/* Desktop Table View - shadcn style */}
-        <div className="relative overflow-x-auto border border-gray-200 rounded-lg hidden md:block">
-          <table className="w-full text-sm text-left text-gray-500">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+        <div className="relative overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg hidden md:block">
+          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead className="text-xs text-gray-700 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-700">
               <tr>
                 <th scope="col" className="px-6 py-3">
                   ID Transaksi
@@ -111,9 +111,9 @@ const SalesPage: React.FC<SalesPageProps> = ({ sales }) => {
                 filteredSales.map((sale) => (
                   <tr
                     key={sale.id}
-                    className="bg-white border-b hover:bg-gray-50"
+                    className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                   >
-                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                    <td className="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                       {sale.id.substring(0, 4)}-{sale.id.substring(4, 8)}-
                       {sale.id.substring(8, 12)}
                     </td>
@@ -134,7 +134,7 @@ const SalesPage: React.FC<SalesPageProps> = ({ sales }) => {
                     </td>
                     <td className="px-6 py-4 text-right whitespace-nowrap">
                       <Link href={`/dashboard/sales/${sale.id}`} legacyBehavior>
-                        <a className="text-indigo-600 hover:text-indigo-900 font-medium">
+                        <a className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 font-medium">
                           Detail
                         </a>
                       </Link>
@@ -145,7 +145,7 @@ const SalesPage: React.FC<SalesPageProps> = ({ sales }) => {
                 <tr>
                   <td
                     colSpan={5}
-                    className="px-6 py-4 text-center text-gray-500"
+                    className="px-6 py-4 text-center text-gray-500 dark:text-gray-400"
                   >
                     {searchTerm
                       ? "Tidak ada transaksi yang sesuai dengan pencarian."
@@ -158,22 +158,24 @@ const SalesPage: React.FC<SalesPageProps> = ({ sales }) => {
         </div>
 
         {/* Mobile Card View */}
-        <div className="md:hidden divide-y divide-gray-200 bg-white">
+        <div className="md:hidden divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
           {filteredSales.length > 0 ? (
             filteredSales.map((sale) => (
               <div key={sale.id} className="p-4 space-y-2">
                 <div className="flex justify-between">
-                  <span className="font-medium text-gray-900">
+                  <span className="font-medium text-gray-900 dark:text-gray-100">
                     ID Transaksi:
                   </span>
-                  <span className="text-gray-500">
+                  <span className="text-gray-500 dark:text-gray-400">
                     {sale.id.substring(0, 4)}-{sale.id.substring(4, 8)}-
                     {sale.id.substring(8, 12)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-medium text-gray-900">Tanggal:</span>
-                  <span className="text-gray-500">
+                  <span className="font-medium text-gray-900 dark:text-gray-100">
+                    Tanggal:
+                  </span>
+                  <span className="text-gray-500 dark:text-gray-400">
                     {new Date(sale.saleDate).toLocaleDateString("id-ID", {
                       day: "numeric",
                       month: "long",
@@ -184,22 +186,24 @@ const SalesPage: React.FC<SalesPageProps> = ({ sales }) => {
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-medium text-gray-900">
+                  <span className="font-medium text-gray-900 dark:text-gray-100">
                     Jumlah Item:
                   </span>
-                  <span className="text-gray-500">
+                  <span className="text-gray-500 dark:text-gray-400">
                     {sale.items.length} item
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-medium text-gray-900">Total:</span>
-                  <span className="text-gray-500">
+                  <span className="font-medium text-gray-900 dark:text-gray-100">
+                    Total:
+                  </span>
+                  <span className="text-gray-500 dark:text-gray-400">
                     Rp {sale.totalAmount.toLocaleString("id-ID")}
                   </span>
                 </div>
                 <div className="text-right">
                   <Link href={`/dashboard/sales/${sale.id}`} legacyBehavior>
-                    <a className="text-indigo-600 hover:text-indigo-900">
+                    <a className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300">
                       Detail
                     </a>
                   </Link>
@@ -207,7 +211,7 @@ const SalesPage: React.FC<SalesPageProps> = ({ sales }) => {
               </div>
             ))
           ) : (
-            <div className="p-4 text-center text-sm text-gray-500">
+            <div className="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
               {searchTerm
                 ? "Tidak ada transaksi yang sesuai dengan pencarian."
                 : "Belum ada data penjualan."}

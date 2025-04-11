@@ -115,8 +115,10 @@ const NewSalePage = ({ products }: { products: Product[] }) => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      {/* Card component from shadcn/ui likely handles its own dark mode */}
       <Card>
         <CardHeader>
+          {/* CardTitle and CardDescription likely handle dark mode */}
           <CardTitle className="text-2xl font-bold tracking-tight">
             Tambah Penjualan Baru
           </CardTitle>
@@ -130,7 +132,11 @@ const NewSalePage = ({ products }: { products: Product[] }) => {
               {/* Sale Items */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-medium">Item Penjualan</h3>
+                  {/* Add dark mode text color */}
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                    Item Penjualan
+                  </h3>
+                  {/* Button from shadcn/ui likely handles dark mode */}
                   <Button
                     type="button"
                     variant="outline"
@@ -148,7 +154,8 @@ const NewSalePage = ({ products }: { products: Product[] }) => {
                 {fields.map((field, index) => (
                   <div
                     key={field.id}
-                    className="grid grid-cols-12 gap-4 items-end border p-4 rounded-md"
+                    // Add dark mode border color
+                    className="grid grid-cols-12 gap-4 items-end border dark:border-gray-700 p-4 rounded-md"
                   >
                     {/* Product Selection */}
                     <FormField
@@ -157,11 +164,16 @@ const NewSalePage = ({ products }: { products: Product[] }) => {
                       render={({ field }) => (
                         <FormItem className="col-span-12 md:col-span-5">
                           <FormLabel>
-                            Produk <span className="text-red-500">*</span>
+                            {/* FormLabel from shadcn/ui likely handles dark mode */}
+                            Produk{" "}
+                            <span className="text-red-500 dark:text-red-400">
+                              *
+                            </span>
                           </FormLabel>
                           <FormControl>
+                            {/* Style the select element for dark mode */}
                             <select
-                              className="block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                              className="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm text-gray-900 dark:text-gray-100"
                               {...field}
                               onChange={(e) => {
                                 field.onChange(e);
@@ -189,9 +201,13 @@ const NewSalePage = ({ products }: { products: Product[] }) => {
                       render={({ field }) => (
                         <FormItem className="col-span-4 md:col-span-2">
                           <FormLabel>
-                            Jumlah <span className="text-red-500">*</span>
+                            Jumlah{" "}
+                            <span className="text-red-500 dark:text-red-400">
+                              *
+                            </span>
                           </FormLabel>
                           <FormControl>
+                            {/* Input from shadcn/ui likely handles dark mode */}
                             <Input
                               type="number"
                               min="1"
@@ -222,6 +238,7 @@ const NewSalePage = ({ products }: { products: Product[] }) => {
                             </span>
                           </FormLabel>
                           <FormControl>
+                            {/* Input from shadcn/ui likely handles dark mode */}
                             <Input
                               type="number"
                               min="0"
@@ -241,7 +258,8 @@ const NewSalePage = ({ products }: { products: Product[] }) => {
 
                     {/* Subtotal (calculated) */}
                     <div className="col-span-10 md:col-span-1 flex items-center">
-                      <p className="text-sm font-medium">
+                      {/* Add dark mode text color */}
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         Rp{" "}
                         {(
                           (items[index]?.quantity || 0) *
@@ -270,9 +288,12 @@ const NewSalePage = ({ products }: { products: Product[] }) => {
               </div>
 
               {/* Total Amount (Read-only) */}
+              {/* Add dark mode text color */}
               <div className="flex justify-end items-center space-x-2 pt-4 border-t border-gray-200 dark:border-gray-700">
-                <span className="font-medium">Total:</span>
-                <span className="text-xl font-bold">
+                <span className="font-medium text-gray-700 dark:text-gray-300">
+                  Total:
+                </span>
+                <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
                   Rp {totalAmount.toLocaleString("id-ID")}
                 </span>
               </div>
@@ -286,6 +307,7 @@ const NewSalePage = ({ products }: { products: Product[] }) => {
 
               {/* Submit Button */}
               <div className="flex justify-end space-x-2 pt-4">
+                {/* Buttons from shadcn/ui likely handle dark mode */}
                 <Button
                   type="button"
                   variant="outline"
