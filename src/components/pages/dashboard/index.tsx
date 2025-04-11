@@ -3,7 +3,17 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useState, useEffect } from "react";
-import { getDashboardSummary } from "@/actions/dashboard"; // Import the server action
+import {
+  getDashboardSummary,
+  getSalesChartData,
+  getProductDistributionData,
+  getRecentTransactions,
+} from "@/actions/dashboard"; // Import all server actions
+import type {
+  SalesChartDataPoint,
+  ProductDistributionDataPoint,
+  RecentTransactionItem,
+} from "@/actions/dashboard"; // Import types
 import {
   CubeIcon,
   CurrencyDollarIcon,
@@ -53,51 +63,10 @@ type SummaryData = {
   purchasesChange: number;
 };
 
-// Sample data for charts (can be replaced with fetched data later if needed)
-const salesData = [
-  { name: "Jan", total: 1500000 },
-  { name: "Feb", total: 2300000 },
-  { name: "Mar", total: 1800000 },
-  { name: "Apr", total: 2800000 },
-  { name: "May", total: 2100000 },
-  { name: "Jun", total: 3200000 },
-  { name: "Jul", total: 2900000 },
-];
-
-const productData = [
-  { name: "Makanan", value: 35 },
-  { name: "Minuman", value: 25 },
-  { name: "Elektronik", value: 15 },
-  { name: "Pakaian", value: 20 },
-  { name: "Lainnya", value: 5 },
-];
-
-const recentTransactions = [
-  {
-    id: "INV12345",
-    time: "10 menit lalu",
-    amount: "Rp 75.000",
-    status: "success",
-  },
-  {
-    id: "INV12344",
-    time: "1 jam lalu",
-    amount: "Rp 120.000",
-    status: "success",
-  },
-  {
-    id: "INV12343",
-    time: "3 jam lalu",
-    amount: "Rp 250.000",
-    status: "success",
-  },
-  {
-    id: "INV12342",
-    time: "5 jam lalu",
-    amount: "Rp 85.000",
-    status: "success",
-  },
-];
+// No longer need sample data here
+// const salesData = [...];
+// const productData = [...];
+// const recentTransactions = [...];
 
 const quickActions = [
   {
@@ -121,36 +90,83 @@ const quickActions = [
 ];
 
 const DashboardHomePage: NextPage = () => {
+  // State for all dashboard data
   const [summaryData, setSummaryData] = useState<SummaryData | null>(null);
+  const [salesChartData, setSalesChartData] = useState<
+    SalesChartDataPoint[] | null
+  >(null);
+  const [productDistData, setProductDistData] = useState<
+    ProductDistributionDataPoint[] | null
+  >(null);
+  const [recentTransData, setRecentTransData] = useState<
+    RecentTransactionItem[] | null
+  >(null);
+
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchSummary = async () => {
+    const fetchAllData = async () => {
       setIsLoading(true);
       setError(null);
       try {
-        const result = await getDashboardSummary();
-        if (result.success && result.data) {
-          // Convert Decimal types to number before setting state
-          const formattedData: SummaryData = {
-            ...result.data,
-            salesToday: Number(result.data.salesToday), // Convert Decimal to number
-            purchasesThisMonth: Number(result.data.purchasesThisMonth), // Convert Decimal to number
-          };
-          setSummaryData(formattedData);
+        // Fetch all data concurrently
+        const [
+          summaryResult,
+          salesChartResult,
+          productDistResult,
+          recentTransResult,
+        ] = await Promise.all([
+          getDashboardSummary(),
+          getSalesChartData(),
+          getProductDistributionData(),
+          getRecentTransactions(),
+        ]);
+
+        // Process results and update state
+        if (summaryResult.success && summaryResult.data) {
+          // No need to convert here as it's done in the action now
+          setSummaryData(summaryResult.data);
         } else {
-          setError(result.error || "Gagal mengambil data ringkasan.");
+          throw new Error(
+            summaryResult.error || "Gagal mengambil data ringkasan."
+          );
         }
-      } catch (err) {
-        console.error("Failed to fetch dashboard summary:", err);
-        setError("Terjadi kesalahan saat menghubungi server.");
+
+        if (salesChartResult.success && salesChartResult.data) {
+          setSalesChartData(salesChartResult.data);
+        } else {
+          throw new Error(
+            salesChartResult.error || "Gagal mengambil data grafik penjualan."
+          );
+        }
+
+        if (productDistResult.success && productDistResult.data) {
+          setProductDistData(productDistResult.data);
+        } else {
+          throw new Error(
+            productDistResult.error || "Gagal mengambil data distribusi produk."
+          );
+        }
+
+        if (recentTransResult.success && recentTransResult.data) {
+          setRecentTransData(recentTransResult.data);
+        } else {
+          throw new Error(
+            recentTransResult.error || "Gagal mengambil transaksi terkini."
+          );
+        }
+      } catch (err: any) {
+        console.error("Failed to fetch dashboard data:", err);
+        setError(
+          err.message || "Terjadi kesalahan saat memuat data dashboard."
+        );
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchSummary();
+    fetchAllData();
   }, []);
 
   // Render loading skeletons
@@ -194,14 +210,17 @@ const DashboardHomePage: NextPage = () => {
   }
 
   // Render dashboard with data
-  if (!summaryData) {
-    // Should not happen if loading and error states are handled, but good practice
+  // Check if all required data is loaded before rendering the main content
+  if (!summaryData || !salesChartData || !productDistData || !recentTransData) {
+    // This case should ideally be covered by loading/error states,
+    // but acts as a fallback if some data fails partially without throwing a blocking error.
     return (
       <DashboardLayout pageTitle="Dashboard Utama">
         <Head>
           <title>Dashboard - Kasir Online</title>
         </Head>
-        <p>Data tidak tersedia.</p>
+        <p>Data dashboard tidak lengkap atau tidak tersedia.</p>
+        {/* Optionally show partial data if needed */}
       </DashboardLayout>
     );
   }
@@ -273,15 +292,15 @@ const DashboardHomePage: NextPage = () => {
       {/* Charts Section */}
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-7">
         {/* Sales Chart */}
-        <SalesChart data={salesData} />
+        <SalesChart data={salesChartData} />
 
         {/* Product Distribution Chart */}
-        <ProductDistributionChart data={productData} />
+        <ProductDistributionChart data={productDistData} />
       </div>
 
       {/* Recent Activity */}
       <div className="mt-6">
-        <RecentActivity transactions={recentTransactions} />
+        <RecentActivity transactions={recentTransData} />
       </div>
     </DashboardLayout>
   );
