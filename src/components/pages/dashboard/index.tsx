@@ -1,143 +1,171 @@
-// pages/dashboard/index.tsx
+"use client";
+
 import type { NextPage } from "next";
 import Head from "next/head";
-import { CubeIcon, CurrencyDollarIcon } from "@heroicons/react/24/outline";
+import { useState, useEffect } from "react";
+import {
+  CubeIcon,
+  CurrencyDollarIcon,
+  UsersIcon,
+  ShoppingBagIcon,
+  PlusIcon,
+} from "@heroicons/react/24/outline";
 import DashboardLayout from "@/components/layout/dashboardlayout";
 
+// Import our reusable components
+import { SummaryCard } from "@/components/dashboard/summary-card";
+import { QuickActions } from "@/components/dashboard/quick-actions";
+import { RecentActivity } from "@/components/dashboard/recent-activity";
+import {
+  SalesChart,
+  ProductDistributionChart,
+  CHART_COLORS,
+} from "@/components/dashboard/dashboard-charts";
+
+// Sample data for charts
+const salesData = [
+  { name: "Jan", total: 1500000 },
+  { name: "Feb", total: 2300000 },
+  { name: "Mar", total: 1800000 },
+  { name: "Apr", total: 2800000 },
+  { name: "May", total: 2100000 },
+  { name: "Jun", total: 3200000 },
+  { name: "Jul", total: 2900000 },
+];
+
+const productData = [
+  { name: "Makanan", value: 35 },
+  { name: "Minuman", value: 25 },
+  { name: "Elektronik", value: 15 },
+  { name: "Pakaian", value: 20 },
+  { name: "Lainnya", value: 5 },
+];
+
+const recentTransactions = [
+  {
+    id: "INV12345",
+    time: "10 menit lalu",
+    amount: "Rp 75.000",
+    status: "success",
+  },
+  {
+    id: "INV12344",
+    time: "1 jam lalu",
+    amount: "Rp 120.000",
+    status: "success",
+  },
+  {
+    id: "INV12343",
+    time: "3 jam lalu",
+    amount: "Rp 250.000",
+    status: "success",
+  },
+  {
+    id: "INV12342",
+    time: "5 jam lalu",
+    amount: "Rp 85.000",
+    status: "success",
+  },
+];
+
+const quickActions = [
+  {
+    label: "Tambah Penjualan",
+    href: "/dashboard/sales/new",
+    icon: <PlusIcon className="mr-2 h-4 w-4" />,
+    colorClass: "bg-indigo-600 hover:bg-indigo-700",
+  },
+  {
+    label: "Tambah Pembelian",
+    href: "/dashboard/purchases/new",
+    icon: <PlusIcon className="mr-2 h-4 w-4" />,
+    colorClass: "bg-emerald-600 hover:bg-emerald-700",
+  },
+  {
+    label: "Tambah Produk",
+    href: "/dashboard/products/new",
+    icon: <PlusIcon className="mr-2 h-4 w-4" />,
+    colorClass: "bg-amber-600 hover:bg-amber-700",
+  },
+];
+
 const DashboardHomePage: NextPage = () => {
+  const [mounted, setMounted] = useState(false);
+
+  // Ensure components render properly with SSR
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
   return (
     <DashboardLayout pageTitle="Dashboard Utama">
       <Head>
         <title>Dashboard - Kasir Online</title>
       </Head>
 
-      {/* Page header (optional, already have one in layout) */}
-      {/* <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">Dashboard Utama</h1>
-      </div> */}
+      {/* Quick Actions */}
+      <QuickActions actions={quickActions} />
 
-      {/* Start Content Area */}
-      <div className="py-4">
-        <div className="space-y-4">
-          {/* Example Content: Stats Cards */}
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {/* Example Card 1 */}
-            <div className="overflow-hidden rounded-lg bg-white shadow">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <CurrencyDollarIcon
-                      className="h-6 w-6 text-gray-400"
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="truncate text-sm font-medium text-gray-500">
-                        Penjualan Hari Ini
-                      </dt>
-                      <dd>
-                        <div className="text-lg font-medium text-gray-900">
-                          Rp 1.250.000
-                        </div>
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-50 px-5 py-3">
-                <div className="text-sm">
-                  <a
-                    href="#"
-                    className="font-medium text-indigo-700 hover:text-indigo-900"
-                  >
-                    Lihat Semua
-                  </a>
-                </div>
-              </div>
-            </div>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <SummaryCard
+          title="Penjualan Hari Ini"
+          value="Rp 1.250.000"
+          icon={<CurrencyDollarIcon className="h-5 w-5" />}
+          change={{ value: "+12% dari kemarin", type: "increase" }}
+          linkText="Lihat semua penjualan"
+          linkHref="/dashboard/sales"
+          colorScheme="indigo"
+        />
 
-            {/* Add more cards like the one above */}
-            <div className="overflow-hidden rounded-lg bg-white shadow">
-              {" "}
-              {/* Card 2 */}
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <CubeIcon
-                      className="h-6 w-6 text-gray-400"
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="truncate text-sm font-medium text-gray-500">
-                        Produk Aktif
-                      </dt>
-                      <dd>
-                        <div className="text-lg font-medium text-gray-900">
-                          152
-                        </div>
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="overflow-hidden rounded-lg bg-white shadow">
-              {" "}
-              {/* Card 3 */}
-              {/* ... content ... */}
-            </div>
-            <div className="overflow-hidden rounded-lg bg-white shadow">
-              {" "}
-              {/* Card 4 */}
-              {/* ... content ... */}
-            </div>
-          </div>
+        <SummaryCard
+          title="Produk Aktif"
+          value="152"
+          icon={<CubeIcon className="h-5 w-5" />}
+          change={{ value: "+5 produk baru", type: "increase" }}
+          linkText="Kelola produk"
+          linkHref="/dashboard/products"
+          colorScheme="emerald"
+        />
 
-          {/* Example Content: Recent Activity Table */}
-          <div className="overflow-hidden rounded-lg bg-white shadow">
-            <div className="px-4 py-5 sm:px-6">
-              <h3 className="text-lg font-medium leading-6 text-gray-900">
-                Aktivitas Terbaru
-              </h3>
-            </div>
-            <div className="border-t border-gray-200">
-              {/* Replace with actual table data */}
-              <div className="min-w-full divide-y divide-gray-200">
-                <div className="bg-gray-50">
-                  {/* Table Header (Example) */}
-                  <div className="grid grid-cols-3 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                    <span>Transaksi ID</span>
-                    <span>Waktu</span>
-                    <span className="text-right">Total</span>
-                  </div>
-                </div>
-                <div className="divide-y divide-gray-200 bg-white">
-                  {/* Table Row (Example) */}
-                  <div className="grid grid-cols-3 px-6 py-4 text-sm text-gray-900">
-                    <span className="text-indigo-600 hover:text-indigo-900">
-                      #INV12345
-                    </span>
-                    <span>10 menit lalu</span>
-                    <span className="text-right font-medium">Rp 75.000</span>
-                  </div>
-                  <div className="grid grid-cols-3 px-6 py-4 text-sm text-gray-900">
-                    <span className="text-indigo-600 hover:text-indigo-900">
-                      #INV12344
-                    </span>
-                    <span>1 jam lalu</span>
-                    <span className="text-right font-medium">Rp 120.000</span>
-                  </div>
-                  {/* Add more rows */}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <SummaryCard
+          title="Pelanggan"
+          value="45"
+          icon={<UsersIcon className="h-5 w-5" />}
+          change={{ value: "+3 minggu ini", type: "increase" }}
+          linkText="Lihat pelanggan"
+          linkHref="/dashboard/customers"
+          colorScheme="blue"
+        />
+
+        <SummaryCard
+          title="Pembelian Bulan Ini"
+          value="Rp 8.500.000"
+          icon={<ShoppingBagIcon className="h-5 w-5" />}
+          change={{ value: "-5% dari bulan lalu", type: "decrease" }}
+          linkText="Lihat pembelian"
+          linkHref="/dashboard/purchases"
+          colorScheme="amber"
+        />
       </div>
-      {/* End Content Area */}
+
+      {/* Charts Section */}
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-7">
+        {/* Sales Chart */}
+        <SalesChart data={salesData} />
+
+        {/* Product Distribution Chart */}
+        <ProductDistributionChart data={productData} />
+      </div>
+
+      {/* Recent Activity */}
+      <div className="mt-6">
+        <RecentActivity transactions={recentTransactions} />
+      </div>
     </DashboardLayout>
   );
 };

@@ -9,7 +9,7 @@ const Dashboard = async () => {
 
   return (
     <main>
-      <DashboardHomePage />;
+      <DashboardHomePage />
     </main>
   );
 };
