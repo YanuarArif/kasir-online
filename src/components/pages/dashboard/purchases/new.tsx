@@ -92,6 +92,19 @@ const NewPurchasePage: React.FC<NewPurchasePageProps> = ({
     const selectedProduct = products.find((p) => p.id === productId);
     if (selectedProduct && selectedProduct.cost) {
       form.setValue(`items.${index}.costAtPurchase`, selectedProduct.cost);
+
+      // Force recalculation of total immediately
+      const currentItems = form.getValues("items");
+
+      // Update the current item with the new cost before calculating total
+      currentItems[index].costAtPurchase = selectedProduct.cost;
+
+      const total = currentItems.reduce((sum, item) => {
+        return sum + (item.quantity || 0) * (item.costAtPurchase || 0);
+      }, 0);
+
+      setTotalAmount(total);
+      form.setValue("totalAmount", total);
     }
   };
 

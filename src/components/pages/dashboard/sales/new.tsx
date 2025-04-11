@@ -82,6 +82,10 @@ const NewSalePage = ({ products }: { products: Product[] }) => {
 
       // Force recalculation of total immediately
       const currentItems = form.getValues("items");
+
+      // Update the current item with the new price before calculating total
+      currentItems[index].priceAtSale = selectedProduct.price;
+
       const total = currentItems.reduce((sum, item) => {
         return sum + (item.quantity || 0) * (item.priceAtSale || 0);
       }, 0);
