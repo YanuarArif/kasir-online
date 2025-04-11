@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, type ReactNode } from "react";
-import MobileSidebar from "./dashboard/MobileSidebar"; // Updated import path
-import DesktopSidebar from "./dashboard/DesktopSidebar"; // Updated import path
-import TopBar from "./dashboard/TopBar"; // Updated import path
-import { classNames } from "./dashboard/SidebarNavigation"; // Updated import path
+import MobileSidebar from "./MobileSidebar";
+import DesktopSidebar from "./DesktopSidebar";
+import TopBar from "./TopBar";
+import { classNames } from "./SidebarNavigation";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -92,16 +92,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   return (
     <div className="min-h-screen flex bg-gray-100 dark:bg-gray-900">
       {/* Mobile Sidebar */}
-      <MobileSidebar
-        sidebarOpen={sidebarOpen}
-        setSidebarOpen={setSidebarOpen}
-      />
+      <MobileSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
       {/* Desktop Sidebar */}
-      <DesktopSidebar
-        isCollapsed={isCollapsed}
-        toggleCollapse={toggleCollapse}
-      />
+      <DesktopSidebar isCollapsed={isCollapsed} toggleCollapse={toggleCollapse} />
 
       {/* Main Content */}
       <div
