@@ -1,6 +1,5 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/prisma";
-import { redirect } from "next/navigation";
 import React from "react";
 import AccountSettings from "@/components/pages/dashboard/settings/account/account-settings";
 import DashboardLayout from "@/components/layout/dashboardlayout";
@@ -8,32 +7,36 @@ import SettingsLayout from "@/components/pages/dashboard/settings/settings-layou
 
 const AccountSettingsPage = async () => {
   const session = await auth();
-  if (!session?.user?.id) {
-    redirect("/login");
-  }
 
-  // Fetch user data from database
-  const user = await db.user.findUnique({
-    where: {
-      id: session.user.id,
-    },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      username: true,
-      image: true,
-    },
-  });
+  // Fetch user data from database - we can assume session exists due to middleware protection
+  const user = session?.user?.id
+    ? await db.user.findUnique({
+        where: {
+          id: session.user.id,
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          username: true,
+          image: true,
+        },
+      })
+    : null;
 
-  if (!user) {
-    redirect("/login");
-  }
+  // Use a default user object with empty values if user is null
+  const userData = user || {
+    id: session?.user?.id || "",
+    name: session?.user?.name || "",
+    email: session?.user?.email || "",
+    username: "",
+    image: session?.user?.image || "",
+  };
 
   return (
     <DashboardLayout pageTitle="Pengaturan Akun">
       <SettingsLayout>
-        <AccountSettings user={user} />
+        <AccountSettings user={userData} />
       </SettingsLayout>
     </DashboardLayout>
   );

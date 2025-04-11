@@ -1,6 +1,18 @@
-import { redirect } from "next/navigation";
+"use client";
 
-// Redirect to account settings page
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+// Client-side redirect to account settings page
 export default function SettingsPage() {
-  redirect("/dashboard/settings/account");
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push("/dashboard/settings/account");
+  }, [router]);
+
+  // Return a loading state or empty div while redirecting
+  return (
+    <div className="flex items-center justify-center h-full">Loading...</div>
+  );
 }

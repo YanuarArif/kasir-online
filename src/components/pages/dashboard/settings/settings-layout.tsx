@@ -65,19 +65,16 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
 
   // Set active tab based on current pathname
   useEffect(() => {
-    // Default to account if we're at the base settings path
-    if (pathname === "/dashboard/settings") {
-      router.push("/dashboard/settings/account");
-      return;
-    }
-
     // Find the matching nav item
     const matchingItem = settingsNavItems.find((item) =>
       pathname.includes(item.href)
     );
-    
+
     if (matchingItem) {
       setActiveTab(matchingItem.href);
+    } else if (pathname === "/dashboard/settings") {
+      // If we're at the base settings path, set the active tab to account
+      setActiveTab("/dashboard/settings/account");
     }
   }, [pathname, router]);
 

@@ -49,7 +49,11 @@ const navigation = [
     icon: BuildingStorefrontIcon,
   },
   { name: "Laporan", href: "/dashboard/reports", icon: ChartBarIcon },
-  { name: "Pengaturan", href: "/dashboard/settings", icon: Cog6ToothIcon },
+  {
+    name: "Pengaturan",
+    href: "/dashboard/settings/account",
+    icon: Cog6ToothIcon,
+  },
 ];
 
 function classNames(...classes: string[]) {
@@ -481,7 +485,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                       <Menu.Item>
                         {({ active }) => (
                           <Link
-                            href="/dashboard/settings"
+                            href="/dashboard/settings/account"
                             className={classNames(
                               active ? "bg-gray-50 dark:bg-gray-700" : "",
                               "flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
@@ -661,7 +665,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                         <Menu.Item>
                           {({ active }) => (
                             <Link
-                              href="/dashboard/settings"
+                              href="/dashboard/settings/account"
                               className={classNames(
                                 active ? "bg-gray-50 dark:bg-gray-700" : "",
                                 "flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
