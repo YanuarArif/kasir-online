@@ -21,7 +21,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
 
 // Define the type for the form values
@@ -44,7 +50,10 @@ interface NewPurchasePageProps {
   suppliers: Supplier[];
 }
 
-const NewPurchasePage: React.FC<NewPurchasePageProps> = ({ products, suppliers }) => {
+const NewPurchasePage: React.FC<NewPurchasePageProps> = ({
+  products,
+  suppliers,
+}) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [totalAmount, setTotalAmount] = useState<number>(0);
@@ -121,10 +130,7 @@ const NewPurchasePage: React.FC<NewPurchasePageProps> = ({ products, suppliers }
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-6"
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               {/* Purchase Info */}
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 {/* Invoice Reference */}
@@ -262,7 +268,10 @@ const NewPurchasePage: React.FC<NewPurchasePageProps> = ({ products, suppliers }
                       render={({ field }) => (
                         <FormItem className="col-span-6 md:col-span-3">
                           <FormLabel>
-                            Harga Beli (Rp) <span className="text-red-500">*</span>
+                            Harga Beli (Rp){" "}
+                            <span className="text-red-500 dark:text-red-400">
+                              *
+                            </span>
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -286,10 +295,10 @@ const NewPurchasePage: React.FC<NewPurchasePageProps> = ({ products, suppliers }
                     <div className="col-span-10 md:col-span-1 flex items-center">
                       <p className="text-sm font-medium">
                         Rp{" "}
-                        {((items[index]?.quantity || 0) *
-                          (items[index]?.costAtPurchase || 0)).toLocaleString(
-                          "id-ID"
-                        )}
+                        {(
+                          (items[index]?.quantity || 0) *
+                          (items[index]?.costAtPurchase || 0)
+                        ).toLocaleString("id-ID")}
                       </p>
                     </div>
 
@@ -302,7 +311,7 @@ const NewPurchasePage: React.FC<NewPurchasePageProps> = ({ products, suppliers }
                           size="sm"
                           onClick={() => remove(index)}
                           disabled={isPending}
-                          className="text-red-500 hover:text-red-700"
+                          className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                         >
                           <TrashIcon className="h-5 w-5" />
                         </Button>
@@ -313,7 +322,7 @@ const NewPurchasePage: React.FC<NewPurchasePageProps> = ({ products, suppliers }
               </div>
 
               {/* Total Amount (Read-only) */}
-              <div className="flex justify-end items-center space-x-2 pt-4 border-t">
+              <div className="flex justify-end items-center space-x-2 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <span className="font-medium">Total:</span>
                 <span className="text-xl font-bold">
                   Rp {totalAmount.toLocaleString("id-ID")}

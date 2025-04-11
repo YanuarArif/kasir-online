@@ -307,7 +307,7 @@ const AddProductPage: NextPage = () => {
                               />
                             </FormControl>
                             {isUploading && (
-                              <span className="text-sm text-gray-500">
+                              <span className="text-sm text-gray-500 dark:text-gray-400">
                                 Mengunggah...
                               </span>
                             )}
@@ -315,7 +315,7 @@ const AddProductPage: NextPage = () => {
 
                           {/* Image preview */}
                           {previewUrl && (
-                            <div className="mt-2 relative w-48 h-48 border rounded-md overflow-hidden">
+                            <div className="mt-2 relative w-48 h-48 border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden bg-white dark:bg-gray-800">
                               <Image
                                 src={previewUrl}
                                 alt="Preview"
@@ -332,7 +332,7 @@ const AddProductPage: NextPage = () => {
                 </div>
 
                 {/* Buttons */}
-                <div className="mt-8 pt-6 border-t border-gray-100 flex justify-end gap-4">
+                <div className="mt-8 pt-6 border-t border-gray-100 dark:border-gray-700 flex justify-end gap-4">
                   <Button
                     type="button"
                     variant="outline"

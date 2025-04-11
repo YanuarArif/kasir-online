@@ -216,7 +216,10 @@ const NewSalePage = ({ products }: { products: Product[] }) => {
                       render={({ field }) => (
                         <FormItem className="col-span-6 md:col-span-3">
                           <FormLabel>
-                            Harga (Rp) <span className="text-red-500">*</span>
+                            Harga (Rp){" "}
+                            <span className="text-red-500 dark:text-red-400">
+                              *
+                            </span>
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -256,7 +259,7 @@ const NewSalePage = ({ products }: { products: Product[] }) => {
                           size="sm"
                           onClick={() => remove(index)}
                           disabled={isPending}
-                          className="text-red-500 hover:text-red-700"
+                          className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                         >
                           <TrashIcon className="h-5 w-5" />
                         </Button>
@@ -267,7 +270,7 @@ const NewSalePage = ({ products }: { products: Product[] }) => {
               </div>
 
               {/* Total Amount (Read-only) */}
-              <div className="flex justify-end items-center space-x-2 pt-4 border-t">
+              <div className="flex justify-end items-center space-x-2 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <span className="font-medium">Total:</span>
                 <span className="text-xl font-bold">
                   Rp {totalAmount.toLocaleString("id-ID")}
