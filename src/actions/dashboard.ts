@@ -56,7 +56,11 @@ export const getDashboardSummary = async () => {
       },
     });
     const salesYesterday = salesYesterdayResult._sum.totalAmount ?? 0;
-    const salesChange = calculatePercentageChange(salesToday, salesYesterday);
+    // Convert Decimal to number before calculating change
+    const salesChange = calculatePercentageChange(
+      Number(salesToday),
+      Number(salesYesterday)
+    );
 
     // --- Product Data ---
     // Assuming 'active' means all products for now
@@ -113,22 +117,24 @@ export const getDashboardSummary = async () => {
       },
     });
     const purchasesLastMonth = purchasesLastMonthResult._sum.totalAmount ?? 0;
+    // Convert Decimal to number before calculating change
     const purchasesChange = calculatePercentageChange(
-      purchasesThisMonth,
-      purchasesLastMonth
+      Number(purchasesThisMonth),
+      Number(purchasesLastMonth)
     );
 
     return {
       success: true,
+      // Ensure only plain objects/primitives are returned
       data: {
-        salesToday,
-        salesChange, // Percentage change vs yesterday
-        totalProducts,
-        newProductsCount, // New in last 7 days
-        totalCustomers,
-        newCustomersCount, // New in last 7 days
-        purchasesThisMonth,
-        purchasesChange, // Percentage change vs last month
+        salesToday: Number(salesToday), // Convert Decimal to number
+        salesChange, // Already a number
+        totalProducts, // Already a number
+        newProductsCount, // Already a number
+        totalCustomers, // Already a number
+        newCustomersCount, // Already a number
+        purchasesThisMonth: Number(purchasesThisMonth), // Convert Decimal to number
+        purchasesChange, // Already a number
       },
     };
   } catch (error) {
