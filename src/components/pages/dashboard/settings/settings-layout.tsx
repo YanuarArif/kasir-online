@@ -12,7 +12,6 @@ import {
   CreditCardIcon,
   PaintBrushIcon,
   Cog6ToothIcon,
-  UsersIcon,
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
 import { Role } from "@prisma/client";
@@ -67,13 +66,7 @@ const settingsNavItems: SettingsNavItem[] = [
     icon: CreditCardIcon,
     description: "Kelola langganan dan metode pembayaran Anda",
   },
-  {
-    title: "Pengguna",
-    href: "/dashboard/settings/users",
-    icon: UsersIcon,
-    description: "Kelola pengguna dan peran akses",
-    roles: [Role.OWNER, Role.ADMIN],
-  },
+
   {
     title: "Karyawan",
     href: "/dashboard/settings/employees",

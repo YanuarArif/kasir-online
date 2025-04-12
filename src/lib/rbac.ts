@@ -40,7 +40,6 @@ export const pagePermissions: Record<string, Role[]> = {
   "/dashboard/settings/security": [Role.OWNER, Role.ADMIN, Role.CASHIER],
   "/dashboard/settings/notifications": [Role.OWNER, Role.ADMIN, Role.CASHIER],
   "/dashboard/settings/employees": [Role.OWNER],
-  "/dashboard/settings/users": [Role.OWNER, Role.ADMIN],
 
   // Billing
   "/dashboard/billing": [Role.OWNER],
