@@ -6,20 +6,30 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import {
   UserCircleIcon,
-  KeyIcon,
   BellIcon,
   ShieldCheckIcon,
   BuildingStorefrontIcon,
   CreditCardIcon,
   PaintBrushIcon,
   Cog6ToothIcon,
+  UsersIcon,
 } from "@heroicons/react/24/outline";
+import { Role } from "@prisma/client";
+import { PermissionCheck } from "@/components/auth/permission-check";
 
 interface SettingsLayoutProps {
   children: React.ReactNode;
 }
 
-const settingsNavItems = [
+interface SettingsNavItem {
+  title: string;
+  href: string;
+  icon: React.ElementType;
+  description: string;
+  roles?: Role[];
+}
+
+const settingsNavItems: SettingsNavItem[] = [
   {
     title: "Akun",
     href: "/dashboard/settings/account",
@@ -55,6 +65,13 @@ const settingsNavItems = [
     href: "/dashboard/settings/billing",
     icon: CreditCardIcon,
     description: "Kelola langganan dan metode pembayaran Anda",
+  },
+  {
+    title: "Pengguna",
+    href: "/dashboard/settings/users",
+    icon: UsersIcon,
+    description: "Kelola pengguna dan peran akses",
+    roles: [Role.OWNER, Role.ADMIN],
   },
 ];
 
@@ -96,34 +113,70 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
               </p>
             </div>
             <nav className="p-4 space-y-1">
-              {settingsNavItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
-                    activeTab === item.href
-                      ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                  )}
-                  onClick={() => setActiveTab(item.href)}
-                >
-                  <item.icon
+              {settingsNavItems.map((item) => {
+                // If the item has roles restriction, wrap it in PermissionCheck
+                if (item.roles) {
+                  return (
+                    <PermissionCheck key={item.href} requiredRoles={item.roles}>
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
+                          activeTab === item.href
+                            ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300"
+                            : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                        )}
+                        onClick={() => setActiveTab(item.href)}
+                      >
+                        <item.icon
+                          className={cn(
+                            "h-5 w-5",
+                            activeTab === item.href
+                              ? "text-indigo-600 dark:text-indigo-400"
+                              : "text-gray-500 dark:text-gray-400"
+                          )}
+                        />
+                        <div>
+                          <div className="font-medium">{item.title}</div>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 hidden lg:block">
+                            {item.description}
+                          </p>
+                        </div>
+                      </Link>
+                    </PermissionCheck>
+                  );
+                }
+
+                // Regular item without role restriction
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
                     className={cn(
-                      "h-5 w-5",
+                      "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
                       activeTab === item.href
-                        ? "text-indigo-600 dark:text-indigo-400"
-                        : "text-gray-500 dark:text-gray-400"
+                        ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300"
+                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
                     )}
-                  />
-                  <div>
-                    <div className="font-medium">{item.title}</div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 hidden lg:block">
-                      {item.description}
-                    </p>
-                  </div>
-                </Link>
-              ))}
+                    onClick={() => setActiveTab(item.href)}
+                  >
+                    <item.icon
+                      className={cn(
+                        "h-5 w-5",
+                        activeTab === item.href
+                          ? "text-indigo-600 dark:text-indigo-400"
+                          : "text-gray-500 dark:text-gray-400"
+                      )}
+                    />
+                    <div>
+                      <div className="font-medium">{item.title}</div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 hidden lg:block">
+                        {item.description}
+                      </p>
+                    </div>
+                  </Link>
+                );
+              })}
             </nav>
           </div>
         </div>

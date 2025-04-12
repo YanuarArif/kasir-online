@@ -5,6 +5,7 @@ import Credentials from "next-auth/providers/credentials";
 import { db as database } from "./prisma";
 import bcrypt from "bcryptjs";
 import { LoginSchema } from "../schemas/zod";
+import { Role } from "@prisma/client";
 
 // Notice this is only an object, not a full Auth.js instance
 export default {
@@ -43,7 +44,7 @@ export default {
 
         return {
           ...user,
-          role: user.role ?? "user",
+          role: user.role ?? Role.CASHIER,
         };
       },
     }),

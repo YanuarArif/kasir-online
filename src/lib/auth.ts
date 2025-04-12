@@ -3,6 +3,8 @@ import Resend from "next-auth/providers/resend";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import authConfig from "./auth.config";
 import { db as database } from "./prisma";
+import { Role } from "@prisma/client";
+import { hasPermission } from "./rbac";
 
 const combinedProviders = [
   ...authConfig.providers,
@@ -29,12 +31,27 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       ].includes(pathname);
       const protectedRoutes = ["/dashboard", "/user"];
 
+      // Redirect authenticated users away from auth routes
       if (isLoggedIn && isAuthRoute) {
         return Response.redirect(new URL("/dashboard", nextUrl));
       }
 
-      if (!isLoggedIn && protectedRoutes.includes(pathname)) {
+      // Redirect unauthenticated users to login
+      if (
+        !isLoggedIn &&
+        protectedRoutes.some((route) => pathname.startsWith(route))
+      ) {
         return Response.redirect(new URL("/login", nextUrl));
+      }
+
+      // Check role-based permissions for authenticated users
+      if (isLoggedIn && pathname.startsWith("/dashboard")) {
+        const userRole = auth.user?.role as Role;
+
+        // If user doesn't have permission for this page, redirect to dashboard
+        if (!hasPermission(userRole, pathname)) {
+          return Response.redirect(new URL("/dashboard", nextUrl));
+        }
       }
 
       return true;
@@ -56,7 +73,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.sub; // Add ID to session.user
       }
       if (token.role && session.user) {
-        session.user.role = token.role as string; // Add role to session.user
+        session.user.role = token.role as Role; // Add role to session.user
       }
       return session;
     },

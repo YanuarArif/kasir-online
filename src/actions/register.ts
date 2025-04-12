@@ -6,6 +6,7 @@ import { generateVerificationToken } from "@/lib/token";
 import { resendVerificationEmail } from "@/lib/email";
 import { DaftarSchema } from "@/schemas/zod";
 import { db } from "@/lib/prisma";
+import { Role } from "@prisma/client";
 
 export const register = async (values: z.infer<typeof DaftarSchema>) => {
   // Validasi input menggunakan Zod schema
@@ -49,6 +50,7 @@ export const register = async (values: z.infer<typeof DaftarSchema>) => {
         username: lowerCaseUsername,
         email: lowerCaseEmail,
         password: hashedPassword,
+        role: Role.CASHIER, // Default role for new users
       },
     });
 
