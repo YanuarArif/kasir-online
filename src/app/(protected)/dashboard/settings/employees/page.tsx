@@ -2,19 +2,19 @@ import React from "react";
 import DashboardLayout from "@/components/layout/dashboardlayout";
 import SettingsLayout from "@/components/pages/dashboard/settings/settings-layout";
 import { Role } from "@prisma/client";
-import UserManagement from "@/components/pages/dashboard/settings/users/user-management";
+import EmployeeManagement from "@/components/pages/dashboard/settings/employees/employee-management";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 
-const UsersSettingsPage = async () => {
+const EmployeesSettingsPage = async () => {
   return (
-    <ProtectedRoute allowedRoles={[Role.OWNER, Role.ADMIN]}>
-      <DashboardLayout pageTitle="Pengaturan Pengguna">
+    <ProtectedRoute allowedRoles={[Role.OWNER]}>
+      <DashboardLayout pageTitle="Pengaturan Karyawan">
         <SettingsLayout>
-          <UserManagement />
+          <EmployeeManagement />
         </SettingsLayout>
       </DashboardLayout>
     </ProtectedRoute>
   );
 };
 
-export default UsersSettingsPage;
+export default EmployeesSettingsPage;

@@ -63,6 +63,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user?.id) {
         token.sub = user.id; // 'sub' is the standard JWT claim for subject (user ID)
         token.role = user.role; // Add role if it exists on the user object
+
+        // Add employee-specific data if this is an employee login
+        if (user.isEmployee) {
+          token.isEmployee = true;
+          token.ownerId = user.ownerId;
+          token.employeeId = user.employeeId;
+        }
       }
       return token;
     },
@@ -75,6 +82,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (token.role && session.user) {
         session.user.role = token.role as Role; // Add role to session.user
       }
+
+      // Add employee-specific data if this is an employee login
+      if (token.isEmployee && session.user) {
+        session.user.isEmployee = true;
+        session.user.ownerId = token.ownerId as string;
+        session.user.employeeId = token.employeeId as string;
+      }
+
       return session;
     },
 

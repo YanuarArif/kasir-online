@@ -39,9 +39,20 @@ export const pagePermissions: Record<string, Role[]> = {
   "/dashboard/settings/business": [Role.OWNER, Role.ADMIN],
   "/dashboard/settings/security": [Role.OWNER, Role.ADMIN, Role.CASHIER],
   "/dashboard/settings/notifications": [Role.OWNER, Role.ADMIN, Role.CASHIER],
+  "/dashboard/settings/employees": [Role.OWNER],
+  "/dashboard/settings/users": [Role.OWNER, Role.ADMIN],
 
   // Billing
   "/dashboard/billing": [Role.OWNER],
+
+  // Role-specific pages
+  "/dashboard/cashier": [Role.OWNER, Role.ADMIN, Role.CASHIER],
+  "/dashboard/admin-only": [Role.OWNER, Role.ADMIN],
+  "/dashboard/owner-only": [Role.OWNER],
+  "/dashboard/rbac-demo": [Role.OWNER, Role.ADMIN, Role.CASHIER],
+
+  // Reports
+  "/dashboard/reports": [Role.OWNER, Role.ADMIN],
 };
 
 /**

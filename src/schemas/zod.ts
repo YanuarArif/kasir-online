@@ -101,3 +101,27 @@ export const DaftarSchema = z.object({
     .min(1, { message: "Password wajib diisi" })
     .min(6, "Password minimal 6 karakter"),
 });
+
+export const EmployeeLoginSchema = z.object({
+  companyUsername: z
+    .string()
+    .min(1, { message: "Username perusahaan wajib diisi" }),
+  employeeId: z.string().min(1, { message: "ID karyawan wajib diisi" }),
+  password: z
+    .string()
+    .min(1, { message: "Password wajib diisi" })
+    .min(6, "Password minimal 6 karakter"),
+});
+
+export const CreateEmployeeSchema = z.object({
+  name: z.string().min(1, { message: "Nama karyawan wajib diisi" }),
+  employeeId: z.string().min(1, { message: "ID karyawan wajib diisi" }),
+  password: z
+    .string()
+    .min(1, { message: "Password wajib diisi" })
+    .min(6, "Password minimal 6 karakter"),
+  role: z.enum(["ADMIN", "CASHIER"], {
+    required_error: "Role wajib dipilih",
+    invalid_type_error: "Role tidak valid",
+  }),
+});

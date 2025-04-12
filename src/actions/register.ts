@@ -50,7 +50,7 @@ export const register = async (values: z.infer<typeof DaftarSchema>) => {
         username: lowerCaseUsername,
         email: lowerCaseEmail,
         password: hashedPassword,
-        role: Role.CASHIER, // Default role for new users
+        role: Role.OWNER, // Default role for new users
       },
     });
 

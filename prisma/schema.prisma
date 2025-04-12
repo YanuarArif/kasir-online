@@ -28,7 +28,7 @@ model User {
   image         String?
   password      String? // HASHED password!
   provider      String?   @default("credentials")
-  role          Role      @default(CASHIER) // Using enum Role
+  role          Role      @default(OWNER) // Using enum Role
   token         String?   @unique
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -43,7 +43,33 @@ model User {
   sales      Sale[] // Sales recorded by this user
   purchases  Purchase[] // Purchases recorded by this user
 
+  // Owner-Employee relationship
+  employees Employee[] // Employees managed by this user (if OWNER)
+
   @@map("users")
+}
+
+// Employee model for staff members managed by an owner
+model Employee {
+  id         String   @id @default(cuid())
+  name       String
+  employeeId String // Employee ID/username for login
+  password   String // HASHED password
+  role       Role     @default(CASHIER) // ADMIN or CASHIER
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relationship to owner
+  ownerId       String // ID of the owner (User with OWNER role)
+  ownerUsername String // Username of the owner for login purposes
+  owner         User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  // Employee's activities
+  sales Sale[] // Sales recorded by this employee
+
+  @@unique([ownerId, employeeId]) // Employee ID must be unique per owner
+  @@index([ownerId])
+  @@map("employees")
 }
 
 model Account {
@@ -140,9 +166,11 @@ model Sale {
   updatedAt   DateTime @updatedAt
 
   // Relationships
-  userId String // Foreign key to the User who made the sale
-  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items  SaleItem[] // List of items in this sale
+  userId     String // Foreign key to the User who made the sale
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items      SaleItem[] // List of items in this sale
+  Employee   Employee?  @relation(fields: [employeeId], references: [id])
+  employeeId String?
 
   @@index([userId])
   @@map("sales")

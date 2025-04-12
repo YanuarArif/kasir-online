@@ -13,6 +13,7 @@ import {
   PaintBrushIcon,
   Cog6ToothIcon,
   UsersIcon,
+  UserGroupIcon,
 } from "@heroicons/react/24/outline";
 import { Role } from "@prisma/client";
 import { PermissionCheck } from "@/components/auth/permission-check";
@@ -72,6 +73,13 @@ const settingsNavItems: SettingsNavItem[] = [
     icon: UsersIcon,
     description: "Kelola pengguna dan peran akses",
     roles: [Role.OWNER, Role.ADMIN],
+  },
+  {
+    title: "Karyawan",
+    href: "/dashboard/settings/employees",
+    icon: UserGroupIcon,
+    description: "Kelola karyawan dan akses mereka ke sistem",
+    roles: [Role.OWNER],
   },
 ];
 

@@ -7,12 +7,15 @@ import { Menu, Transition } from "@headlessui/react";
 import { useTransition } from "react";
 import { useSession } from "next-auth/react";
 import { logout } from "@/actions/logout";
+import { Role } from "@prisma/client";
 import {
   UserIcon,
   Cog6ToothIcon,
   ReceiptRefundIcon,
   ArrowRightOnRectangleIcon,
+  UserGroupIcon,
 } from "@heroicons/react/24/outline";
+import { RoleBadge } from "@/components/ui/role-badge";
 import {
   Tooltip,
   TooltipContent,
@@ -42,7 +45,14 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
   const isTopbar = position === "topbar";
 
   return (
-    <Menu as="div" className={isSidebar ? "relative flex flex-row items-center w-full" : "relative ml-3"}>
+    <Menu
+      as="div"
+      className={
+        isSidebar
+          ? "relative flex flex-row items-center w-full"
+          : "relative ml-3"
+      }
+    >
       {/* User Avatar Button */}
       <div>
         {isCollapsed && isSidebar ? (
@@ -72,20 +82,24 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
             </TooltipContent>
           </Tooltip>
         ) : (
-          <Menu.Button 
+          <Menu.Button
             className={classNames(
               "flex items-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2",
-              isSidebar 
-                ? "focus:ring-offset-gray-800 rounded-full" 
+              isSidebar
+                ? "focus:ring-offset-gray-800 rounded-full"
                 : "rounded-full bg-white dark:bg-gray-700 border-2 border-indigo-100 dark:border-gray-600 p-0.5 shadow-sm hover:shadow transition-all duration-200"
             )}
           >
             <span className="sr-only">Open user menu</span>
             {session?.user?.image ? (
-              <div className={classNames(
-                "inline-block h-9 w-9 overflow-hidden rounded-full",
-                isSidebar ? "bg-gray-600 ring-2 ring-white ring-opacity-50" : "bg-gray-100"
-              )}>
+              <div
+                className={classNames(
+                  "inline-block h-9 w-9 overflow-hidden rounded-full",
+                  isSidebar
+                    ? "bg-gray-600 ring-2 ring-white ring-opacity-50"
+                    : "bg-gray-100"
+                )}
+              >
                 <Image
                   src={session.user.image}
                   alt={session.user.name || "User profile"}
@@ -95,14 +109,20 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
                 />
               </div>
             ) : (
-              <span className={classNames(
-                "inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full",
-                isSidebar ? "bg-gray-600 ring-2 ring-white ring-opacity-50" : "bg-indigo-50"
-              )}>
-                <UserIcon className={classNames(
-                  "h-6 w-6",
-                  isSidebar ? "text-gray-400" : "text-indigo-300"
-                )} />
+              <span
+                className={classNames(
+                  "inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full",
+                  isSidebar
+                    ? "bg-gray-600 ring-2 ring-white ring-opacity-50"
+                    : "bg-indigo-50"
+                )}
+              >
+                <UserIcon
+                  className={classNames(
+                    "h-6 w-6",
+                    isSidebar ? "text-gray-400" : "text-indigo-300"
+                  )}
+                />
               </span>
             )}
           </Menu.Button>
@@ -136,10 +156,12 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items 
+        <Menu.Items
           className={classNames(
             "absolute z-20 w-56 origin-top-right rounded-lg bg-white dark:bg-gray-800 py-2 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-gray-100 dark:divide-gray-700",
-            isSidebar ? "bottom-full left-0 mb-2 origin-bottom-left" : "right-0 mt-2"
+            isSidebar
+              ? "bottom-full left-0 mb-2 origin-bottom-left"
+              : "right-0 mt-2"
           )}
         >
           {/* User info section */}
@@ -150,6 +172,16 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
             <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-1">
               {session?.user?.email || ""}
             </p>
+            {/* Show role badge */}
+            {session?.user?.role && (
+              <div className="mt-2 flex items-center">
+                <RoleBadge
+                  role={session.user.role}
+                  isEmployee={!!session.user.isEmployee}
+                  size="sm"
+                />
+              </div>
+            )}
           </div>
 
           {/* Menu items */}
@@ -188,23 +220,48 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
                 </Link>
               )}
             </Menu.Item>
-            <Menu.Item>
-              {({ active }) => (
-                <Link
-                  href="/dashboard/billing"
-                  className={classNames(
-                    active ? "bg-gray-50 dark:bg-gray-700" : "",
-                    "flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
-                  )}
-                >
-                  <ReceiptRefundIcon
-                    className="mr-3 h-5 w-5 text-gray-400 dark:text-gray-300"
-                    aria-hidden="true"
-                  />
-                  {isSidebar ? "Billing" : "Tagihan"}
-                </Link>
-              )}
-            </Menu.Item>
+
+            {/* Only show Employees link for OWNER */}
+            {session?.user?.role === Role.OWNER && (
+              <Menu.Item>
+                {({ active }) => (
+                  <Link
+                    href="/dashboard/settings/employees"
+                    className={classNames(
+                      active ? "bg-gray-50 dark:bg-gray-700" : "",
+                      "flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
+                    )}
+                  >
+                    <UserGroupIcon
+                      className="mr-3 h-5 w-5 text-gray-400 dark:text-gray-300"
+                      aria-hidden="true"
+                    />
+                    {isSidebar ? "Kelola Karyawan" : "Karyawan"}
+                  </Link>
+                )}
+              </Menu.Item>
+            )}
+
+            {/* Only show Billing for OWNER */}
+            {session?.user?.role === Role.OWNER && (
+              <Menu.Item>
+                {({ active }) => (
+                  <Link
+                    href="/dashboard/billing"
+                    className={classNames(
+                      active ? "bg-gray-50 dark:bg-gray-700" : "",
+                      "flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
+                    )}
+                  >
+                    <ReceiptRefundIcon
+                      className="mr-3 h-5 w-5 text-gray-400 dark:text-gray-300"
+                      aria-hidden="true"
+                    />
+                    {isSidebar ? "Billing" : "Tagihan"}
+                  </Link>
+                )}
+              </Menu.Item>
+            )}
           </div>
 
           {/* Logout section */}
@@ -223,7 +280,11 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
                     className="mr-3 h-5 w-5 text-gray-400 dark:text-gray-300"
                     aria-hidden="true"
                   />
-                  {isPending ? "Logging out..." : isSidebar ? "Logout" : "Keluar"}
+                  {isPending
+                    ? "Logging out..."
+                    : isSidebar
+                      ? "Logout"
+                      : "Keluar"}
                 </button>
               )}
             </Menu.Item>

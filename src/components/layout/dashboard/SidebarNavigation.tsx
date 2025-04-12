@@ -3,6 +3,8 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { Role } from "@prisma/client";
 import {
   HomeIcon,
   ChartBarIcon,
@@ -12,6 +14,9 @@ import {
   CurrencyDollarIcon,
   UsersIcon,
   BuildingStorefrontIcon,
+  UserGroupIcon,
+  ShieldCheckIcon,
+  StarIcon as CrownIcon,
 } from "@heroicons/react/24/outline";
 import {
   Tooltip,
@@ -20,23 +25,85 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-// Navigation items
+// Navigation items with role-based access control
 export const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
-  { name: "Penjualan", href: "/dashboard/sales", icon: CurrencyDollarIcon },
-  { name: "Pembelian", href: "/dashboard/purchases", icon: TruckIcon },
-  { name: "Produk", href: "/dashboard/products", icon: CubeIcon },
-  { name: "Daftar Customers", href: "/dashboard/customers", icon: UsersIcon },
+  {
+    name: "Dashboard",
+    href: "/dashboard",
+    icon: HomeIcon,
+    roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
+  },
+  {
+    name: "Penjualan",
+    href: "/dashboard/sales",
+    icon: CurrencyDollarIcon,
+    roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
+  },
+  {
+    name: "Pembelian",
+    href: "/dashboard/purchases",
+    icon: TruckIcon,
+    roles: [Role.OWNER, Role.ADMIN], // Only OWNER and ADMIN can access
+  },
+  {
+    name: "Produk",
+    href: "/dashboard/products",
+    icon: CubeIcon,
+    roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
+  },
+  {
+    name: "Daftar Customers",
+    href: "/dashboard/customers",
+    icon: UsersIcon,
+    roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
+  },
   {
     name: "Suppliers",
     href: "/dashboard/suppliers",
     icon: BuildingStorefrontIcon,
+    roles: [Role.OWNER, Role.ADMIN], // Only OWNER and ADMIN can access
   },
-  { name: "Laporan", href: "/dashboard/reports", icon: ChartBarIcon },
+  {
+    name: "Karyawan",
+    href: "/dashboard/settings/employees",
+    icon: UserGroupIcon,
+    roles: [Role.OWNER], // Only OWNER can access
+  },
+  {
+    name: "Kasir",
+    href: "/dashboard/cashier",
+    icon: CurrencyDollarIcon,
+    roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
+  },
+  {
+    name: "Admin Panel",
+    href: "/dashboard/admin-only",
+    icon: ShieldCheckIcon,
+    roles: [Role.OWNER, Role.ADMIN], // Only OWNER and ADMIN can access
+  },
+  {
+    name: "Owner Panel",
+    href: "/dashboard/owner-only",
+    icon: CrownIcon,
+    roles: [Role.OWNER], // Only OWNER can access
+  },
+  {
+    name: "RBAC Demo",
+    href: "/dashboard/rbac-demo",
+    icon: ShieldCheckIcon,
+    roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
+  },
+  {
+    name: "Laporan",
+    href: "/dashboard/reports",
+    icon: ChartBarIcon,
+    roles: [Role.OWNER, Role.ADMIN], // Only OWNER and ADMIN can access
+  },
   {
     name: "Pengaturan",
     href: "/dashboard/settings/account",
     icon: Cog6ToothIcon,
+    roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
   },
 ];
 
@@ -55,11 +122,21 @@ const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
   onItemClick,
 }) => {
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const userRole = session?.user?.role as Role | undefined;
+
+  // Filter navigation items based on user role
+  const filteredNavigation = navigation.filter((item) => {
+    // If no roles specified or user has no role, show the item
+    if (!item.roles || !userRole) return true;
+    // Otherwise, check if user's role is in the allowed roles
+    return item.roles.includes(userRole);
+  });
 
   return (
     <TooltipProvider delayDuration={100}>
       <nav className="flex-1 space-y-1 px-2 py-4">
-        {navigation.map((item) => {
+        {filteredNavigation.map((item) => {
           const isCurrent =
             item.href === "/dashboard"
               ? pathname === item.href
