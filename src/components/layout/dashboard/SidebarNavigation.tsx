@@ -15,8 +15,6 @@ import {
   UsersIcon,
   BuildingStorefrontIcon,
   UserGroupIcon,
-  ShieldCheckIcon,
-  StarIcon as CrownIcon,
 } from "@heroicons/react/24/outline";
 import {
   Tooltip,
@@ -69,30 +67,7 @@ export const navigation = [
     icon: UserGroupIcon,
     roles: [Role.OWNER], // Only OWNER can access
   },
-  {
-    name: "Kasir",
-    href: "/dashboard/cashier",
-    icon: CurrencyDollarIcon,
-    roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
-  },
-  {
-    name: "Admin Panel",
-    href: "/dashboard/admin-only",
-    icon: ShieldCheckIcon,
-    roles: [Role.OWNER, Role.ADMIN], // Only OWNER and ADMIN can access
-  },
-  {
-    name: "Owner Panel",
-    href: "/dashboard/owner-only",
-    icon: CrownIcon,
-    roles: [Role.OWNER], // Only OWNER can access
-  },
-  {
-    name: "RBAC Demo",
-    href: "/dashboard/rbac-demo",
-    icon: ShieldCheckIcon,
-    roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
-  },
+
   {
     name: "Laporan",
     href: "/dashboard/reports",

@@ -45,11 +45,7 @@ export const pagePermissions: Record<string, Role[]> = {
   // Billing
   "/dashboard/billing": [Role.OWNER],
 
-  // Role-specific pages
-  "/dashboard/cashier": [Role.OWNER, Role.ADMIN, Role.CASHIER],
-  "/dashboard/admin-only": [Role.OWNER, Role.ADMIN],
-  "/dashboard/owner-only": [Role.OWNER],
-  "/dashboard/rbac-demo": [Role.OWNER, Role.ADMIN, Role.CASHIER],
+  // The role-specific demo pages have been removed
 
   // Reports
   "/dashboard/reports": [Role.OWNER, Role.ADMIN],
