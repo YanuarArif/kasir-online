@@ -13,9 +13,9 @@ interface DashboardNavbarProps {
   setSidebarOpen: (open: boolean) => void;
 }
 
-const DashboardNavbar: React.FC<DashboardNavbarProps> = ({ 
-  pageTitle, 
-  setSidebarOpen 
+const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
+  pageTitle,
+  setSidebarOpen,
 }) => {
   const { data: session } = useSession();
   const userRole = session?.user?.role as Role | undefined;
@@ -58,11 +58,9 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
         </div>
 
         {/* User Menu and Theme Toggle */}
-        <div className="ml-4 flex items-center md:ml-6">
+        <div className="ml-4 flex items-center space-x-2 md:ml-6">
           {/* Theme Toggle Button */}
-          <div className="mr-3">
-            <ThemeToggle />
-          </div>
+          <ThemeToggle />
 
           {/* User Menu */}
           <UserProfileMenu position="topbar" />

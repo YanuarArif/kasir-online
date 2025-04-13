@@ -50,7 +50,7 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
       className={
         isSidebar
           ? "relative flex flex-row items-center w-full"
-          : "relative ml-3"
+          : "relative flex items-center h-9"
       }
     >
       {/* User Avatar Button */}
@@ -87,7 +87,7 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
               "flex items-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2",
               isSidebar
                 ? "focus:ring-offset-gray-800 rounded-full"
-                : "rounded-full bg-white dark:bg-gray-700 border-2 border-indigo-100 dark:border-gray-600 p-0.5 shadow-sm hover:shadow transition-all duration-200"
+                : "rounded-full bg-white dark:bg-gray-700 border-2 border-indigo-100 dark:border-gray-600 p-0.5 shadow-sm hover:shadow transition-all duration-200 h-9 w-9"
             )}
           >
             <span className="sr-only">Open user menu</span>
@@ -163,10 +163,10 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
       >
         <Menu.Items
           className={classNames(
-            "absolute z-20 w-56 origin-top-right rounded-lg bg-white dark:bg-gray-800 py-2 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-gray-100 dark:divide-gray-700",
+            "absolute z-20 w-56 rounded-lg bg-white dark:bg-gray-800 py-2 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-gray-100 dark:divide-gray-700",
             isSidebar
               ? "bottom-full left-0 mb-2 origin-bottom-left"
-              : "right-0 mt-2"
+              : "right-0 top-full mt-2 origin-top-right"
           )}
         >
           {/* User info section */}

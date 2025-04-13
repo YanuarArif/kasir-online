@@ -18,7 +18,7 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
     <div
       className={classNames(
         "hidden md:flex md:flex-col transition-all duration-300 ease-in-out h-[calc(100vh-4rem)] sticky top-16 overflow-hidden",
-        isCollapsed ? "md:w-16" : "md:w-64" // Width depends on state
+        isCollapsed ? "md:w-16" : "md:w-52" // Width depends on state
       )}
     >
       {/* Sidebar component */}
