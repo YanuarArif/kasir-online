@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, type ReactNode } from "react";
-import MobileSidebar from "./dashboard/MobileSidebar"; // Updated import path
-import DesktopSidebar from "./dashboard/DesktopSidebar"; // Updated import path
-import TopBar from "./dashboard/TopBar"; // Updated import path
-import { classNames } from "./dashboard/SidebarNavigation"; // Updated import path
+import MobileSidebar from "./dashboard/MobileSidebar";
+import DesktopSidebar from "./dashboard/DesktopSidebar";
+import DashboardNavbar from "./dashboard/DashboardNavbar";
+import { classNames } from "./dashboard/SidebarNavigation";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -21,7 +21,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const [isCollapsed, setIsCollapsed] = useState<boolean | undefined>(
     undefined
   ); // Initially undefined for SSR/hydration safety
-  const [isManuallyToggled, setIsManuallyToggled] = useState(false); // Track if user explicitly toggled
+  // We track if user explicitly toggled the sidebar
+  const [, setIsManuallyToggled] = useState(false);
 
   // Effect 1: Initialize state based on screen size and localStorage on client-side mount
   useEffect(() => {
@@ -90,37 +91,39 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   // --- End Render Guard ---
 
   return (
-    <div className="min-h-screen flex bg-gray-100 dark:bg-gray-900">
-      {/* Mobile Sidebar */}
-      <MobileSidebar
-        sidebarOpen={sidebarOpen}
-        setSidebarOpen={setSidebarOpen}
-      />
+    <div className="h-screen flex flex-col bg-gray-100 dark:bg-gray-900 overflow-hidden">
+      {/* Dashboard Navbar - Full width at top */}
+      <DashboardNavbar pageTitle={pageTitle} setSidebarOpen={setSidebarOpen} />
 
-      {/* Desktop Sidebar */}
-      <DesktopSidebar
-        isCollapsed={isCollapsed}
-        toggleCollapse={toggleCollapse}
-      />
+      <div className="flex flex-1 relative overflow-hidden">
+        {/* Mobile Sidebar */}
+        <MobileSidebar
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+        />
 
-      {/* Main Content */}
-      <div
-        className={classNames(
-          "flex flex-1 flex-col transition-all duration-300 h-screen",
-          isCollapsed ? "md:pl-16" : "md:pl-64" // Adjust left padding
-        )}
-      >
-        {/* Top Bar */}
-        <TopBar pageTitle={pageTitle} setSidebarOpen={setSidebarOpen} />
+        {/* Desktop Sidebar - Now under the navbar */}
+        <DesktopSidebar
+          isCollapsed={isCollapsed}
+          toggleCollapse={toggleCollapse}
+        />
 
-        {/* Page Content */}
-        <main className="flex-1 overflow-y-auto">
-          <div className="py-6">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
-              {children}
+        {/* Main Content */}
+        <div
+          className={classNames(
+            "flex flex-1 flex-col transition-all duration-300 overflow-y-auto",
+            isCollapsed ? "md:ml-16" : "md:ml-64" // Adjust left margin instead of padding
+          )}
+        >
+          {/* Page Content */}
+          <main className="flex-1 overflow-y-auto">
+            <div className="py-6">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
+                {children}
+              </div>
             </div>
-          </div>
-        </main>
+          </main>
+        </div>
       </div>
     </div>
   );

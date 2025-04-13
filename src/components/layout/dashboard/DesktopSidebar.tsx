@@ -17,38 +17,32 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
   return (
     <div
       className={classNames(
-        "hidden md:fixed md:inset-y-0 md:flex md:flex-col transition-all duration-300",
+        "hidden md:flex md:flex-col transition-all duration-300 h-[calc(100vh-4rem)] sticky top-16 overflow-hidden",
         isCollapsed ? "md:w-16" : "md:w-64" // Width depends on state
       )}
     >
       {/* Sidebar component */}
       <div className="flex min-h-0 flex-1 flex-col bg-gray-100 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-md dark:shadow-gray-900/50 z-10">
-        {/* Top Section: Logo and Toggle */}
-        <div className="flex h-16 flex-shrink-0 items-center justify-between bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4">
-          {!isCollapsed && (
-            <span className="text-gray-900 dark:text-white text-xl font-semibold">
-              Kasir Online
-            </span>
-          )}
-          {/* Center toggle button if collapsed */}
+        {/* Toggle Button */}
+        <div className="flex h-12 flex-shrink-0 items-center justify-between border-b border-gray-200 dark:border-gray-700 px-4">
           <button
             onClick={toggleCollapse}
             className={classNames(
-              "flex justify-center items-center h-10 w-10 text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500",
+              "flex justify-center items-center h-8 w-8 text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500",
               isCollapsed ? "mx-auto" : ""
             )}
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {isCollapsed ? (
-              <ChevronRightIcon className="h-6 w-6" aria-hidden="true" />
+              <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
             ) : (
-              <ChevronLeftIcon className="h-6 w-6" aria-hidden="true" />
+              <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
             )}
           </button>
         </div>
 
         {/* Navigation Section */}
-        <div className="flex flex-1 flex-col overflow-y-auto">
+        <div className="flex flex-1 flex-col overflow-y-auto hide-scrollbar">
           <SidebarNavigation isCollapsed={isCollapsed} />
         </div>
 

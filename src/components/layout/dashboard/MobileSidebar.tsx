@@ -43,7 +43,7 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({
             leaveFrom="translate-x-0"
             leaveTo="-translate-x-full"
           >
-            <Dialog.Panel className="relative flex w-full max-w-xs flex-1 flex-col bg-gray-100 dark:bg-gray-800 pb-4 pt-5 shadow-xl dark:shadow-gray-900/50">
+            <Dialog.Panel className="relative flex w-full max-w-xs flex-1 flex-col bg-gray-100 dark:bg-gray-800 pb-4 pt-5 shadow-xl dark:shadow-gray-900/50 mt-16">
               <Transition.Child
                 as={Fragment}
                 enter="ease-in-out duration-300"
@@ -72,7 +72,7 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({
                   Kasir Online
                 </span>
               </div>
-              <div className="mt-5 h-0 flex-1 overflow-y-auto">
+              <div className="mt-5 h-0 flex-1 overflow-y-auto hide-scrollbar">
                 <SidebarNavigation
                   isCollapsed={false}
                   onItemClick={() => setSidebarOpen(false)}
