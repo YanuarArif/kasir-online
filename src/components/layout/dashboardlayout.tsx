@@ -111,7 +111,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         {/* Main Content */}
         <div
           className={classNames(
-            "flex flex-1 flex-col transition-all duration-300 overflow-y-auto w-full p-2 pt-2",
+            "flex flex-1 flex-col transition-all duration-500 ease-in-out overflow-y-auto w-full p-2 pt-2",
             isCollapsed ? "md:m-4" : "md:m-4" // Adjust left margin instead of padding
           )}
         >

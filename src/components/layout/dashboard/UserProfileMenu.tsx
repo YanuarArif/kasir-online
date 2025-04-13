@@ -130,21 +130,26 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
       </div>
 
       {/* Name/Email (only when expanded in sidebar) */}
-      {!isCollapsed && isSidebar && (
-        <div className="min-w-0 flex-1 ml-3 flex flex-col justify-center">
-          <p className="text-sm font-medium text-white dark:text-gray-100 truncate leading-tight">
-            {session?.user?.name || session?.user?.email || "User"}
-          </p>
-          {/* Optionally show email if different from name */}
-          {session?.user?.email &&
-            session.user.name &&
-            session.user.email !== session.user.name && (
-              <p className="text-xs font-medium text-gray-400 dark:text-gray-300 truncate mt-0.5 leading-tight">
-                {session?.user?.email}
-              </p>
-            )}
-        </div>
-      )}
+      <div
+        className={classNames(
+          "min-w-0 flex-1 ml-3 flex flex-col justify-center transition-all duration-500 ease-in-out",
+          isCollapsed || !isSidebar
+            ? "opacity-0 w-0 overflow-hidden"
+            : "opacity-100"
+        )}
+      >
+        <p className="text-sm font-medium text-white dark:text-gray-100 truncate leading-tight">
+          {session?.user?.name || session?.user?.email || "User"}
+        </p>
+        {/* Optionally show email if different from name */}
+        {session?.user?.email &&
+          session.user.name &&
+          session.user.email !== session.user.name && (
+            <p className="text-xs font-medium text-gray-400 dark:text-gray-300 truncate mt-0.5 leading-tight">
+              {session?.user?.email}
+            </p>
+          )}
+      </div>
 
       {/* Dropdown Menu */}
       <Transition
