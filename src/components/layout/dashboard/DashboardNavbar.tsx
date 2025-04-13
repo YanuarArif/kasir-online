@@ -23,7 +23,7 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
   return (
     <div className="sticky top-0 z-30 w-full flex h-16 flex-shrink-0 bg-white dark:bg-gray-800 shadow-md dark:shadow-gray-900/50 border-b border-gray-200 dark:border-gray-700">
       {/* Logo Section */}
-      <div className="flex items-center px-4 border-r border-gray-200 dark:border-gray-700">
+      <div className="flex items-center px-4 w-52 border-r border-gray-200 dark:border-gray-700">
         <span className="text-gray-900 dark:text-white text-xl font-semibold hidden md:block">
           Kasir Online
         </span>

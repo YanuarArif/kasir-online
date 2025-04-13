@@ -4,6 +4,12 @@ import React from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import SidebarNavigation, { classNames } from "./SidebarNavigation";
 import UserProfileMenu from "./UserProfileMenu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface DesktopSidebarProps {
   isCollapsed: boolean;
@@ -26,31 +32,39 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
         {/* Toggle Button */}
         <div className="flex h-12 flex-shrink-0 items-center border-b border-gray-200 dark:border-gray-700 px-4">
           <div className="w-full flex justify-end">
-            <button
-              onClick={toggleCollapse}
-              className="relative flex justify-center items-center h-8 w-8 text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300 ease-in-out overflow-hidden"
-              aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            >
-              {/* Right icon (visible when collapsed) */}
-              <div
-                className={classNames(
-                  "absolute inset-0 flex items-center justify-center transition-all duration-300 ease-in-out",
-                  isCollapsed ? "opacity-100" : "opacity-0"
-                )}
+            {isCollapsed ? (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={toggleCollapse}
+                      className="relative flex justify-center items-center h-8 w-8 text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300 ease-in-out"
+                      aria-label="Perluas Menu"
+                    >
+                      <ChevronRightIcon
+                        className="h-5 w-5"
+                        aria-hidden="true"
+                      />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right" sideOffset={5}>
+                    <p>Perluas Menu</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ) : (
+              <button
+                onClick={toggleCollapse}
+                className="flex items-center gap-2 px-3 py-1.5 text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300 ease-in-out"
+                aria-label="Perkecil Menu"
               >
-                <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
-              </div>
-
-              {/* Left icon (visible when expanded) */}
-              <div
-                className={classNames(
-                  "absolute inset-0 flex items-center justify-center transition-all duration-300 ease-in-out",
-                  isCollapsed ? "opacity-0" : "opacity-100"
-                )}
-              >
-                <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
-              </div>
-            </button>
+                <span className="text-sm font-medium">Perkecil Menu</span>
+                <ChevronLeftIcon
+                  className="h-5 w-5 flex-shrink-0"
+                  aria-hidden="true"
+                />
+              </button>
+            )}
           </div>
         </div>
 
