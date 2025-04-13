@@ -12,6 +12,7 @@ export const pagePermissions: Record<string, Role[]> = {
   // Dashboard pages
   "/dashboard": [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access dashboard
   "/dashboard/profile": [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access profile
+  "/dashboard/summaries": [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access summaries
 
   // Product management
   "/dashboard/products": [Role.OWNER, Role.ADMIN, Role.CASHIER],

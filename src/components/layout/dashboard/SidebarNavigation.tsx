@@ -26,8 +26,8 @@ import {
 // Navigation items with role-based access control
 export const navigation = [
   {
-    name: "Dashboard",
-    href: "/dashboard",
+    name: "Ringkasan",
+    href: "/dashboard/summaries",
     icon: HomeIcon,
     roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
   },
