@@ -5,16 +5,16 @@ import { CustomerSchema } from "@/schemas/zod";
 import { db } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth"; // Import auth to get session
+import { getEffectiveUserId } from "@/lib/get-effective-user-id";
 
 export const addCustomer = async (values: z.infer<typeof CustomerSchema>) => {
-  // Get current session
-  const session = await auth();
-  const user = session?.user;
+  // Get effective user ID (owner ID if employee, user's own ID otherwise)
+  const effectiveUserId = await getEffectiveUserId();
 
-  if (!user || !user.id) {
+  if (!effectiveUserId) {
     return { error: "Tidak terautentikasi!" };
   }
-  const userId = user.id;
+  const userId = effectiveUserId;
 
   // 1. Validate input server-side
   const validatedFields = CustomerSchema.safeParse(values);
@@ -27,7 +27,8 @@ export const addCustomer = async (values: z.infer<typeof CustomerSchema>) => {
     return { error: "Input tidak valid!" };
   }
 
-  const { name, contactName, email, phone, address, notes } = validatedFields.data;
+  const { name, contactName, email, phone, address, notes } =
+    validatedFields.data;
 
   try {
     // 2. Create the customer in the database
@@ -54,17 +55,16 @@ export const addCustomer = async (values: z.infer<typeof CustomerSchema>) => {
 };
 
 export const getCustomers = async () => {
-  // Get current session
-  const session = await auth();
-  const user = session?.user;
+  // Get effective user ID (owner ID if employee, user's own ID otherwise)
+  const effectiveUserId = await getEffectiveUserId();
 
-  if (!user || !user.id) {
+  if (!effectiveUserId) {
     return { error: "Tidak terautentikasi!" };
   }
-  const userId = user.id;
+  const userId = effectiveUserId;
 
   try {
-    // Fetch all customers for the current user
+    // Fetch all customers for the current user or their owner
     const customers = await db.customer.findMany({
       where: {
         userId,
@@ -82,17 +82,16 @@ export const getCustomers = async () => {
 };
 
 export const getCustomerById = async (id: string) => {
-  // Get current session
-  const session = await auth();
-  const user = session?.user;
+  // Get effective user ID (owner ID if employee, user's own ID otherwise)
+  const effectiveUserId = await getEffectiveUserId();
 
-  if (!user || !user.id) {
+  if (!effectiveUserId) {
     return { error: "Tidak terautentikasi!" };
   }
-  const userId = user.id;
+  const userId = effectiveUserId;
 
   try {
-    // Fetch the customer by ID, ensuring it belongs to the current user
+    // Fetch the customer by ID, ensuring it belongs to the current user or their owner
     const customer = await db.customer.findUnique({
       where: {
         id,
@@ -135,7 +134,8 @@ export const updateCustomer = async (
     return { error: "Input tidak valid!" };
   }
 
-  const { name, contactName, email, phone, address, notes } = validatedFields.data;
+  const { name, contactName, email, phone, address, notes } =
+    validatedFields.data;
 
   try {
     // 2. Update the customer in the database

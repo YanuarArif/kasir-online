@@ -2,44 +2,21 @@ import React from "react";
 import Head from "next/head";
 import DashboardLayout from "@/components/layout/dashboardlayout";
 import NewSalePage from "@/components/pages/dashboard/sales/new";
-import { db } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
+import { getProducts } from "@/lib/get-products";
 
 // This is an async Server Component
 const NewSale = async () => {
-  // Get current session
-  const session = await auth();
-  const userId = session?.user?.id;
-
-  if (!userId) {
-    console.error("User ID not found in session on protected route.");
-    return <p>Error: User tidak ditemukan.</p>;
-  }
-
-  // Fetch products for the current user to populate the dropdown
-  const products = await db.product.findMany({
-    where: {
-      userId: userId,
-      stock: {
-        gt: 0, // Only show products with stock > 0
-      },
-    },
-    select: {
-      id: true,
-      name: true,
-      price: true,
-      stock: true,
-    },
-    orderBy: {
-      name: "asc",
-    },
+  // Fetch products using our utility function that handles employee access
+  const serializedProducts = await getProducts({
+    includeOutOfStock: false, // Only show products with stock > 0
+    orderBy: "name",
+    orderDirection: "asc",
   });
 
-  // Convert Decimal to number for serialization
-  const serializedProducts = products.map((product) => ({
-    ...product,
-    price: product.price.toNumber(),
-  }));
+  // If no products were found, it could be due to authentication issues
+  if (!serializedProducts || serializedProducts.length === 0) {
+    return <p>Error: Tidak ada produk yang tersedia untuk dijual.</p>;
+  }
 
   return (
     <DashboardLayout pageTitle="Tambah Penjualan Baru">

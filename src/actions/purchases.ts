@@ -5,16 +5,16 @@ import { PurchaseSchema } from "@/schemas/zod";
 import { db } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
+import { getEffectiveUserId } from "@/lib/get-effective-user-id";
 
 export const addPurchase = async (values: z.infer<typeof PurchaseSchema>) => {
-  // Get current session
-  const session = await auth();
-  const user = session?.user;
+  // Get effective user ID (owner ID if employee, user's own ID otherwise)
+  const effectiveUserId = await getEffectiveUserId();
 
-  if (!user || !user.id) {
+  if (!effectiveUserId) {
     return { error: "Tidak terautentikasi!" };
   }
-  const userId = user.id;
+  const userId = effectiveUserId;
 
   // 1. Validate input server-side
   const validatedFields = PurchaseSchema.safeParse(values);
@@ -110,13 +110,13 @@ export const addPurchase = async (values: z.infer<typeof PurchaseSchema>) => {
 };
 
 export const getPurchases = async () => {
-  // Get current session
-  const session = await auth();
-  const userId = session?.user?.id;
+  // Get effective user ID (owner ID if employee, user's own ID otherwise)
+  const effectiveUserId = await getEffectiveUserId();
 
-  if (!userId) {
+  if (!effectiveUserId) {
     return { error: "Tidak terautentikasi!" };
   }
+  const userId = effectiveUserId;
 
   try {
     const purchases = await db.purchase.findMany({

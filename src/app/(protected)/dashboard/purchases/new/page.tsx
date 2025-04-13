@@ -2,54 +2,29 @@ import React from "react";
 import Head from "next/head";
 import DashboardLayout from "@/components/layout/dashboardlayout";
 import NewPurchasePage from "@/components/pages/dashboard/purchases/new";
-import { db } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
+import { getProducts } from "@/lib/get-products";
+import { getSuppliers } from "@/lib/get-suppliers";
 
 // This is an async Server Component
 const NewPurchase = async () => {
-  // Get current session
-  const session = await auth();
-  const userId = session?.user?.id;
+  // Fetch products using our utility function that handles employee access
+  const serializedProducts = await getProducts({
+    includeOutOfStock: true, // Show all products for purchases
+    orderBy: "name",
+    orderDirection: "asc",
+  });
 
-  if (!userId) {
-    console.error("User ID not found in session on protected route.");
-    return <p>Error: User tidak ditemukan.</p>;
+  // Fetch suppliers using our utility function
+  const suppliers = await getSuppliers();
+
+  // If no products or suppliers were found, it could be due to authentication issues
+  if (!serializedProducts || serializedProducts.length === 0) {
+    return <p>Error: Tidak dapat mengambil data produk.</p>;
   }
 
-  // Fetch products for the current user to populate the dropdown
-  const products = await db.product.findMany({
-    where: {
-      userId: userId,
-    },
-    select: {
-      id: true,
-      name: true,
-      cost: true,
-    },
-    orderBy: {
-      name: "asc",
-    },
-  });
-
-  // Fetch suppliers for the current user
-  const suppliers = await db.supplier.findMany({
-    where: {
-      userId: userId,
-    },
-    select: {
-      id: true,
-      name: true,
-    },
-    orderBy: {
-      name: "asc",
-    },
-  });
-
-  // Convert Decimal to number for serialization
-  const serializedProducts = products.map((product) => ({
-    ...product,
-    cost: product.cost ? product.cost.toNumber() : null,
-  }));
+  if (!suppliers || suppliers.length === 0) {
+    return <p>Error: Tidak dapat mengambil data supplier.</p>;
+  }
 
   return (
     <DashboardLayout pageTitle="Tambah Pembelian Baru">

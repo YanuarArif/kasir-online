@@ -5,16 +5,16 @@ import { SupplierSchema } from "@/schemas/zod";
 import { db } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth"; // Import auth to get session
+import { getEffectiveUserId } from "@/lib/get-effective-user-id";
 
 export const addSupplier = async (values: z.infer<typeof SupplierSchema>) => {
-  // Get current session
-  const session = await auth();
-  const user = session?.user;
+  // Get effective user ID (owner ID if employee, user's own ID otherwise)
+  const effectiveUserId = await getEffectiveUserId();
 
-  if (!user || !user.id) {
+  if (!effectiveUserId) {
     return { error: "Tidak terautentikasi!" };
   }
-  const userId = user.id;
+  const userId = effectiveUserId;
 
   // 1. Validate input server-side
   const validatedFields = SupplierSchema.safeParse(values);
@@ -27,7 +27,8 @@ export const addSupplier = async (values: z.infer<typeof SupplierSchema>) => {
     return { error: "Input tidak valid!" };
   }
 
-  const { name, contactName, email, phone, address, notes } = validatedFields.data;
+  const { name, contactName, email, phone, address, notes } =
+    validatedFields.data;
 
   try {
     // 2. Create the supplier in the database
@@ -54,17 +55,16 @@ export const addSupplier = async (values: z.infer<typeof SupplierSchema>) => {
 };
 
 export const getSuppliers = async () => {
-  // Get current session
-  const session = await auth();
-  const user = session?.user;
+  // Get effective user ID (owner ID if employee, user's own ID otherwise)
+  const effectiveUserId = await getEffectiveUserId();
 
-  if (!user || !user.id) {
+  if (!effectiveUserId) {
     return { error: "Tidak terautentikasi!" };
   }
-  const userId = user.id;
+  const userId = effectiveUserId;
 
   try {
-    // Fetch all suppliers for the current user
+    // Fetch all suppliers for the current user or their owner
     const suppliers = await db.supplier.findMany({
       where: {
         userId,
@@ -82,17 +82,16 @@ export const getSuppliers = async () => {
 };
 
 export const getSupplierById = async (id: string) => {
-  // Get current session
-  const session = await auth();
-  const user = session?.user;
+  // Get effective user ID (owner ID if employee, user's own ID otherwise)
+  const effectiveUserId = await getEffectiveUserId();
 
-  if (!user || !user.id) {
+  if (!effectiveUserId) {
     return { error: "Tidak terautentikasi!" };
   }
-  const userId = user.id;
+  const userId = effectiveUserId;
 
   try {
-    // Fetch the supplier by ID, ensuring it belongs to the current user
+    // Fetch the supplier by ID, ensuring it belongs to the current user or their owner
     const supplier = await db.supplier.findUnique({
       where: {
         id,
@@ -135,7 +134,8 @@ export const updateSupplier = async (
     return { error: "Input tidak valid!" };
   }
 
-  const { name, contactName, email, phone, address, notes } = validatedFields.data;
+  const { name, contactName, email, phone, address, notes } =
+    validatedFields.data;
 
   try {
     // 2. Update the supplier in the database

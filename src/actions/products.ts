@@ -5,16 +5,16 @@ import { ProductSchema } from "@/schemas/zod";
 import { db } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth"; // Import auth to get session
+import { getEffectiveUserId } from "@/lib/get-effective-user-id";
 
 export const addProduct = async (values: z.infer<typeof ProductSchema>) => {
-  // Get current session
-  const session = await auth();
-  const user = session?.user;
+  // Get effective user ID (owner ID if employee, user's own ID otherwise)
+  const effectiveUserId = await getEffectiveUserId();
 
-  if (!user || !user.id) {
+  if (!effectiveUserId) {
     return { error: "Tidak terautentikasi!" };
   }
-  const userId = user.id;
+  const userId = effectiveUserId;
 
   // 1. Validate input server-side
   const validatedFields = ProductSchema.safeParse(values);
