@@ -11,6 +11,7 @@ export const roleHierarchy: Record<Role, number> = {
 export const pagePermissions: Record<string, Role[]> = {
   // Dashboard pages
   "/dashboard": [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access dashboard
+  "/dashboard/profile": [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access profile
 
   // Product management
   "/dashboard/products": [Role.OWNER, Role.ADMIN, Role.CASHIER],
