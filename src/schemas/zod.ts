@@ -125,3 +125,28 @@ export const CreateEmployeeSchema = z.object({
     invalid_type_error: "Role tidak valid",
   }),
 });
+
+// Schema for updating employee information
+export const UpdateEmployeeNameSchema = z.object({
+  name: z.string().min(1, { message: "Nama karyawan wajib diisi" }),
+  role: z.enum(["ADMIN", "CASHIER"], {
+    required_error: "Role wajib dipilih",
+    invalid_type_error: "Role tidak valid",
+  }),
+});
+
+// Schema for updating employee password
+export const UpdateEmployeePasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(1, { message: "Password wajib diisi" })
+      .min(6, "Password minimal 6 karakter"),
+    confirmPassword: z
+      .string()
+      .min(1, { message: "Konfirmasi password wajib diisi" }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Password dan konfirmasi password tidak sama",
+    path: ["confirmPassword"],
+  });
