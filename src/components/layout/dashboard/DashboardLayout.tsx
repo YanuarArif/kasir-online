@@ -92,10 +92,16 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   return (
     <div className="min-h-screen flex bg-gray-100 dark:bg-gray-900">
       {/* Mobile Sidebar */}
-      <MobileSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+      <MobileSidebar
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+      />
 
       {/* Desktop Sidebar */}
-      <DesktopSidebar isCollapsed={isCollapsed} toggleCollapse={toggleCollapse} />
+      <DesktopSidebar
+        isCollapsed={isCollapsed}
+        toggleCollapse={toggleCollapse}
+      />
 
       {/* Main Content */}
       <div
@@ -108,7 +114,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         <TopBar pageTitle={pageTitle} setSidebarOpen={setSidebarOpen} />
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto bg-white dark:bg-gray-900 shadow-inner dark:shadow-gray-900/50">
           <div className="py-6">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
               {children}

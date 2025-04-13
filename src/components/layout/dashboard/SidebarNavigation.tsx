@@ -110,7 +110,7 @@ const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
 
   return (
     <TooltipProvider delayDuration={100}>
-      <nav className="flex-1 space-y-1 px-2 py-4">
+      <nav className="flex-1 space-y-1 px-2 py-4 bg-gray-100 dark:bg-gray-800">
         {filteredNavigation.map((item) => {
           const isCurrent =
             item.href === "/dashboard"
@@ -124,8 +124,8 @@ const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
                   href={item.href}
                   className={classNames(
                     isCurrent
-                      ? "bg-gray-900 text-white"
-                      : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                      ? "bg-blue-100 text-blue-700 dark:bg-gray-900 dark:text-white"
+                      : "text-gray-700 hover:bg-gray-200 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white",
                     "group flex items-center rounded-md px-2 py-2 text-sm font-medium justify-center"
                   )}
                   onClick={onItemClick}
@@ -133,8 +133,8 @@ const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
                   <item.icon
                     className={classNames(
                       isCurrent
-                        ? "text-gray-300"
-                        : "text-gray-400 group-hover:text-gray-300",
+                        ? "text-blue-600 dark:text-gray-300"
+                        : "text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300",
                       "h-6 w-6 flex-shrink-0 mx-auto"
                     )}
                     aria-hidden="true"
@@ -152,8 +152,8 @@ const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
               href={item.href}
               className={classNames(
                 isCurrent
-                  ? "bg-gray-900 text-white"
-                  : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                  ? "bg-blue-100 text-blue-700 dark:bg-gray-900 dark:text-white"
+                  : "text-gray-700 hover:bg-gray-200 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white",
                 "group flex items-center rounded-md px-2 py-2 text-sm font-medium"
               )}
               onClick={onItemClick}
@@ -161,8 +161,8 @@ const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
               <item.icon
                 className={classNames(
                   isCurrent
-                    ? "text-gray-300"
-                    : "text-gray-400 group-hover:text-gray-300",
+                    ? "text-blue-600 dark:text-gray-300"
+                    : "text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300",
                   "h-6 w-6 flex-shrink-0 mr-3"
                 )}
                 aria-hidden="true"

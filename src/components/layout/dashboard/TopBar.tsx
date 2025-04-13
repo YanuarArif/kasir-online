@@ -34,7 +34,7 @@ const TopBar: React.FC<TopBarProps> = ({ pageTitle, setSidebarOpen }) => {
   };
 
   return (
-    <div className="sticky top-0 z-10 flex h-16 flex-shrink-0 bg-white dark:bg-gray-800 shadow">
+    <div className="sticky top-0 z-20 flex h-16 flex-shrink-0 bg-white dark:bg-gray-800 shadow-md dark:shadow-gray-900/50 border-b border-gray-200 dark:border-gray-700">
       {/* Mobile Menu Button */}
       <button
         type="button"

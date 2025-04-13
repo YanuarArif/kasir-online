@@ -22,11 +22,11 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
       )}
     >
       {/* Sidebar component */}
-      <div className="flex min-h-0 flex-1 flex-col bg-gray-800">
+      <div className="flex min-h-0 flex-1 flex-col bg-gray-100 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-md dark:shadow-gray-900/50 z-10">
         {/* Top Section: Logo and Toggle */}
-        <div className="flex h-16 flex-shrink-0 items-center justify-between bg-gray-900 px-4">
+        <div className="flex h-16 flex-shrink-0 items-center justify-between bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4">
           {!isCollapsed && (
-            <span className="text-white text-xl font-semibold">
+            <span className="text-gray-900 dark:text-white text-xl font-semibold">
               Kasir Online
             </span>
           )}
@@ -34,7 +34,7 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
           <button
             onClick={toggleCollapse}
             className={classNames(
-              "flex justify-center items-center h-10 w-10 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500",
+              "flex justify-center items-center h-10 w-10 text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500",
               isCollapsed ? "mx-auto" : ""
             )}
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -46,16 +46,16 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
             )}
           </button>
         </div>
-        
+
         {/* Navigation Section */}
         <div className="flex flex-1 flex-col overflow-y-auto">
           <SidebarNavigation isCollapsed={isCollapsed} />
         </div>
-        
+
         {/* User Profile Section at Bottom */}
         <div
           className={classNames(
-            "flex-shrink-0 border-t border-gray-700 dark:border-gray-600 p-3 bg-gray-900 dark:bg-gray-800",
+            "flex-shrink-0 border-t border-gray-200 dark:border-gray-700 p-3 bg-white dark:bg-gray-900",
             isCollapsed ? "flex justify-center" : "flex items-center"
           )}
         >
