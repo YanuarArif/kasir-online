@@ -18,6 +18,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   pageTitle = "Dashboard",
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Function to properly close the sidebar
+  const closeSidebar = () => {
+    // Use setTimeout to ensure the animation completes before state changes
+    setSidebarOpen(false);
+  };
   const [isCollapsed, setIsCollapsed] = useState<boolean | undefined>(
     undefined
   ); // Initially undefined for SSR/hydration safety
@@ -99,7 +105,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         {/* Mobile Sidebar */}
         <MobileSidebar
           sidebarOpen={sidebarOpen}
-          setSidebarOpen={setSidebarOpen}
+          setSidebarOpen={closeSidebar}
         />
 
         {/* Desktop Sidebar - Now under the navbar */}
