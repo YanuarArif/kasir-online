@@ -95,7 +95,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       {/* Dashboard Navbar - Full width at top */}
       <DashboardNavbar pageTitle={pageTitle} setSidebarOpen={setSidebarOpen} />
 
-      <div className="flex flex-1 relative overflow-hidden">
+      <div className="flex flex-1 relative overflow-hidden w-full">
         {/* Mobile Sidebar */}
         <MobileSidebar
           sidebarOpen={sidebarOpen}
@@ -111,17 +111,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         {/* Main Content */}
         <div
           className={classNames(
-            "flex flex-1 flex-col transition-all duration-300 overflow-y-auto",
-            isCollapsed ? "md:ml-16" : "md:ml-64" // Adjust left margin instead of padding
+            "flex flex-1 flex-col transition-all duration-300 overflow-y-auto w-full p-2 pt-2",
+            isCollapsed ? "md:m-4" : "md:m-4" // Adjust left margin instead of padding
           )}
         >
           {/* Page Content */}
-          <main className="flex-1 overflow-y-auto">
-            <div className="py-6">
-              <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
-                {children}
-              </div>
-            </div>
+          <main className="flex-1 overflow-y-auto w-full bg-white dark:bg-gray-800 rounded-lg shadow-sm mt-2 thin-scrollbar">
+            <div className="py-6 px-4 sm:px-6 md:px-8 w-full">{children}</div>
           </main>
         </div>
       </div>

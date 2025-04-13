@@ -72,7 +72,7 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({
                   Kasir Online
                 </span>
               </div>
-              <div className="mt-5 h-0 flex-1 overflow-y-auto hide-scrollbar">
+              <div className="mt-5 h-0 flex-1 overflow-y-auto thin-scrollbar">
                 <SidebarNavigation
                   isCollapsed={false}
                   onItemClick={() => setSidebarOpen(false)}
