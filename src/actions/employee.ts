@@ -128,15 +128,17 @@ export const employeeLogin = async (
       return { error: "Password salah!" };
     }
 
+    // Create a custom token for the employee
     try {
-      // Sign in the employee
-      await signIn("employee-credentials", {
+      // Create a JWT token with employee data
+      const token = await signIn("employee-credentials", {
+        redirect: false,
         employeeId,
         companyUsername,
         password,
-        redirectTo: "/dashboard",
       });
 
+      // Return success
       return {
         success: "Login berhasil!",
         redirectTo: "/dashboard",
@@ -150,7 +152,17 @@ export const employeeLogin = async (
             return { error: "Ada yang salah!" };
         }
       }
-      throw error;
+
+      // Check if this is a redirect error (which is actually a success)
+      if (error instanceof Error && error.message?.includes("NEXT_REDIRECT")) {
+        return {
+          success: "Login berhasil!",
+          redirectTo: "/dashboard",
+        };
+      }
+
+      console.error("Error during employee login:", error);
+      return { error: "Terjadi kesalahan saat login!" };
     }
   } catch (error) {
     console.error("Error logging in as employee:", error);

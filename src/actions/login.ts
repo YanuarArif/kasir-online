@@ -31,22 +31,42 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
   }
 
   try {
-    await signIn("credentials", { email, password, redirectTo: "/dashboard" });
+    try {
+      // Use signIn with redirect: false to prevent automatic redirects
+      const result = await signIn("credentials", {
+        redirect: false,
+        email,
+        password,
+      });
 
-    // Return success jika login berhasil
-    return {
-      success: "Login berhasil!",
-      redirectTo: `/dashboard`,
-    };
-  } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case "CredentialsSignin":
-          return { error: "Email atau password salah!" };
-        default:
-          return { error: "Ada yang salah!" };
+      // Return success
+      return {
+        success: "Login berhasil!",
+        redirectTo: "/dashboard",
+      };
+    } catch (error) {
+      if (error instanceof AuthError) {
+        switch (error.type) {
+          case "CredentialsSignin":
+            return { error: "Email atau password salah!" };
+          default:
+            return { error: "Ada yang salah!" };
+        }
       }
+
+      // Check if this is a redirect error (which is actually a success)
+      if (error instanceof Error && error.message?.includes("NEXT_REDIRECT")) {
+        return {
+          success: "Login berhasil!",
+          redirectTo: "/dashboard",
+        };
+      }
+
+      console.error("Error during login:", error);
+      return { error: "Terjadi kesalahan saat login!" };
     }
-    throw error;
+  } catch (error) {
+    console.error("Error during login:", error);
+    return { error: "Terjadi kesalahan saat login!" };
   }
 };

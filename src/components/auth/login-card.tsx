@@ -97,15 +97,25 @@ const LoginCard = () => {
         .then((data) => {
           if (data?.error) {
             setError(data.error);
+            return;
           }
 
           if (data?.success) {
             setSuccess(data.success);
             form.reset();
-            router.push("/dashboard");
+
+            // Redirect to dashboard after successful login
+            if (data.redirectTo) {
+              setTimeout(() => {
+                router.push(data.redirectTo);
+              }, 500); // Small delay to show success message
+            }
           }
         })
-        .catch(() => setError("Something went wrong"));
+        .catch((err) => {
+          console.error("Error during login:", err);
+          setError("Something went wrong");
+        });
     });
   };
 
@@ -118,15 +128,25 @@ const LoginCard = () => {
         .then((data) => {
           if (data?.error) {
             setError(data.error);
+            return;
           }
 
           if (data?.success) {
             setSuccess(data.success);
             employeeForm.reset();
-            router.push("/dashboard");
+
+            // Redirect to dashboard after successful login
+            if (data.redirectTo) {
+              setTimeout(() => {
+                router.push(data.redirectTo);
+              }, 500); // Small delay to show success message
+            }
           }
         })
-        .catch(() => setError("Something went wrong"));
+        .catch((err) => {
+          console.error("Error during employee login:", err);
+          setError("Something went wrong");
+        });
     });
   };
 
@@ -190,9 +210,10 @@ const LoginCard = () => {
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <Button
                   variant="outline"
-                  onClick={() =>
-                    signIn("google", { callbackUrl: "/dashboard" })
-                  }
+                  onClick={() => {
+                    // For client-side signIn, we use the original syntax
+                    signIn("google", { callbackUrl: "/dashboard" });
+                  }}
                   className="flex items-center justify-center gap-2"
                 >
                   <FcGoogle className="h-5 w-5" />
