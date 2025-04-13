@@ -37,6 +37,7 @@ import { LoginSchema, EmployeeLoginSchema } from "@/schemas/zod";
 import { ErrorMessage } from "../ui/errormessage";
 import { SuccessMessage } from "../ui/successmessage";
 import { signIn } from "next-auth/react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const LoginCard = () => {
   const [error, setError] = useState<string | undefined>("");
@@ -163,12 +164,15 @@ const LoginCard = () => {
         duration={5000}
       />
       <Card className="w-full h-full py-5 shadow-md">
-        <CardHeader className="flex items-center text-center">
+        <CardHeader className="flex flex-col items-center justify-center text-center">
+          <div className="absolute top-4 right-4">
+            <ThemeToggle />
+          </div>
           <div className="space-y-3 pb-5">
-            <CardTitle className="text-3xl lg:text-4xl font-bold">
+            <CardTitle className="text-3xl lg:text-4xl font-bold text-center">
               Selamat Datang
             </CardTitle>
-            <CardDescription className="text-lg font-light">
+            <CardDescription className="text-lg font-light text-center">
               {isEmployeeLogin
                 ? "Silahkan login sebagai karyawan"
                 : "Silahkan login untuk membuat pesanan"}
@@ -231,10 +235,10 @@ const LoginCard = () => {
 
               <div className="relative mb-4">
                 <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
+                  <span className="w-full border-t dark:border-gray-700" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
+                  <span className="bg-white dark:bg-gray-900 px-2 text-muted-foreground rounded">
                     Atau masuk dengan email
                   </span>
                 </div>

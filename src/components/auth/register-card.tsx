@@ -2,6 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { VscAccount } from "react-icons/vsc";
+import { FcGoogle } from "react-icons/fc";
 import {
   MdOutlineLock,
   MdOutlineVisibility,
@@ -33,6 +34,8 @@ import { DaftarSchema } from "@/schemas/zod";
 import { register } from "@/actions/register";
 import { ErrorMessage } from "../ui/errormessage";
 import { SuccessMessage } from "../ui/successmessage";
+import { signIn } from "next-auth/react";
+import { ThemeToggle } from "@/components/theme-toggle";
 // import { useRouter } from "next/navigation";
 
 // interface DaftarCardProps {
@@ -89,7 +92,7 @@ const RegisterCard = () => {
             }, 2000);
           }
         })
-        .catch((error) => {
+        .catch(() => {
           setError("Terjadi kesalahan saat mendaftar");
         });
     });
@@ -112,15 +115,18 @@ const RegisterCard = () => {
           error
             ? "border-4 border-destructive animate-vibrate"
             : success
-            ? "border-4 border-emerald-500"
-            : ""
+              ? "border-4 border-emerald-500"
+              : ""
         }`}
       >
-        <CardHeader className="flex items-center text-center">
-          <CardTitle className="text-3xl lg:text-4xl font-bold">
+        <CardHeader className="flex flex-col items-center justify-center text-center">
+          <div className="absolute top-4 right-4">
+            <ThemeToggle />
+          </div>
+          <CardTitle className="text-3xl lg:text-4xl font-bold text-center">
             Selamat Datang
           </CardTitle>
-          <CardDescription className="text-lg font-light">
+          <CardDescription className="text-lg font-light text-center">
             Silahkan daftar untuk bisa mengakses akun.
           </CardDescription>
         </CardHeader>
@@ -138,7 +144,7 @@ const RegisterCard = () => {
                         <div className="flex relative items-center">
                           <MdPerson className="absolute left-3" />
                           <Input
-                            className={`pl-10 text-base md:text-lg h-12 
+                            className={`pl-10 text-base md:text-lg h-12
                         ${
                           form.formState.errors.username
                             ? "border-red-300 focus-visible:ring-red-300"
@@ -171,7 +177,7 @@ const RegisterCard = () => {
                         <div className="flex relative items-center">
                           <VscAccount className="absolute left-3" />
                           <Input
-                            className={`pl-10 text-base md:text-lg h-12 
+                            className={`pl-10 text-base md:text-lg h-12
                         ${
                           form.formState.errors.email
                             ? "border-red-300 focus-visible:ring-red-300"
@@ -204,7 +210,7 @@ const RegisterCard = () => {
                         <div className="flex relative items-center">
                           <MdOutlineLock className="absolute left-3" />
                           <Input
-                            className={`pl-10 text-base md:text-lg h-12 
+                            className={`pl-10 text-base md:text-lg h-12
                         ${
                           form.formState.errors.password
                             ? "border-red-300 focus-visible:ring-red-300"
@@ -255,15 +261,30 @@ const RegisterCard = () => {
             </form>
           </Form>
           <div className="flex items-center">
-            <div className="border-t mr-[10px] flex-1" />
-            <div className="border-t ml-[10px] flex-1" />
+            <div className="border-t dark:border-gray-700 mr-[10px] flex-1" />
+            <span className="text-xs text-muted-foreground">atau</span>
+            <div className="border-t dark:border-gray-700 ml-[10px] flex-1" />
           </div>
+
+          {/* Google Sign Up Button */}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              signIn("google", { callbackUrl: "/dashboard" });
+            }}
+            className="w-full flex items-center justify-center gap-2 h-10"
+          >
+            <FcGoogle className="h-5 w-5" />
+            <span>Daftar dengan Google</span>
+          </Button>
+
           <div>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
               Sudah punya akun?{" "}
               <span
                 onClick={() => router.push("/login")}
-                className="cursor-pointer font-bold text-blue-500 hover:underline"
+                className="cursor-pointer font-bold text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline"
               >
                 Login
               </span>

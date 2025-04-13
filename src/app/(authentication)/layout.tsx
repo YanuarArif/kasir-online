@@ -1,4 +1,5 @@
 import { Navbar } from "@/components/layout/navbar";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -7,19 +8,19 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
         <Navbar />
       </div>
       <div className="absolute bottom-10 left-10 z-10">
-        {/* <ThemeSwitcher /> */}
+        <ThemeToggle />
       </div>
       {/* Background Radial */}
       <div
-        className="absolute h-full w-full 
+        className="absolute h-full w-full
     bg-[radial-gradient(#e5e7eb_1px,transparent_1.5px)]
     [background-size:15px_15px]
     [mask-image:radial-gradient(ellipse_65%_65%_at_50%_50%,#000_70%,transparent_100%)]
-    
-    dark:top-0 
-    dark:h-screen 
-    dark:w-screen 
-    dark:bg-[#000000] 
+
+    dark:top-0
+    dark:h-screen
+    dark:w-screen
+    dark:bg-[#000000]
     dark:bg-[radial-gradient(#ffffff33_1px,#00091d_1.5px)]
     dark:bg-[size:15px_15px]
     dark:[mask-image:radial-gradient(ellipse_75%_75%_at_50%_50%,#000_50%,transparent_100%)]"
