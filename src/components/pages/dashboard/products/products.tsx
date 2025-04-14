@@ -19,6 +19,9 @@ import {
   AdjustmentsHorizontalIcon,
   EyeIcon,
   EyeSlashIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
+  ArrowsUpDownIcon,
 } from "@heroicons/react/24/outline";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
@@ -89,9 +92,37 @@ const ProductsPage: NextPage<ProductsPageProps> = ({
     discountPrice: true,
   });
 
-  // Filter products based on search term and active tabs
+  // Sorting state
+  const [sortField, setSortField] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+  // Function to handle column sorting
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      // If already sorting by this field, toggle direction
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      // If sorting by a new field, set it and default to ascending
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  // Function to get sort icon
+  const getSortIcon = (field: string) => {
+    if (sortField !== field) {
+      return <ArrowsUpDownIcon className="h-4 w-4 ml-1 opacity-50" />;
+    }
+    return sortDirection === "asc" ? (
+      <ChevronUpIcon className="h-4 w-4 ml-1" />
+    ) : (
+      <ChevronDownIcon className="h-4 w-4 ml-1" />
+    );
+  };
+
+  // Filter and sort products based on search term, active tabs, and sort settings
   useEffect(() => {
-    let result = products;
+    let result = [...products]; // Create a copy to avoid mutating the original
 
     // Apply search filter
     if (searchTerm) {
@@ -125,8 +156,53 @@ const ProductsPage: NextPage<ProductsPageProps> = ({
       result = result.filter((product) => product.stock === 0);
     }
 
+    // Apply sorting if a sort field is selected
+    if (sortField) {
+      result.sort((a, b) => {
+        let valueA, valueB;
+
+        // Handle different field types
+        switch (sortField) {
+          case "name":
+            valueA = a.name.toLowerCase();
+            valueB = b.name.toLowerCase();
+            break;
+          case "sku":
+            valueA = (a.sku || "").toLowerCase();
+            valueB = (b.sku || "").toLowerCase();
+            break;
+          case "category":
+            valueA = (a.category?.name || "").toLowerCase();
+            valueB = (b.category?.name || "").toLowerCase();
+            break;
+          case "price":
+            valueA = a.price;
+            valueB = b.price;
+            break;
+          case "stock":
+            valueA = a.stock;
+            valueB = b.stock;
+            break;
+          case "cost":
+            valueA = a.cost || 0;
+            valueB = b.cost || 0;
+            break;
+          default:
+            valueA = a[sortField as keyof Product] || "";
+            valueB = b[sortField as keyof Product] || "";
+        }
+
+        // Compare based on direction
+        if (sortDirection === "asc") {
+          return valueA > valueB ? 1 : valueA < valueB ? -1 : 0;
+        } else {
+          return valueA < valueB ? 1 : valueA > valueB ? -1 : 0;
+        }
+      });
+    }
+
     setFilteredProducts(result);
-  }, [products, searchTerm, mainTab, subTab]);
+  }, [products, searchTerm, mainTab, subTab, sortField, sortDirection]);
 
   // Function to get stock status badge
   const getStockStatusBadge = (stock: number) => {
@@ -386,43 +462,99 @@ const ProductsPage: NextPage<ProductsPageProps> = ({
                       <thead className="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-700">
                         <tr>
                           {columnVisibility.name && (
-                            <th scope="col" className="px-6 py-3">
-                              Nama Produk
+                            <th
+                              scope="col"
+                              className="px-6 py-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                              onClick={() => handleSort("name")}
+                            >
+                              <div className="flex items-center">
+                                Nama Produk
+                                {getSortIcon("name")}
+                              </div>
                             </th>
                           )}
                           {columnVisibility.sku && (
-                            <th scope="col" className="px-6 py-3">
-                              Kode Produk
+                            <th
+                              scope="col"
+                              className="px-6 py-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                              onClick={() => handleSort("sku")}
+                            >
+                              <div className="flex items-center">
+                                Kode Produk
+                                {getSortIcon("sku")}
+                              </div>
                             </th>
                           )}
                           {columnVisibility.category && (
-                            <th scope="col" className="px-6 py-3">
-                              Kategori Produk
+                            <th
+                              scope="col"
+                              className="px-6 py-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                              onClick={() => handleSort("category")}
+                            >
+                              <div className="flex items-center">
+                                Kategori Produk
+                                {getSortIcon("category")}
+                              </div>
                             </th>
                           )}
                           {columnVisibility.price && (
-                            <th scope="col" className="px-6 py-3">
-                              Harga
+                            <th
+                              scope="col"
+                              className="px-6 py-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                              onClick={() => handleSort("price")}
+                            >
+                              <div className="flex items-center">
+                                Harga
+                                {getSortIcon("price")}
+                              </div>
                             </th>
                           )}
                           {columnVisibility.stock && (
-                            <th scope="col" className="px-6 py-3">
-                              Total Stok
+                            <th
+                              scope="col"
+                              className="px-6 py-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                              onClick={() => handleSort("stock")}
+                            >
+                              <div className="flex items-center">
+                                Total Stok
+                                {getSortIcon("stock")}
+                              </div>
                             </th>
                           )}
                           {columnVisibility.cost && (
-                            <th scope="col" className="px-6 py-3">
-                              Harga Beli
+                            <th
+                              scope="col"
+                              className="px-6 py-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                              onClick={() => handleSort("cost")}
+                            >
+                              <div className="flex items-center">
+                                Harga Beli
+                                {getSortIcon("cost")}
+                              </div>
                             </th>
                           )}
                           {columnVisibility.sellPrice && (
-                            <th scope="col" className="px-6 py-3">
-                              Harga Jual
+                            <th
+                              scope="col"
+                              className="px-6 py-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                              onClick={() => handleSort("price")}
+                            >
+                              <div className="flex items-center">
+                                Harga Jual
+                                {getSortIcon("price")}
+                              </div>
                             </th>
                           )}
                           {columnVisibility.discountPrice && (
-                            <th scope="col" className="px-6 py-3">
-                              Harga Diskon
+                            <th
+                              scope="col"
+                              className="px-6 py-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                              onClick={() => handleSort("discountPrice")}
+                            >
+                              <div className="flex items-center">
+                                Harga Diskon
+                                {getSortIcon("discountPrice")}
+                              </div>
                             </th>
                           )}
                           <th scope="col" className="px-6 py-3 text-right">
