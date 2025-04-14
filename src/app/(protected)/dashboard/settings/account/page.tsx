@@ -20,6 +20,10 @@ const AccountSettingsPage = async () => {
           email: true,
           username: true,
           image: true,
+          phone: true,
+          bio: true,
+          lastLogin: true,
+          createdAt: true,
         },
       })
     : null;
@@ -31,6 +35,10 @@ const AccountSettingsPage = async () => {
     email: session?.user?.email || "",
     username: "",
     image: session?.user?.image || "",
+    phone: null,
+    bio: null,
+    lastLogin: null,
+    createdAt: new Date(),
   };
 
   return (

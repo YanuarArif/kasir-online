@@ -9,9 +9,13 @@ const ProfileUpdateSchema = z.object({
   name: z.string().optional(),
   username: z.string().optional(),
   image: z.string().optional(),
+  phone: z.string().optional(),
+  bio: z.string().optional(),
 });
 
-export const updateProfile = async (values: z.infer<typeof ProfileUpdateSchema>) => {
+export const updateProfile = async (
+  values: z.infer<typeof ProfileUpdateSchema>
+) => {
   try {
     // Get current session
     const session = await auth();
@@ -65,6 +69,10 @@ export const getUserProfile = async () => {
         email: true,
         username: true,
         image: true,
+        phone: true,
+        bio: true,
+        lastLogin: true,
+        createdAt: true,
       },
     });
 

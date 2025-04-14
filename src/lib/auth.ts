@@ -95,6 +95,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
     // Callback untuk menambahkan logika tambahan setelah autentikasi berhasil
     async signIn({ user, account }) {
+      // Update lastLogin timestamp for all login types
+      if (user?.id) {
+        await database.user.update({
+          where: { id: user.id },
+          data: {
+            lastLogin: new Date(),
+          },
+        });
+      }
+
       // Block Google login if email exists but isn't verified
       if (account?.provider === "google") {
         const existingUser = await database.user.findUnique({
