@@ -74,12 +74,7 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
         </div>
 
         {/* User Profile Section at Bottom */}
-        <div
-          className={classNames(
-            "flex-shrink-0 border-t border-gray-200 dark:border-gray-700 p-1 bg-white dark:bg-gray-900 transition-all duration-300 ease-in-out",
-            isCollapsed ? "flex justify-center" : "flex items-center"
-          )}
-        >
+        <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 ease-in-out p-1">
           <UserProfileMenu isCollapsed={isCollapsed} position="sidebar" />
         </div>
       </div>

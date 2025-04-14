@@ -85,24 +85,29 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
           <TooltipTrigger asChild>
             <Menu.Button
               ref={buttonRef}
-              className="flex items-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-800 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 p-1 transition-all duration-300 ease-in-out cursor-pointer"
+              className="group flex items-center rounded-md px-2 py-2 text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer w-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none"
             >
-              <span className="sr-only">Open user menu</span>
-              {session?.user?.image ? (
-                <div className="inline-block h-9 w-9 overflow-hidden rounded-full bg-gray-600 dark:bg-gray-700 ring-2 ring-white dark:ring-gray-500 ring-opacity-50">
-                  <Image
-                    src={session.user.image}
-                    alt={session.user.name || "User profile"}
-                    width={36}
-                    height={36}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-              ) : (
-                <span className="inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gray-600 dark:bg-gray-700 ring-2 ring-white dark:ring-gray-500 ring-opacity-50">
+              {/* Fixed width container for consistent positioning */}
+              <div className="w-6 flex-shrink-0 flex justify-center">
+                {session?.user?.image ? (
+                  <div className="inline-block h-6 w-6 overflow-hidden rounded-full bg-gray-600 dark:bg-gray-700 ring-1 ring-white dark:ring-gray-500 ring-opacity-50">
+                    <Image
+                      src={session.user.image}
+                      alt={session.user.name || "User profile"}
+                      width={24}
+                      height={24}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                ) : (
                   <UserIcon className="h-6 w-6 text-gray-400 dark:text-gray-300" />
-                </span>
-              )}
+                )}
+              </div>
+
+              {/* Hidden text container */}
+              <div className="opacity-0 w-0 overflow-hidden">
+                <span className="sr-only">Open user menu</span>
+              </div>
             </Menu.Button>
           </TooltipTrigger>
           <TooltipContent side="right" sideOffset={5}>
@@ -112,72 +117,36 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
       ) : (
         <Menu.Button
           ref={buttonRef}
-          className={classNames(
-            "flex items-center w-full focus:outline-none transition-all duration-300 ease-in-out cursor-pointer",
-            isSidebar
-              ? "rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 p-2"
-              : "rounded-full bg-white dark:bg-gray-700 border-2 border-indigo-100 dark:border-gray-600 p-0.5 shadow-sm hover:shadow h-9 w-9"
-          )}
+          className="group flex items-center rounded-md px-2 py-2 text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer w-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none"
         >
           <div className="flex items-center w-full">
-            {/* Avatar */}
-            <div className="flex-shrink-0">
+            {/* Fixed width container for consistent positioning */}
+            <div className="w-6 flex-shrink-0 flex justify-center">
               {session?.user?.image ? (
-                <div
-                  className={classNames(
-                    "inline-block h-9 w-9 overflow-hidden rounded-full",
-                    isSidebar
-                      ? "bg-gray-600 ring-2 ring-white ring-opacity-50"
-                      : "bg-gray-100"
-                  )}
-                >
+                <div className="inline-block h-6 w-6 overflow-hidden rounded-full bg-gray-600 dark:bg-gray-700 ring-1 ring-white dark:ring-gray-500 ring-opacity-50">
                   <Image
                     src={session.user.image}
                     alt={session.user.name || "User profile"}
-                    width={36}
-                    height={36}
+                    width={24}
+                    height={24}
                     className="h-full w-full object-cover"
                   />
                 </div>
               ) : (
-                <span
-                  className={classNames(
-                    "inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full",
-                    isSidebar
-                      ? "bg-gray-600 ring-2 ring-white ring-opacity-50"
-                      : "bg-indigo-50"
-                  )}
-                >
-                  <UserIcon
-                    className={classNames(
-                      "h-6 w-6",
-                      isSidebar ? "text-gray-400" : "text-indigo-300"
-                    )}
-                  />
-                </span>
+                <UserIcon className="h-6 w-6 text-gray-400 dark:text-gray-300" />
               )}
             </div>
 
             {/* Name/Email (only when expanded in sidebar) */}
             <div
               className={classNames(
-                "min-w-0 flex-1 ml-3 flex flex-col justify-center transition-all duration-500 ease-in-out",
-                isCollapsed || !isSidebar
-                  ? "opacity-0 w-0 overflow-hidden"
-                  : "opacity-100"
+                "ml-3 flex-1 transition-all duration-500 ease-in-out",
+                isCollapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100"
               )}
             >
-              <p className="text-sm font-medium text-black dark:text-gray-100 truncate leading-tight">
+              <span className="truncate">
                 {session?.user?.name || session?.user?.email || "User"}
-              </p>
-              {/* Optionally show email if different from name */}
-              {session?.user?.email &&
-                session.user.name &&
-                session.user.email !== session.user.name && (
-                  <p className="text-xs font-medium text-gray-400 dark:text-gray-300 truncate mt-0.5 leading-tight">
-                    {session?.user?.email}
-                  </p>
-                )}
+              </span>
             </div>
           </div>
         </Menu.Button>
