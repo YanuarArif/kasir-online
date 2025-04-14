@@ -28,30 +28,42 @@ interface ProductData {
   profit: number;
 }
 
+// Define the interface for the handle exposed by useImperativeHandle
+export interface ProductsReportTableHandle {
+  exportData: () => {
+    ID: string;
+    "Nama Produk": string;
+    Kategori: string;
+    Stok: number;
+    Terjual: number;
+    Pendapatan: number;
+    Keuntungan: number;
+  }[];
+}
+
 export const ProductsReportTable = React.forwardRef<
-  HTMLDivElement,
+  ProductsReportTableHandle, // Use the handle interface here
   ProductsReportTableProps
 >(({ dateRange }, ref) => {
-  // Create a ref for the component
+  // Create a ref for the component's root div element
   const componentRef = React.useRef<HTMLDivElement>(null);
   const resolvedRef = ref || componentRef;
 
-  // Function to export data for Excel
-  const exportData = () => {
-    return products.map((product) => ({
-      ID: product.id,
-      "Nama Produk": product.name,
-      Kategori: product.category,
-      Stok: product.stock,
-      Terjual: product.sold,
-      Pendapatan: product.revenue,
-      Keuntungan: product.profit,
-    }));
-  };
-
-  // Expose the exportData function
-  React.useImperativeHandle(resolvedRef, () => ({
-    exportData,
+  // Expose the exportData function using useImperativeHandle
+  // Note: We pass the ref directly here, not the resolvedRef which might be null initially
+  React.useImperativeHandle(ref, () => ({
+    exportData: () => {
+      // Define exportData inside the callback to access the latest products state
+      return products.map((product) => ({
+        ID: product.id,
+        "Nama Produk": product.name,
+        Kategori: product.category,
+        Stok: product.stock,
+        Terjual: product.sold,
+        Pendapatan: product.revenue,
+        Keuntungan: product.profit,
+      }));
+    },
   }));
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -180,13 +192,15 @@ export const ProductsReportTable = React.forwardRef<
       );
     } else if (stock <= 20) {
       return (
-        <Badge variant="warning" className="whitespace-nowrap bg-amber-500">
+        // Remove invalid "warning" variant
+        <Badge className="whitespace-nowrap bg-amber-500 text-white">
           Stok Segera Habis
         </Badge>
       );
     } else {
       return (
-        <Badge variant="success" className="whitespace-nowrap bg-green-500">
+        // Remove invalid "success" variant
+        <Badge className="whitespace-nowrap bg-green-500 text-white">
           Stok Tersedia
         </Badge>
       );
@@ -216,9 +230,10 @@ export const ProductsReportTable = React.forwardRef<
   }
 
   return (
+    // Attach the componentRef to the root div
     <div
       id="products-report-table"
-      ref={resolvedRef}
+      ref={componentRef}
       className="rounded-md border"
     >
       <Table>
