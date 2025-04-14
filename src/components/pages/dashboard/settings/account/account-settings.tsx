@@ -45,23 +45,23 @@ export default function AccountSettings({ user }: AccountSettingsProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto">
       <Tabs
         defaultValue="profile"
         className="w-full"
         onValueChange={setActiveTab}
       >
-        <div className="bg-white dark:bg-gray-800  border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
-          <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-indigo-50 to-white dark:from-indigo-900/20 dark:to-gray-800">
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm mb-6">
+          <div className="px-6 py-5 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-indigo-50 to-white dark:from-indigo-900/20 dark:to-gray-800">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
               Pengaturan Akun
             </h1>
-            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-1.5 text-sm text-gray-600 dark:text-gray-400">
               Kelola informasi pribadi, keamanan, dan aktivitas akun Anda
             </p>
           </div>
           <div className="relative">
-            <TabsList className="w-full flex justify-between bg-gray-50 dark:bg-gray-800 p-1 rounded-none border-b border-gray-200 dark:border-gray-700">
+            <TabsList className="w-full flex justify-between bg-gray-50 dark:bg-gray-800 p-1.5 rounded-none border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
               {/* Animated tab indicator */}
               <motion.div
                 className="absolute bottom-0 h-0.5 bg-indigo-600 dark:bg-indigo-400 rounded-full"
@@ -114,12 +114,13 @@ export default function AccountSettings({ user }: AccountSettingsProps) {
             </TabsList>
           </div>
 
-          <div className="p-6 relative z-10 bg-white dark:bg-gray-800 shadow-sm">
+          <div className="p-0 relative z-10 bg-white dark:bg-gray-800">
             <TabsContent value="profile" className="space-y-6">
               <motion.div
                 initial="hidden"
                 animate="visible"
                 variants={contentVariants}
+                className="overflow-hidden"
               >
                 <ProfileSettingsForm user={user} />
               </motion.div>
@@ -130,6 +131,7 @@ export default function AccountSettings({ user }: AccountSettingsProps) {
                 initial="hidden"
                 animate="visible"
                 variants={contentVariants}
+                className="overflow-hidden"
               >
                 <div className="space-y-6">
                   <PasswordSettingsForm />
@@ -144,6 +146,7 @@ export default function AccountSettings({ user }: AccountSettingsProps) {
                 initial="hidden"
                 animate="visible"
                 variants={contentVariants}
+                className="overflow-hidden"
               >
                 <AccountActivitySection user={user} />
               </motion.div>
@@ -152,7 +155,7 @@ export default function AccountSettings({ user }: AccountSettingsProps) {
         </div>
       </Tabs>
 
-      {/* Keep Custom Animation Styles if needed globally here */}
+      {/* Custom Animation Styles */}
       <style jsx>{`
         @keyframes fadeIn {
           from {

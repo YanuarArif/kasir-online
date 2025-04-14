@@ -13,7 +13,9 @@ interface PasswordSettingsFormProps {
   // Add any necessary props, e.g., user ID if needed by the action
 }
 
-export default function PasswordSettingsForm(props: PasswordSettingsFormProps) {
+export default function PasswordSettingsForm(
+  _props: PasswordSettingsFormProps
+) {
   // Password form state
   const [isPasswordLoading, setIsPasswordLoading] = useState(false);
   const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
@@ -80,16 +82,19 @@ export default function PasswordSettingsForm(props: PasswordSettingsFormProps) {
     setPasswordStrength(0);
   };
 
-  const getPasswordStrengthColor = () => {
-    if (passwordStrength < 50) return "bg-red-500";
-    if (passwordStrength < 75) return "bg-yellow-500";
-    return "bg-green-500";
-  };
+  // Helper function for password strength color (used directly in JSX now)
+  // const getPasswordStrengthColor = () => {
+  //   if (passwordStrength < 50) return "bg-red-500";
+  //   if (passwordStrength < 75) return "bg-yellow-500";
+  //   return "bg-green-500";
+  // };
 
   return (
-    <div>
-      <div className="px-6 py-5 border-b border-gray-100 dark:border-gray-700 flex items-center gap-4 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-750">
-        <KeyIcon className="h-7 w-7 text-indigo-600 dark:text-indigo-400" />
+    <div className="bg-white dark:bg-gray-800">
+      <div className="px-8 py-6 border-b border-gray-100 dark:border-gray-700 flex items-center gap-4 bg-gradient-to-r from-indigo-50 to-white dark:from-gray-800 dark:to-gray-750">
+        <div className="p-2.5 rounded-full bg-indigo-100 dark:bg-indigo-900/30">
+          <KeyIcon className="h-7 w-7 text-indigo-600 dark:text-indigo-400" />
+        </div>
         <div>
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
             Ubah Password
@@ -100,86 +105,191 @@ export default function PasswordSettingsForm(props: PasswordSettingsFormProps) {
         </div>
       </div>
 
-      <form className="p-6 space-y-6" onSubmit={handlePasswordSubmit}>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          <div className="space-y-2 sm:col-span-2">
-            <label
-              htmlFor="current-password"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Password Saat Ini
-            </label>
-            <input
-              type="password"
-              name="current-password"
-              id="current-password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-gray-50 dark:bg-gray-700 hover:bg-white dark:hover:bg-gray-600 dark:text-gray-100"
-              placeholder="Masukkan password saat ini"
-              required
-              autoComplete="current-password"
-            />
-          </div>
+      <form className="p-8 space-y-8" onSubmit={handlePasswordSubmit}>
+        <div className="max-w-3xl mx-auto bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+            Pengaturan Password
+          </h3>
 
-          <div className="space-y-2">
-            <label
-              htmlFor="new-password"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Password Baru
-            </label>
-            <input
-              type="password"
-              name="new-password"
-              id="new-password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-gray-50 dark:bg-gray-700 hover:bg-white dark:hover:bg-gray-600 dark:text-gray-100"
-              placeholder="Masukkan password baru"
-              required
-              autoComplete="new-password"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label
-              htmlFor="confirm-password"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Konfirmasi Password Baru
-            </label>
-            <input
-              type="password"
-              name="confirm-password"
-              id="confirm-password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-gray-50 dark:bg-gray-700 hover:bg-white dark:hover:bg-gray-600 dark:text-gray-100"
-              placeholder="Konfirmasi password baru"
-              required
-              autoComplete="new-password"
-            />
-          </div>
-
-          {/* Password Strength Indicator */}
-          {newPassword && (
-            <div className="sm:col-span-2 space-y-1">
-              <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                Kekuatan Password:
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div className="space-y-2 sm:col-span-2">
+              <label
+                htmlFor="current-password"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
+                Password Saat Ini
               </label>
-              <Progress value={passwordStrength} className="h-2" />
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                {passwordStrength < 50 && "Lemah"}
-                {passwordStrength >= 50 && passwordStrength < 75 && "Sedang"}
-                {passwordStrength >= 75 && "Kuat"}
-              </p>
+              <div className="relative">
+                <input
+                  type="password"
+                  name="current-password"
+                  id="current-password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white dark:bg-gray-700 hover:bg-white dark:hover:bg-gray-600 dark:text-gray-100"
+                  placeholder="Masukkan password saat ini"
+                  required
+                  autoComplete="current-password"
+                />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                    />
+                  </svg>
+                </div>
+              </div>
             </div>
-          )}
+
+            <div className="space-y-2">
+              <label
+                htmlFor="new-password"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
+                Password Baru
+              </label>
+              <div className="relative">
+                <input
+                  type="password"
+                  name="new-password"
+                  id="new-password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white dark:bg-gray-700 hover:bg-white dark:hover:bg-gray-600 dark:text-gray-100"
+                  placeholder="Masukkan password baru"
+                  required
+                  autoComplete="new-password"
+                />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label
+                htmlFor="confirm-password"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
+                Konfirmasi Password Baru
+              </label>
+              <div className="relative">
+                <input
+                  type="password"
+                  name="confirm-password"
+                  id="confirm-password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white dark:bg-gray-700 hover:bg-white dark:hover:bg-gray-600 dark:text-gray-100"
+                  placeholder="Konfirmasi password baru"
+                  required
+                  autoComplete="new-password"
+                />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Password Strength Indicator */}
+            {newPassword && (
+              <div className="sm:col-span-2 space-y-2 mt-2 bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-100 dark:border-gray-700">
+                <div className="flex justify-between items-center">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Kekuatan Password:
+                  </label>
+                  <span
+                    className={`text-xs font-medium px-2 py-1 rounded-full ${passwordStrength < 50 ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300" : passwordStrength < 75 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300" : "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"}`}
+                  >
+                    {passwordStrength < 50 && "Lemah"}
+                    {passwordStrength >= 50 &&
+                      passwordStrength < 75 &&
+                      "Sedang"}
+                    {passwordStrength >= 75 && "Kuat"}
+                  </span>
+                </div>
+                <Progress
+                  value={passwordStrength}
+                  className={`h-2 ${passwordStrength < 50 ? "bg-red-100 dark:bg-red-900/30" : passwordStrength < 75 ? "bg-yellow-100 dark:bg-yellow-900/30" : "bg-green-100 dark:bg-green-900/30"}`}
+                />
+
+                <div className="grid grid-cols-2 gap-2 mt-3">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`w-4 h-4 rounded-full ${newPassword.length >= 8 ? "bg-green-500" : "bg-gray-300 dark:bg-gray-600"}`}
+                    ></div>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      Minimal 8 karakter
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`w-4 h-4 rounded-full ${/[A-Z]/.test(newPassword) ? "bg-green-500" : "bg-gray-300 dark:bg-gray-600"}`}
+                    ></div>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      Huruf besar
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`w-4 h-4 rounded-full ${/[0-9]/.test(newPassword) ? "bg-green-500" : "bg-gray-300 dark:bg-gray-600"}`}
+                    ></div>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      Angka
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`w-4 h-4 rounded-full ${/[^A-Za-z0-9]/.test(newPassword) ? "bg-green-500" : "bg-gray-300 dark:bg-gray-600"}`}
+                    ></div>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      Karakter khusus
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
+        {/* Notifications */}
         {passwordSuccess && (
-          <div className="rounded-lg bg-green-50 dark:bg-green-900/20 p-4 animate-fade-in">
+          <div className="rounded-lg bg-green-50 dark:bg-green-900/20 p-4 border border-green-100 dark:border-green-800/30 shadow-sm animate-fade-in">
             <div className="flex items-center">
               <CheckCircleIcon className="h-5 w-5 text-green-500 dark:text-green-400" />
               <p className="ml-3 text-sm font-medium text-green-800 dark:text-green-300">
@@ -190,7 +300,7 @@ export default function PasswordSettingsForm(props: PasswordSettingsFormProps) {
         )}
 
         {passwordError && (
-          <div className="rounded-lg bg-red-50 dark:bg-red-900/20 p-4 animate-fade-in">
+          <div className="rounded-lg bg-red-50 dark:bg-red-900/20 p-4 border border-red-100 dark:border-red-800/30 shadow-sm animate-fade-in">
             <div className="flex items-center">
               <ExclamationCircleIcon className="h-5 w-5 text-red-500 dark:text-red-400" />
               <p className="ml-3 text-sm font-medium text-red-800 dark:text-red-300">
@@ -200,7 +310,8 @@ export default function PasswordSettingsForm(props: PasswordSettingsFormProps) {
           </div>
         )}
 
-        <div className="flex justify-end gap-4 pt-4">
+        {/* Action Buttons */}
+        <div className="flex justify-end gap-4 pt-4 border-t border-gray-100 dark:border-gray-700 mt-8">
           <button
             type="button"
             onClick={handleReset}
