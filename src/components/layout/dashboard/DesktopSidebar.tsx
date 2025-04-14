@@ -38,13 +38,21 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
                   <TooltipTrigger asChild>
                     <button
                       onClick={toggleCollapse}
-                      className="relative flex justify-center items-center h-8 w-8 text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300 ease-in-out"
+                      className="group flex items-center rounded-md px-1 py-2 text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer w-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                       aria-label="Perluas Menu"
                     >
-                      <ChevronRightIcon
-                        className="h-5 w-5"
-                        aria-hidden="true"
-                      />
+                      {/* Icon container - always fixed width */}
+                      <div className="w-6 flex-shrink-0 flex justify-center">
+                        <ChevronRightIcon
+                          className="h-6 w-6 transition-all duration-300 ease-in-out"
+                          aria-hidden="true"
+                        />
+                      </div>
+
+                      {/* Hidden text container */}
+                      <div className="opacity-0 w-0 overflow-hidden ml-3">
+                        <span className="truncate">Perluas Menu</span>
+                      </div>
                     </button>
                   </TooltipTrigger>
                   <TooltipContent side="right" sideOffset={5}>
@@ -55,14 +63,21 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
             ) : (
               <button
                 onClick={toggleCollapse}
-                className="flex items-center gap-2 px-3 py-1.5 text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300 ease-in-out"
+                className="group flex items-center rounded-md px-2 py-2 text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer w-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                 aria-label="Perkecil Menu"
               >
-                <span className="text-sm font-medium">Perkecil Menu</span>
-                <ChevronLeftIcon
-                  className="h-5 w-5 flex-shrink-0"
-                  aria-hidden="true"
-                />
+                {/* Icon container - always fixed width */}
+                <div className="w-6 flex-shrink-0 flex justify-center">
+                  <ChevronLeftIcon
+                    className="h-6 w-6 transition-all duration-300 ease-in-out"
+                    aria-hidden="true"
+                  />
+                </div>
+
+                {/* Text container */}
+                <div className="ml-3 flex-1 transition-all duration-300 ease-in-out">
+                  <span className="truncate">Perkecil Menu</span>
+                </div>
               </button>
             )}
           </div>

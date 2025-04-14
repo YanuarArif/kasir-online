@@ -58,7 +58,7 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
         setMenuPosition({
           top: 0,
           left: rect.left + 0, // Adjust left position based on collapsed state
-          bottom: window.innerHeight - rect.bottom + (isCollapsed ? 50 : 70), // Align with bottom of button and adjust up
+          bottom: window.innerHeight - rect.bottom + 50, // Align with bottom of button and adjust up
         });
       } else {
         setMenuPosition({
