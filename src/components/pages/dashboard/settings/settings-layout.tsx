@@ -97,23 +97,26 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
   }, [pathname, router]);
 
   return (
-    <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    // Removed max-w-7xl and mx-auto for full width, kept padding for margins
+    <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-8 px-4 sm:px-6 lg:px-8 py-8">
       {/* Settings Sidebar */}
-      <aside className="lg:w-1/4">
+      {/* Adjusted width for medium screens */}
+      <aside className="w-full md:w-1/3 lg:w-1/4">
         <div className="sticky top-8 space-y-6">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden">
-            <div className="px-6 py-5 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-750">
+          {/* Refined card styling: softer shadow, simpler background */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+            {/* Simplified header */}
+            <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-3">
-                <Cog6ToothIcon className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
-                <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                <Cog6ToothIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                <h2 className="text-base font-semibold text-gray-800 dark:text-gray-200">
                   Pengaturan
                 </h2>
               </div>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Kelola preferensi dan pengaturan akun Anda
-              </p>
             </div>
-            <nav className="p-4 space-y-1">
+            <nav className="p-3 space-y-1">
+              {" "}
+              {/* Reduced padding */}
               {settingsNavItems.map((item) => {
                 // If the item has roles restriction, wrap it in PermissionCheck
                 if (item.roles) {
@@ -122,24 +125,27 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
                       <Link
                         href={item.href}
                         className={cn(
-                          "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
+                          "group flex items-start gap-3 px-3 py-2.5 rounded-md transition-colors duration-150 text-sm", // Adjusted padding, text size
                           activeTab === item.href
-                            ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300"
-                            : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                            ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-medium" // Enhanced active state
+                            : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/60 hover:text-gray-900 dark:hover:text-gray-100" // Subtle hover
                         )}
                         onClick={() => setActiveTab(item.href)}
                       >
                         <item.icon
                           className={cn(
-                            "h-5 w-5",
+                            "h-5 w-5 mt-0.5 flex-shrink-0", // Added margin-top for alignment
                             activeTab === item.href
                               ? "text-indigo-600 dark:text-indigo-400"
-                              : "text-gray-500 dark:text-gray-400"
+                              : "text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400" // Icon hover color
                           )}
                         />
-                        <div>
+                        <div className="flex-grow">
+                          {" "}
+                          {/* Allow text to wrap */}
                           <div className="font-medium">{item.title}</div>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 hidden lg:block">
+                          {/* Show description on medium screens and up */}
+                          <p className="text-xs text-gray-500 dark:text-gray-400/80 mt-0.5 hidden md:block">
                             {item.description}
                           </p>
                         </div>
@@ -154,24 +160,27 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
+                      "group flex items-start gap-3 px-3 py-2.5 rounded-md transition-colors duration-150 text-sm", // Adjusted padding, text size
                       activeTab === item.href
-                        ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300"
-                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                        ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-medium" // Enhanced active state
+                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/60 hover:text-gray-900 dark:hover:text-gray-100" // Subtle hover
                     )}
                     onClick={() => setActiveTab(item.href)}
                   >
                     <item.icon
                       className={cn(
-                        "h-5 w-5",
+                        "h-5 w-5 mt-0.5 flex-shrink-0", // Added margin-top for alignment
                         activeTab === item.href
                           ? "text-indigo-600 dark:text-indigo-400"
-                          : "text-gray-500 dark:text-gray-400"
+                          : "text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400" // Icon hover color
                       )}
                     />
-                    <div>
+                    <div className="flex-grow">
+                      {" "}
+                      {/* Allow text to wrap */}
                       <div className="font-medium">{item.title}</div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 hidden lg:block">
+                      {/* Show description on medium screens and up */}
+                      <p className="text-xs text-gray-500 dark:text-gray-400/80 mt-0.5 hidden md:block">
                         {item.description}
                       </p>
                     </div>
@@ -185,7 +194,8 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
 
       {/* Main Content */}
       <main className="flex-1">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden">
+        {/* Refined card styling to match sidebar */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
           {children}
         </div>
       </main>
