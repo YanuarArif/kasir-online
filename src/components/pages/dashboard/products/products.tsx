@@ -13,12 +13,27 @@ import {
   ClockIcon,
   BuildingStorefrontIcon,
   ArchiveBoxIcon,
+  FunnelIcon,
+  ArrowDownTrayIcon,
+  ArrowUpTrayIcon,
+  AdjustmentsHorizontalIcon,
+  EyeIcon,
+  EyeSlashIcon,
 } from "@heroicons/react/24/outline";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { SummaryCard } from "@/components/dashboard/summary-card";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
 interface Category {
   id: string;
@@ -61,6 +76,18 @@ const ProductsPage: NextPage<ProductsPageProps> = ({
   const [mainTab, setMainTab] = useState("products");
   const [subTab, setSubTab] = useState("all-products");
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+
+  // Column visibility state
+  const [columnVisibility, setColumnVisibility] = useState({
+    name: true,
+    sku: true,
+    category: true,
+    price: true,
+    stock: true,
+    cost: true,
+    sellPrice: true,
+    discountPrice: true,
+  });
 
   // Filter products based on search term and active tabs
   useEffect(() => {
@@ -187,28 +214,168 @@ const ProductsPage: NextPage<ProductsPageProps> = ({
 
               <TabsContent value="all-products" className="space-y-6">
                 {/* Header Actions */}
-                <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                  <div className="relative flex-grow w-full sm:w-auto">
-                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                      <MagnifyingGlassIcon
-                        className="h-5 w-5 text-gray-400 dark:text-gray-500"
-                        aria-hidden="true"
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex flex-wrap items-center gap-2">
+                    {/* Column Visibility Dropdown */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger className="inline-flex items-center justify-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        <AdjustmentsHorizontalIcon className="mr-2 h-5 w-5" />
+                        Kolom yang ditampilkan
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="w-56">
+                        <DropdownMenuLabel>Pilih Kolom</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuCheckboxItem
+                          checked={columnVisibility.name}
+                          onCheckedChange={(checked) =>
+                            setColumnVisibility((prev) => ({
+                              ...prev,
+                              name: checked,
+                            }))
+                          }
+                        >
+                          Nama Produk
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                          checked={columnVisibility.sku}
+                          onCheckedChange={(checked) =>
+                            setColumnVisibility((prev) => ({
+                              ...prev,
+                              sku: checked,
+                            }))
+                          }
+                        >
+                          Kode Produk
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                          checked={columnVisibility.category}
+                          onCheckedChange={(checked) =>
+                            setColumnVisibility((prev) => ({
+                              ...prev,
+                              category: checked,
+                            }))
+                          }
+                        >
+                          Kategori Produk
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                          checked={columnVisibility.price}
+                          onCheckedChange={(checked) =>
+                            setColumnVisibility((prev) => ({
+                              ...prev,
+                              price: checked,
+                            }))
+                          }
+                        >
+                          Harga
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                          checked={columnVisibility.stock}
+                          onCheckedChange={(checked) =>
+                            setColumnVisibility((prev) => ({
+                              ...prev,
+                              stock: checked,
+                            }))
+                          }
+                        >
+                          Total Stok
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                          checked={columnVisibility.cost}
+                          onCheckedChange={(checked) =>
+                            setColumnVisibility((prev) => ({
+                              ...prev,
+                              cost: checked,
+                            }))
+                          }
+                        >
+                          Harga Beli
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                          checked={columnVisibility.sellPrice}
+                          onCheckedChange={(checked) =>
+                            setColumnVisibility((prev) => ({
+                              ...prev,
+                              sellPrice: checked,
+                            }))
+                          }
+                        >
+                          Harga Jual
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                          checked={columnVisibility.discountPrice}
+                          onCheckedChange={(checked) =>
+                            setColumnVisibility((prev) => ({
+                              ...prev,
+                              discountPrice: checked,
+                            }))
+                          }
+                        >
+                          Harga Diskon
+                        </DropdownMenuCheckboxItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    {/* Filter Button */}
+                    <button
+                      onClick={() =>
+                        toast.info("Fitur filter akan segera hadir!")
+                      }
+                      className="inline-flex items-center justify-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    >
+                      <FunnelIcon className="mr-2 h-5 w-5" />
+                      Filter
+                    </button>
+
+                    {/* Import Button */}
+                    <button
+                      onClick={() =>
+                        toast.info("Fitur import akan segera hadir!")
+                      }
+                      className="inline-flex items-center justify-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    >
+                      <ArrowUpTrayIcon className="mr-2 h-5 w-5" />
+                      Import
+                    </button>
+
+                    {/* Export Button */}
+                    <button
+                      onClick={() =>
+                        toast.info("Fitur export akan segera hadir!")
+                      }
+                      className="inline-flex items-center justify-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    >
+                      <ArrowDownTrayIcon className="mr-2 h-5 w-5" />
+                      Export
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
+                    {/* Search Input */}
+                    <div className="relative flex-grow">
+                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <MagnifyingGlassIcon
+                          className="h-5 w-5 text-gray-400 dark:text-gray-500"
+                          aria-hidden="true"
+                        />
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="Cari Produk"
+                        className="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 py-2 pl-10 pr-3 leading-5 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:border-indigo-500 dark:focus:border-indigo-400 focus:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                       />
                     </div>
-                    <input
-                      type="text"
-                      placeholder="Cari Produk (Nama, ID, SKU)"
-                      className="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 py-2 pl-10 pr-3 leading-5 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:border-indigo-500 dark:focus:border-indigo-400 focus:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+
+                    {/* Add Product Button */}
+                    <Link href="/dashboard/products/new" legacyBehavior>
+                      <a className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        <PlusIcon className="mr-2 h-5 w-5" />
+                        Tambah
+                      </a>
+                    </Link>
                   </div>
-                  <Link href="/dashboard/products/new" legacyBehavior>
-                    <a className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 w-full sm:w-auto">
-                      <PlusIcon className="mr-2 h-5 w-5" />
-                      Tambah Produk Baru
-                    </a>
-                  </Link>
                 </div>
 
                 {/* Products List */}
@@ -218,30 +385,46 @@ const ProductsPage: NextPage<ProductsPageProps> = ({
                     <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                       <thead className="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-700">
                         <tr>
-                          <th scope="col" className="px-6 py-3">
-                            Nama Produk
-                          </th>
-                          <th scope="col" className="px-6 py-3">
-                            Kode Produk
-                          </th>
-                          <th scope="col" className="px-6 py-3">
-                            Kategori Produk
-                          </th>
-                          <th scope="col" className="px-6 py-3">
-                            Harga
-                          </th>
-                          <th scope="col" className="px-6 py-3">
-                            Total Stok
-                          </th>
-                          <th scope="col" className="px-6 py-3">
-                            Harga Beli
-                          </th>
-                          <th scope="col" className="px-6 py-3">
-                            Harga Jual
-                          </th>
-                          <th scope="col" className="px-6 py-3">
-                            Harga Diskon
-                          </th>
+                          {columnVisibility.name && (
+                            <th scope="col" className="px-6 py-3">
+                              Nama Produk
+                            </th>
+                          )}
+                          {columnVisibility.sku && (
+                            <th scope="col" className="px-6 py-3">
+                              Kode Produk
+                            </th>
+                          )}
+                          {columnVisibility.category && (
+                            <th scope="col" className="px-6 py-3">
+                              Kategori Produk
+                            </th>
+                          )}
+                          {columnVisibility.price && (
+                            <th scope="col" className="px-6 py-3">
+                              Harga
+                            </th>
+                          )}
+                          {columnVisibility.stock && (
+                            <th scope="col" className="px-6 py-3">
+                              Total Stok
+                            </th>
+                          )}
+                          {columnVisibility.cost && (
+                            <th scope="col" className="px-6 py-3">
+                              Harga Beli
+                            </th>
+                          )}
+                          {columnVisibility.sellPrice && (
+                            <th scope="col" className="px-6 py-3">
+                              Harga Jual
+                            </th>
+                          )}
+                          {columnVisibility.discountPrice && (
+                            <th scope="col" className="px-6 py-3">
+                              Harga Diskon
+                            </th>
+                          )}
                           <th scope="col" className="px-6 py-3 text-right">
                             <span className="sr-only">Aksi</span>
                           </th>
@@ -254,32 +437,48 @@ const ProductsPage: NextPage<ProductsPageProps> = ({
                               key={product.id}
                               className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                             >
-                              <td className="px-6 py-4 font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">
-                                {product.name}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
-                                {product.sku || "-"}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
-                                {product.category?.name || "-"}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
-                                Rp {product.price.toLocaleString("id-ID")}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
-                                {getStockStatusBadge(product.stock)}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
-                                {product.cost
-                                  ? `Rp ${product.cost.toLocaleString("id-ID")}`
-                                  : "-"}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
-                                Rp {product.price.toLocaleString("id-ID")}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
-                                -
-                              </td>
+                              {columnVisibility.name && (
+                                <td className="px-6 py-4 font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">
+                                  {product.name}
+                                </td>
+                              )}
+                              {columnVisibility.sku && (
+                                <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
+                                  {product.sku || "-"}
+                                </td>
+                              )}
+                              {columnVisibility.category && (
+                                <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
+                                  {product.category?.name || "-"}
+                                </td>
+                              )}
+                              {columnVisibility.price && (
+                                <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
+                                  Rp {product.price.toLocaleString("id-ID")}
+                                </td>
+                              )}
+                              {columnVisibility.stock && (
+                                <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
+                                  {getStockStatusBadge(product.stock)}
+                                </td>
+                              )}
+                              {columnVisibility.cost && (
+                                <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
+                                  {product.cost
+                                    ? `Rp ${product.cost.toLocaleString("id-ID")}`
+                                    : "-"}
+                                </td>
+                              )}
+                              {columnVisibility.sellPrice && (
+                                <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
+                                  Rp {product.price.toLocaleString("id-ID")}
+                                </td>
+                              )}
+                              {columnVisibility.discountPrice && (
+                                <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
+                                  -
+                                </td>
+                              )}
                               <td className="px-6 py-4 text-right whitespace-nowrap space-x-3">
                                 <Link
                                   href={`/dashboard/products/${product.id}`}
@@ -295,7 +494,10 @@ const ProductsPage: NextPage<ProductsPageProps> = ({
                         ) : (
                           <tr>
                             <td
-                              colSpan={9}
+                              colSpan={
+                                Object.values(columnVisibility).filter(Boolean)
+                                  .length + 1
+                              }
                               className="px-6 py-4 text-center text-gray-500 dark:text-gray-400"
                             >
                               {searchTerm
