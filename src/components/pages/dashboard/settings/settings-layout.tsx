@@ -98,7 +98,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
 
   return (
     // Removed max-w-7xl and mx-auto for full width, kept padding for margins
-    <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-8 px-4 sm:px-6 lg:px-8 py-8">
+    <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-8 py-2">
       {/* Settings Sidebar */}
       {/* Adjusted width for medium screens */}
       <aside className="w-full md:w-1/3 lg:w-1/4">
