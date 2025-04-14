@@ -106,6 +106,137 @@ export const getPurchaseReportData = async (dateRange: string) => {
   }
 };
 
+// Function to get sales report data
+export const getSalesReportData = async (dateRange: string) => {
+  try {
+    const effectiveUserId = await getEffectiveUserId();
+    if (!effectiveUserId) {
+      return { error: "Tidak terautentikasi!" };
+    }
+
+    const { startDate, endDate } = getDateRange(dateRange);
+
+    const sales = await db.sale.findMany({
+      where: {
+        userId: effectiveUserId,
+        saleDate: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      include: {
+        items: true, // Include the full items relation
+      },
+      orderBy: {
+        saleDate: "desc",
+      },
+    });
+
+    const salesData = sales.map((sale) => {
+      const totalItems = sale.items.reduce(
+        (sum: number, item: { quantity: number }) => sum + item.quantity,
+        0
+      );
+      return {
+        id: sale.id,
+        date: sale.saleDate.toISOString(),
+        customer: "Pelanggan Umum", // Defaulting as customer is not directly linked
+        items: totalItems,
+        total: sale.totalAmount.toNumber(),
+        // paymentMethod is not available on the Sale model
+      };
+    });
+
+    return {
+      success: true,
+      data: salesData,
+    };
+  } catch (error) {
+    console.error("Error fetching sales report data:", error);
+    return {
+      error: "Gagal mengambil data laporan penjualan.",
+    };
+  }
+};
+
+// Function to get product report data
+export const getProductReportData = async (dateRange: string) => {
+  try {
+    const effectiveUserId = await getEffectiveUserId();
+    if (!effectiveUserId) {
+      return { error: "Tidak terautentikasi!" };
+    }
+
+    const { startDate, endDate } = getDateRange(dateRange);
+
+    // Fetch all products for the user
+    const products = await db.product.findMany({
+      where: {
+        userId: effectiveUserId,
+      },
+      include: {
+        category: {
+          select: { name: true },
+        },
+        saleItems: {
+          where: {
+            sale: {
+              saleDate: {
+                gte: startDate,
+                lte: endDate,
+              },
+            },
+          },
+          select: {
+            quantity: true,
+            priceAtSale: true,
+          },
+        },
+        // We might need purchaseItems if we want to calculate profit based on costAtPurchase
+        // purchaseItems: {
+        //   where: { purchase: { purchaseDate: { gte: startDate, lte: endDate } } },
+        //   select: { quantity: true, costAtPurchase: true }
+        // }
+      },
+    });
+
+    const productData = products.map((product) => {
+      const totalSold = product.saleItems.reduce(
+        (sum: number, item: { quantity: number }) => sum + item.quantity,
+        0
+      );
+      const totalRevenue = product.saleItems.reduce(
+        (sum: number, item: { quantity: number; priceAtSale: any }) =>
+          sum + item.quantity * item.priceAtSale.toNumber(),
+        0
+      );
+      // Basic profit calculation (Revenue - Cost * Sold). Requires cost on Product model.
+      const totalCost = product.cost ? product.cost.toNumber() * totalSold : 0;
+      const totalProfit = totalRevenue - totalCost;
+
+      return {
+        id: product.id,
+        name: product.name,
+        category: product.category?.name || "Tidak ada kategori",
+        stock: product.stock,
+        sold: totalSold,
+        revenue: totalRevenue,
+        profit: totalProfit, // This depends on having a 'cost' field on the Product model
+      };
+    });
+
+    return {
+      success: true,
+      data: productData,
+    };
+  } catch (error) {
+    console.error("Error fetching product report data:", error);
+    return {
+      error: "Gagal mengambil data laporan produk.",
+    };
+  }
+};
+
 // Function to get purchase chart data
 export const getPurchaseChartData = async (dateRange: string) => {
   try {
@@ -147,10 +278,12 @@ export const getPurchaseChartData = async (dateRange: string) => {
       monthlyData.set(month, currentTotal + purchase.totalAmount.toNumber());
     });
 
-    const trendData = Array.from(monthlyData.entries()).map(([name, total]) => ({
-      name,
-      total,
-    }));
+    const trendData = Array.from(monthlyData.entries()).map(
+      ([name, total]) => ({
+        name,
+        total,
+      })
+    );
 
     // Group purchases by supplier for pie chart
     const supplierData = new Map<string, number>();
