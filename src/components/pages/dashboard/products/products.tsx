@@ -31,11 +31,9 @@ interface ProductsPageProps {
   categories: Category[]; // Keep categories if needed for filtering/display elsewhere
 }
 
-const ProductsPage: NextPage<ProductsPageProps> = ({
-  products,
-  stockCounts,
-  categories,
-}) => {
+const ProductsPage: NextPage<ProductsPageProps> = (props) => {
+  const { products, stockCounts } = props;
+  // categories is available in props but not currently used
   const [searchTerm, setSearchTerm] = useState("");
   const [mainTab, setMainTab] = useState("products");
   const [subTab, setSubTab] = useState("all-products");

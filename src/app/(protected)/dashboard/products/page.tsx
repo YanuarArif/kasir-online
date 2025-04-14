@@ -29,10 +29,8 @@ const Products = async () => {
       });
     }
 
-    // If no products were found, it could be due to authentication issues
-    if (!serializedProducts || serializedProducts.length === 0) {
-      return <p>Error: Tidak dapat mengambil data produk.</p>;
-    }
+    // Always render the ProductsPage component, even if no products were found
+    // The ProductTableDesktop and ProductListMobile components will handle showing appropriate messages
 
     return (
       <ProductsPage
