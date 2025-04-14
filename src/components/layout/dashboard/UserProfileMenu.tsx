@@ -22,6 +22,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { classNames } from "./SidebarNavigation";
+import { createPortal } from "react-dom";
 
 interface UserProfileMenuProps {
   isCollapsed?: boolean;
@@ -34,6 +35,12 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
 }) => {
   const [isPending, startTransition] = useTransition();
   const { data: session } = useSession();
+  const [menuPosition, setMenuPosition] = React.useState({
+    top: 0,
+    left: 0,
+    bottom: 0,
+  });
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
 
   const handleLogout = () => {
     startTransition(() => {
@@ -42,7 +49,25 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
   };
 
   const isSidebar = position === "sidebar";
-  const isTopbar = position === "topbar";
+  // Calculate position when menu opens
+  const updatePosition = () => {
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      if (isSidebar) {
+        setMenuPosition({
+          top: 0,
+          left: rect.left + rect.width - 40,
+          bottom: window.innerHeight - rect.top + 15, // Move up by 40px
+        });
+      } else {
+        setMenuPosition({
+          top: rect.bottom + 5,
+          left: rect.right - 224, // 224px is the width of the menu (w-56)
+          bottom: 0,
+        });
+      }
+    }
+  };
 
   return (
     <Menu
@@ -58,7 +83,10 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
         {isCollapsed && isSidebar ? (
           <Tooltip>
             <TooltipTrigger asChild>
-              <Menu.Button className="flex items-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-800 rounded-full">
+              <Menu.Button
+                ref={buttonRef}
+                className="flex items-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-800 rounded-full"
+              >
                 <span className="sr-only">Open user menu</span>
                 {session?.user?.image ? (
                   <div className="inline-block h-9 w-9 overflow-hidden rounded-full bg-gray-600 dark:bg-gray-700 ring-2 ring-white dark:ring-gray-500 ring-opacity-50">
@@ -83,6 +111,7 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
           </Tooltip>
         ) : (
           <Menu.Button
+            ref={buttonRef}
             className={classNames(
               "flex items-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2",
               isSidebar
@@ -138,7 +167,7 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
             : "opacity-100"
         )}
       >
-        <p className="text-sm font-medium text-white dark:text-gray-100 truncate leading-tight">
+        <p className="text-sm font-medium text-black dark:text-gray-100 truncate leading-tight">
           {session?.user?.name || session?.user?.email || "User"}
         </p>
         {/* Optionally show email if different from name */}
@@ -152,150 +181,158 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
       </div>
 
       {/* Dropdown Menu */}
-      <Transition
-        as={Fragment}
-        enter="transition ease-out duration-100"
-        enterFrom="transform opacity-0 scale-95"
-        enterTo="transform opacity-100 scale-100"
-        leave="transition ease-in duration-75"
-        leaveFrom="transform opacity-100 scale-100"
-        leaveTo="transform opacity-0 scale-95"
-      >
-        <Menu.Items
-          className={classNames(
-            "absolute z-20 w-56 rounded-lg bg-white dark:bg-gray-800 py-2 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-gray-100 dark:divide-gray-700",
-            isSidebar
-              ? "bottom-full left-0 mb-2 origin-bottom-left"
-              : "right-0 top-full mt-2 origin-top-right"
-          )}
-        >
-          {/* User info section */}
-          <div className="px-4 py-3">
-            <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-              {session?.user?.name || session?.user?.email || "User"}
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-1">
-              {session?.user?.email || ""}
-            </p>
-            {/* Show role badge */}
-            {session?.user?.role && (
-              <div className="mt-2 flex items-center">
-                <RoleBadge
-                  role={session.user.role}
-                  isEmployee={!!session.user.isEmployee}
-                  size="sm"
-                />
+      {typeof document !== "undefined" &&
+        createPortal(
+          <Transition
+            as={Fragment}
+            enter="transition ease-out duration-100"
+            enterFrom="transform opacity-0 scale-95"
+            enterTo="transform opacity-100 scale-100"
+            leave="transition ease-in duration-75"
+            leaveFrom="transform opacity-100 scale-100"
+            leaveTo="transform opacity-0 scale-95"
+            afterEnter={updatePosition}
+          >
+            <Menu.Items
+              className={classNames(
+                "fixed z-50 w-56 rounded-lg bg-white dark:bg-gray-800 py-2 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-gray-100 dark:divide-gray-700",
+                isSidebar ? "origin-bottom-left" : "origin-top-right"
+              )}
+              style={{
+                bottom: isSidebar ? menuPosition.bottom : "auto",
+                left: menuPosition.left,
+                top: isSidebar ? "auto" : menuPosition.top,
+              }}
+            >
+              {/* User info section */}
+              <div className="px-4 py-3">
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                  {session?.user?.name || session?.user?.email || "User"}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-1">
+                  {session?.user?.email || ""}
+                </p>
+                {/* Show role badge */}
+                {session?.user?.role && (
+                  <div className="mt-2 flex items-center">
+                    <RoleBadge
+                      role={session.user.role}
+                      isEmployee={!!session.user.isEmployee}
+                      size="sm"
+                    />
+                  </div>
+                )}
               </div>
-            )}
-          </div>
 
-          {/* Menu items */}
-          <div className="py-1">
-            <Menu.Item>
-              {({ active }) => (
-                <Link
-                  href="/dashboard/profile"
-                  className={classNames(
-                    active ? "bg-gray-50 dark:bg-gray-700" : "",
-                    "flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
+              {/* Menu items */}
+              <div className="py-1">
+                <Menu.Item>
+                  {({ active }) => (
+                    <Link
+                      href="/dashboard/profile"
+                      className={classNames(
+                        active ? "bg-gray-50 dark:bg-gray-700" : "",
+                        "flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
+                      )}
+                    >
+                      <UserIcon
+                        className="mr-3 h-5 w-5 text-gray-400 dark:text-gray-300"
+                        aria-hidden="true"
+                      />
+                      {isSidebar ? "Lihat Profil" : "Profil"}
+                    </Link>
                   )}
-                >
-                  <UserIcon
-                    className="mr-3 h-5 w-5 text-gray-400 dark:text-gray-300"
-                    aria-hidden="true"
-                  />
-                  {isSidebar ? "Lihat Profil" : "Profil"}
-                </Link>
-              )}
-            </Menu.Item>
-            <Menu.Item>
-              {({ active }) => (
-                <Link
-                  href="/dashboard/settings/account"
-                  className={classNames(
-                    active ? "bg-gray-50 dark:bg-gray-700" : "",
-                    "flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
+                </Menu.Item>
+                <Menu.Item>
+                  {({ active }) => (
+                    <Link
+                      href="/dashboard/settings/account"
+                      className={classNames(
+                        active ? "bg-gray-50 dark:bg-gray-700" : "",
+                        "flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
+                      )}
+                    >
+                      <Cog6ToothIcon
+                        className="mr-3 h-5 w-5 text-gray-400 dark:text-gray-300"
+                        aria-hidden="true"
+                      />
+                      {isSidebar ? "Pengaturan Akun" : "Pengaturan"}
+                    </Link>
                   )}
-                >
-                  <Cog6ToothIcon
-                    className="mr-3 h-5 w-5 text-gray-400 dark:text-gray-300"
-                    aria-hidden="true"
-                  />
-                  {isSidebar ? "Pengaturan Akun" : "Pengaturan"}
-                </Link>
-              )}
-            </Menu.Item>
+                </Menu.Item>
 
-            {/* Only show Employees link for OWNER */}
-            {session?.user?.role === Role.OWNER && (
-              <Menu.Item>
-                {({ active }) => (
-                  <Link
-                    href="/dashboard/settings/employees"
-                    className={classNames(
-                      active ? "bg-gray-50 dark:bg-gray-700" : "",
-                      "flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
+                {/* Only show Employees link for OWNER */}
+                {session?.user?.role === Role.OWNER && (
+                  <Menu.Item>
+                    {({ active }) => (
+                      <Link
+                        href="/dashboard/settings/employees"
+                        className={classNames(
+                          active ? "bg-gray-50 dark:bg-gray-700" : "",
+                          "flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
+                        )}
+                      >
+                        <UserGroupIcon
+                          className="mr-3 h-5 w-5 text-gray-400 dark:text-gray-300"
+                          aria-hidden="true"
+                        />
+                        {isSidebar ? "Kelola Karyawan" : "Karyawan"}
+                      </Link>
                     )}
-                  >
-                    <UserGroupIcon
-                      className="mr-3 h-5 w-5 text-gray-400 dark:text-gray-300"
-                      aria-hidden="true"
-                    />
-                    {isSidebar ? "Kelola Karyawan" : "Karyawan"}
-                  </Link>
+                  </Menu.Item>
                 )}
-              </Menu.Item>
-            )}
 
-            {/* Only show Billing for OWNER */}
-            {session?.user?.role === Role.OWNER && (
-              <Menu.Item>
-                {({ active }) => (
-                  <Link
-                    href="/dashboard/billing"
-                    className={classNames(
-                      active ? "bg-gray-50 dark:bg-gray-700" : "",
-                      "flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
+                {/* Only show Billing for OWNER */}
+                {session?.user?.role === Role.OWNER && (
+                  <Menu.Item>
+                    {({ active }) => (
+                      <Link
+                        href="/dashboard/billing"
+                        className={classNames(
+                          active ? "bg-gray-50 dark:bg-gray-700" : "",
+                          "flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
+                        )}
+                      >
+                        <ReceiptRefundIcon
+                          className="mr-3 h-5 w-5 text-gray-400 dark:text-gray-300"
+                          aria-hidden="true"
+                        />
+                        {isSidebar ? "Billing" : "Tagihan"}
+                      </Link>
                     )}
-                  >
-                    <ReceiptRefundIcon
-                      className="mr-3 h-5 w-5 text-gray-400 dark:text-gray-300"
-                      aria-hidden="true"
-                    />
-                    {isSidebar ? "Billing" : "Tagihan"}
-                  </Link>
+                  </Menu.Item>
                 )}
-              </Menu.Item>
-            )}
-          </div>
+              </div>
 
-          {/* Logout section */}
-          <div className="py-1">
-            <Menu.Item>
-              {({ active }) => (
-                <button
-                  onClick={handleLogout}
-                  disabled={isPending}
-                  className={classNames(
-                    active ? "bg-gray-50 dark:bg-gray-700" : "",
-                    "flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 disabled:opacity-50"
+              {/* Logout section */}
+              <div className="py-1">
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      onClick={handleLogout}
+                      disabled={isPending}
+                      className={classNames(
+                        active ? "bg-gray-50 dark:bg-gray-700" : "",
+                        "flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 disabled:opacity-50"
+                      )}
+                    >
+                      <ArrowRightOnRectangleIcon
+                        className="mr-3 h-5 w-5 text-gray-400 dark:text-gray-300"
+                        aria-hidden="true"
+                      />
+                      {isPending
+                        ? "Logging out..."
+                        : isSidebar
+                          ? "Logout"
+                          : "Keluar"}
+                    </button>
                   )}
-                >
-                  <ArrowRightOnRectangleIcon
-                    className="mr-3 h-5 w-5 text-gray-400 dark:text-gray-300"
-                    aria-hidden="true"
-                  />
-                  {isPending
-                    ? "Logging out..."
-                    : isSidebar
-                      ? "Logout"
-                      : "Keluar"}
-                </button>
-              )}
-            </Menu.Item>
-          </div>
-        </Menu.Items>
-      </Transition>
+                </Menu.Item>
+              </div>
+            </Menu.Items>
+          </Transition>,
+          document.body
+        )}
     </Menu>
   );
 };
