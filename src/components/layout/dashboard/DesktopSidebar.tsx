@@ -76,7 +76,7 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
         {/* User Profile Section at Bottom */}
         <div
           className={classNames(
-            "flex-shrink-0 border-t border-gray-200 dark:border-gray-700 p-3 bg-white dark:bg-gray-900 transition-all duration-300 ease-in-out",
+            "flex-shrink-0 border-t border-gray-200 dark:border-gray-700 p-1 bg-white dark:bg-gray-900 transition-all duration-300 ease-in-out",
             isCollapsed ? "flex justify-center" : "flex items-center"
           )}
         >

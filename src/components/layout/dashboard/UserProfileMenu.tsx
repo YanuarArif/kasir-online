@@ -54,10 +54,11 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
     if (buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
       if (isSidebar) {
+        // For sidebar position, align with the button
         setMenuPosition({
           top: 0,
-          left: rect.left + rect.width - 40,
-          bottom: window.innerHeight - rect.top + 15, // Move up by 40px
+          left: rect.left + 0, // Adjust left position based on collapsed state
+          bottom: window.innerHeight - rect.bottom + (isCollapsed ? 50 : 70), // Align with bottom of button and adjust up
         });
       } else {
         setMenuPosition({
@@ -79,106 +80,108 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
       }
     >
       {/* User Avatar Button */}
-      <div>
-        {isCollapsed && isSidebar ? (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Menu.Button
-                ref={buttonRef}
-                className="flex items-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-800 rounded-full"
-              >
-                <span className="sr-only">Open user menu</span>
-                {session?.user?.image ? (
-                  <div className="inline-block h-9 w-9 overflow-hidden rounded-full bg-gray-600 dark:bg-gray-700 ring-2 ring-white dark:ring-gray-500 ring-opacity-50">
-                    <Image
-                      src={session.user.image}
-                      alt={session.user.name || "User profile"}
-                      width={36}
-                      height={36}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                ) : (
-                  <span className="inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gray-600 dark:bg-gray-700 ring-2 ring-white dark:ring-gray-500 ring-opacity-50">
-                    <UserIcon className="h-6 w-6 text-gray-400 dark:text-gray-300" />
-                  </span>
-                )}
-              </Menu.Button>
-            </TooltipTrigger>
-            <TooltipContent side="right" sideOffset={5}>
-              <p>User Menu</p>
-            </TooltipContent>
-          </Tooltip>
-        ) : (
-          <Menu.Button
-            ref={buttonRef}
-            className={classNames(
-              "flex items-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2",
-              isSidebar
-                ? "focus:ring-offset-gray-800 rounded-full"
-                : "rounded-full bg-white dark:bg-gray-700 border-2 border-indigo-100 dark:border-gray-600 p-0.5 shadow-sm hover:shadow transition-all duration-200 h-9 w-9"
-            )}
-          >
-            <span className="sr-only">Open user menu</span>
-            {session?.user?.image ? (
-              <div
-                className={classNames(
-                  "inline-block h-9 w-9 overflow-hidden rounded-full",
-                  isSidebar
-                    ? "bg-gray-600 ring-2 ring-white ring-opacity-50"
-                    : "bg-gray-100"
-                )}
-              >
-                <Image
-                  src={session.user.image}
-                  alt={session.user.name || "User profile"}
-                  width={36}
-                  height={36}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-            ) : (
-              <span
-                className={classNames(
-                  "inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full",
-                  isSidebar
-                    ? "bg-gray-600 ring-2 ring-white ring-opacity-50"
-                    : "bg-indigo-50"
-                )}
-              >
-                <UserIcon
-                  className={classNames(
-                    "h-6 w-6",
-                    isSidebar ? "text-gray-400" : "text-indigo-300"
-                  )}
-                />
-              </span>
-            )}
-          </Menu.Button>
-        )}
-      </div>
-
-      {/* Name/Email (only when expanded in sidebar) */}
-      <div
-        className={classNames(
-          "min-w-0 flex-1 ml-3 flex flex-col justify-center transition-all duration-500 ease-in-out",
-          isCollapsed || !isSidebar
-            ? "opacity-0 w-0 overflow-hidden"
-            : "opacity-100"
-        )}
-      >
-        <p className="text-sm font-medium text-black dark:text-gray-100 truncate leading-tight">
-          {session?.user?.name || session?.user?.email || "User"}
-        </p>
-        {/* Optionally show email if different from name */}
-        {session?.user?.email &&
-          session.user.name &&
-          session.user.email !== session.user.name && (
-            <p className="text-xs font-medium text-gray-400 dark:text-gray-300 truncate mt-0.5 leading-tight">
-              {session?.user?.email}
-            </p>
+      {isCollapsed && isSidebar ? (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Menu.Button
+              ref={buttonRef}
+              className="flex items-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-800 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 p-1 transition-all duration-300 ease-in-out cursor-pointer"
+            >
+              <span className="sr-only">Open user menu</span>
+              {session?.user?.image ? (
+                <div className="inline-block h-9 w-9 overflow-hidden rounded-full bg-gray-600 dark:bg-gray-700 ring-2 ring-white dark:ring-gray-500 ring-opacity-50">
+                  <Image
+                    src={session.user.image}
+                    alt={session.user.name || "User profile"}
+                    width={36}
+                    height={36}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              ) : (
+                <span className="inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gray-600 dark:bg-gray-700 ring-2 ring-white dark:ring-gray-500 ring-opacity-50">
+                  <UserIcon className="h-6 w-6 text-gray-400 dark:text-gray-300" />
+                </span>
+              )}
+            </Menu.Button>
+          </TooltipTrigger>
+          <TooltipContent side="right" sideOffset={5}>
+            <p>User Menu</p>
+          </TooltipContent>
+        </Tooltip>
+      ) : (
+        <Menu.Button
+          ref={buttonRef}
+          className={classNames(
+            "flex items-center w-full focus:outline-none transition-all duration-300 ease-in-out cursor-pointer",
+            isSidebar
+              ? "rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 p-2"
+              : "rounded-full bg-white dark:bg-gray-700 border-2 border-indigo-100 dark:border-gray-600 p-0.5 shadow-sm hover:shadow h-9 w-9"
           )}
-      </div>
+        >
+          <div className="flex items-center w-full">
+            {/* Avatar */}
+            <div className="flex-shrink-0">
+              {session?.user?.image ? (
+                <div
+                  className={classNames(
+                    "inline-block h-9 w-9 overflow-hidden rounded-full",
+                    isSidebar
+                      ? "bg-gray-600 ring-2 ring-white ring-opacity-50"
+                      : "bg-gray-100"
+                  )}
+                >
+                  <Image
+                    src={session.user.image}
+                    alt={session.user.name || "User profile"}
+                    width={36}
+                    height={36}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              ) : (
+                <span
+                  className={classNames(
+                    "inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full",
+                    isSidebar
+                      ? "bg-gray-600 ring-2 ring-white ring-opacity-50"
+                      : "bg-indigo-50"
+                  )}
+                >
+                  <UserIcon
+                    className={classNames(
+                      "h-6 w-6",
+                      isSidebar ? "text-gray-400" : "text-indigo-300"
+                    )}
+                  />
+                </span>
+              )}
+            </div>
+
+            {/* Name/Email (only when expanded in sidebar) */}
+            <div
+              className={classNames(
+                "min-w-0 flex-1 ml-3 flex flex-col justify-center transition-all duration-500 ease-in-out",
+                isCollapsed || !isSidebar
+                  ? "opacity-0 w-0 overflow-hidden"
+                  : "opacity-100"
+              )}
+            >
+              <p className="text-sm font-medium text-black dark:text-gray-100 truncate leading-tight">
+                {session?.user?.name || session?.user?.email || "User"}
+              </p>
+              {/* Optionally show email if different from name */}
+              {session?.user?.email &&
+                session.user.name &&
+                session.user.email !== session.user.name && (
+                  <p className="text-xs font-medium text-gray-400 dark:text-gray-300 truncate mt-0.5 leading-tight">
+                    {session?.user?.email}
+                  </p>
+                )}
+            </div>
+          </div>
+        </Menu.Button>
+      )}
 
       {/* Dropdown Menu */}
       {typeof document !== "undefined" &&
