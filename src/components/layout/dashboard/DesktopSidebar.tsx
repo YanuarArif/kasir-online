@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import SidebarNavigation, { classNames } from "./SidebarNavigation";
 import UserProfileMenu from "./UserProfileMenu";
 import {
@@ -43,8 +43,8 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
                     >
                       {/* Icon container - always fixed width */}
                       <div className="w-6 flex-shrink-0 flex justify-center">
-                        <ChevronRightIcon
-                          className="h-6 w-6 transition-all duration-300 ease-in-out"
+                        <ChevronLeftIcon
+                          className="h-6 w-6 transition-all duration-500 ease-in-out transform rotate-180"
                           aria-hidden="true"
                         />
                       </div>
@@ -69,7 +69,7 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
                 {/* Icon container - always fixed width */}
                 <div className="w-6 flex-shrink-0 flex justify-center">
                   <ChevronLeftIcon
-                    className="h-6 w-6 transition-all duration-300 ease-in-out"
+                    className="h-6 w-6 transition-all duration-500 ease-in-out transform rotate-0"
                     aria-hidden="true"
                   />
                 </div>
