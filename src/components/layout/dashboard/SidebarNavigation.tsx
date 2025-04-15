@@ -69,19 +69,6 @@ export const navigation = [
     icon: UserGroupIcon,
     roles: [Role.OWNER], // Only OWNER can access
   },
-
-  {
-    name: "Aktivitas",
-    href: "/dashboard/activity",
-    icon: ClockIcon,
-    roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
-  },
-  {
-    name: "Notifikasi",
-    href: "/dashboard/notifications",
-    icon: BellIcon,
-    roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
-  },
   {
     name: "Laporan",
     href: "/dashboard/reports",

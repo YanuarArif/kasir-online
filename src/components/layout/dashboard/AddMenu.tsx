@@ -30,19 +30,19 @@ const AddMenu = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <Link href="/dashboard/products/add" passHref>
+        <Link href="/dashboard/products/new" passHref>
           <DropdownMenuItem className="cursor-pointer">
             <CubeIcon className="mr-2 h-4 w-4" />
             <span>Tambah Produk</span>
           </DropdownMenuItem>
         </Link>
-        <Link href="/dashboard/purchases/add" passHref>
+        <Link href="/dashboard/purchases/new" passHref>
           <DropdownMenuItem className="cursor-pointer">
             <ShoppingBagIcon className="mr-2 h-4 w-4" />
             <span>Tambah Pembelian</span>
           </DropdownMenuItem>
         </Link>
-        <Link href="/dashboard/sales/add" passHref>
+        <Link href="/dashboard/sales/new" passHref>
           <DropdownMenuItem className="cursor-pointer">
             <CurrencyDollarIcon className="mr-2 h-4 w-4" />
             <span>Tambah Penjualan</span>
