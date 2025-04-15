@@ -64,10 +64,10 @@ const ActivityMenu = () => {
         <Button
           variant="ghost"
           size="icon"
-          className="relative h-11 w-11 rounded-md cursor-pointer"
+          className="relative h-8 w-8 md:h-11 md:w-11 rounded-md cursor-pointer"
           aria-label="Aktivitas Terbaru"
         >
-          <Clock className="!h-6 !w-6" />
+          <Clock className="!h-4 !w-4 md:!h-6 md:!w-6" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-80">

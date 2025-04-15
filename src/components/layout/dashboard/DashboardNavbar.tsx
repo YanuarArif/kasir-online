@@ -44,7 +44,7 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
 
       <div className="flex flex-1 justify-between px-4">
         <div className="flex flex-1 items-center">
-          <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+          <h1 className="text-sm md:text-xl font-semibold text-gray-900 dark:text-gray-100">
             {pageTitle}
           </h1>
 
@@ -75,7 +75,9 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
           <ThemeToggle />
 
           {/* User Menu */}
-          <UserProfileMenu position="topbar" />
+          <div className="m-3">
+            <UserProfileMenu position="topbar" />
+          </div>
         </div>
       </div>
     </div>
