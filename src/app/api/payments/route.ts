@@ -29,9 +29,8 @@ export async function GET(_request: NextRequest) {
 // POST /api/payments/check/:id - Check payment status
 export async function POST(
   _request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const { params } = context;
   try {
     const session = await auth();
 
@@ -39,7 +38,8 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const paymentId = params.id;
+    const resolvedParams = await context.params;
+    const paymentId = resolvedParams.id;
 
     // Get payment from database
     const payment = await db.payment.findUnique({
