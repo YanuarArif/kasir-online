@@ -17,14 +17,13 @@ const NewPurchase = async () => {
   // Fetch suppliers using our utility function
   const suppliers = await getSuppliers();
 
-  // If no products or suppliers were found, it could be due to authentication issues
+  // If no products were found, it could be due to authentication issues
   if (!serializedProducts || serializedProducts.length === 0) {
     return <p>Error: Tidak dapat mengambil data produk.</p>;
   }
 
-  if (!suppliers || suppliers.length === 0) {
-    return <p>Error: Tidak dapat mengambil data supplier.</p>;
-  }
+  // Even if there are no suppliers, we'll still show the UI
+  // The user can add a supplier later or proceed without one
 
   return (
     <DashboardLayout pageTitle="Tambah Pembelian Baru">
@@ -34,7 +33,7 @@ const NewPurchase = async () => {
 
       <EnhancedPurchasePage
         products={serializedProducts}
-        suppliers={suppliers}
+        suppliers={suppliers || []}
       />
     </DashboardLayout>
   );
