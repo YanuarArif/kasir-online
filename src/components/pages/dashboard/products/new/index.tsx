@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useTransition } from "react";
-import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -13,12 +12,12 @@ import { addProduct } from "@/actions/products";
 import DashboardLayout from "@/components/layout/dashboardlayout";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+
 import { EnhancedProductSchema } from "./types";
 import { ProductFormValues } from "./types";
 import ProductFormTabs from "./components/ProductFormTabs";
 import ProductFormSummary from "./components/ProductFormSummary";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { ArrowLeft, Check } from "lucide-react";
 
 const EnhancedAddProductPage: React.FC = () => {
   const router = useRouter();
@@ -27,7 +26,7 @@ const EnhancedAddProductPage: React.FC = () => {
   const [isUploading, setIsUploading] = React.useState(false);
   const [previewUrl, setPreviewUrl] = React.useState<string>("");
   const [fileInputKey, setFileInputKey] = React.useState<number>(0);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
   // Initialize the form with enhanced schema
   const form = useForm<ProductFormValues>({
@@ -133,10 +132,6 @@ const EnhancedAddProductPage: React.FC = () => {
 
   return (
     <DashboardLayout pageTitle="Tambah Produk Baru">
-      <Head>
-        <title>Tambah Produk - Kasir Online</title>
-      </Head>
-
       <div className="container mx-auto px-4 py-6">
         <div className="flex items-center justify-between mb-6">
           <div>

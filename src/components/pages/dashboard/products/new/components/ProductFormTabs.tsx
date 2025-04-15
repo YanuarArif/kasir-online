@@ -9,14 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Info,
-  Image,
-  SlidersHorizontal,
-  BarChart,
-  ImageIcon,
-  SlidersHorizontalIcon,
-} from "lucide-react";
+import { Info, BarChart, ImageIcon, SlidersHorizontalIcon } from "lucide-react";
 import { ProductFormValues } from "../types";
 import { Control } from "react-hook-form";
 import ProductBasicInfo from "./ProductBasicInfo";
@@ -30,7 +23,7 @@ interface ProductFormTabsProps {
   handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
   isUploading: boolean;
   previewUrl: string;
-  fileInputRef: React.RefObject<HTMLInputElement>;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
   fileInputKey: number;
 }
 

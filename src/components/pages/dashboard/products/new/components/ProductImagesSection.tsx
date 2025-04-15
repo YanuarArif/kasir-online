@@ -23,7 +23,7 @@ interface ProductImagesSectionProps {
   handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
   isUploading: boolean;
   previewUrl: string;
-  fileInputRef: React.RefObject<HTMLInputElement>;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
   fileInputKey: number;
 }
 
