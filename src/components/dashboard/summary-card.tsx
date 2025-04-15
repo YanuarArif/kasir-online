@@ -28,27 +28,32 @@ const colorSchemes = {
   indigo: {
     iconBg: "bg-indigo-100 dark:bg-indigo-900",
     iconText: "text-indigo-600 dark:text-indigo-300",
-    linkText: "text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300",
+    linkText:
+      "text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300",
   },
   emerald: {
     iconBg: "bg-emerald-100 dark:bg-emerald-900",
     iconText: "text-emerald-600 dark:text-emerald-300",
-    linkText: "text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300",
+    linkText:
+      "text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300",
   },
   blue: {
     iconBg: "bg-blue-100 dark:bg-blue-900",
     iconText: "text-blue-600 dark:text-blue-300",
-    linkText: "text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300",
+    linkText:
+      "text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300",
   },
   amber: {
     iconBg: "bg-amber-100 dark:bg-amber-900",
     iconText: "text-amber-600 dark:text-amber-300",
-    linkText: "text-amber-600 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-300",
+    linkText:
+      "text-amber-600 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-300",
   },
   rose: {
     iconBg: "bg-rose-100 dark:bg-rose-900",
     iconText: "text-rose-600 dark:text-rose-300",
-    linkText: "text-rose-600 hover:text-rose-800 dark:text-rose-400 dark:hover:text-rose-300",
+    linkText:
+      "text-rose-600 hover:text-rose-800 dark:text-rose-400 dark:hover:text-rose-300",
   },
 };
 
@@ -64,12 +69,12 @@ export function SummaryCard({
   const colors = colorSchemes[colorScheme];
 
   return (
-    <Card className="border-none shadow-md dark:bg-gray-800">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+    <Card className="border shadow-sm dark:bg-gray-800">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {title}
         </CardTitle>
-        <div className={`rounded-full ${colors.iconBg} p-2 ${colors.iconText}`}>
+        <div className={`rounded-full ${colors.iconBg} p-1 ${colors.iconText}`}>
           {icon}
         </div>
       </CardHeader>
@@ -94,10 +99,7 @@ export function SummaryCard({
       </CardContent>
       {linkText && linkHref && (
         <CardFooter className="p-2">
-          <Link
-            href={linkHref}
-            className={`text-xs ${colors.linkText}`}
-          >
+          <Link href={linkHref} className={`text-xs ${colors.linkText}`}>
             {linkText}
           </Link>
         </CardFooter>
