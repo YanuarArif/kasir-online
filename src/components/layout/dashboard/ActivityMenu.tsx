@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ClockIcon } from "@heroicons/react/24/outline";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { getRecentActivities, ActivityItem } from "@/actions/activity";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import { Clock } from "lucide-react";
 
 const ActivityMenu = () => {
   const [activities, setActivities] = useState<ActivityItem[]>([]);
@@ -64,10 +64,10 @@ const ActivityMenu = () => {
         <Button
           variant="ghost"
           size="icon"
-          className="relative h-10 w-10 rounded-md cursor-pointer"
+          className="relative h-11 w-11 rounded-md cursor-pointer"
           aria-label="Aktivitas Terbaru"
         >
-          <ClockIcon className="h-5 w-5" />
+          <Clock className="!h-6 !w-6" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-80">

@@ -2,7 +2,6 @@
 
 import React from "react";
 import Link from "next/link";
-import { PlusIcon } from "@heroicons/react/24/outline";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +14,7 @@ import {
   ShoppingBagIcon,
   CurrencyDollarIcon,
 } from "@heroicons/react/24/outline";
+import { Plus } from "lucide-react";
 
 const AddMenu = () => {
   return (
@@ -23,10 +23,10 @@ const AddMenu = () => {
         <Button
           variant="ghost"
           size="icon"
-          className="relative h-10 w-10 rounded-md cursor-pointer"
+          className="relative h-11 w-11 rounded-md cursor-pointer"
           aria-label="Tambah Baru"
         >
-          <PlusIcon className="h-5 w-5" />
+          <Plus className="!h-6 !w-6" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">

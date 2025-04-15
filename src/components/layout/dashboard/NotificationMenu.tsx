@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { BellIcon } from "@heroicons/react/24/outline";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +19,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { toast } from "sonner";
+import { Bell } from "lucide-react";
 
 const NotificationMenu = () => {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -117,10 +117,10 @@ const NotificationMenu = () => {
         <Button
           variant="ghost"
           size="icon"
-          className="relative h-10 w-10 rounded-md cursor-pointer"
+          className="relative h-11 w-11 rounded-md cursor-pointer"
           aria-label="Notifikasi"
         >
-          <BellIcon className="h-5 w-5" />
+          <Bell className="!h-6 !w-6" />
           {unreadCount > 0 && (
             <span className="absolute top-0 right-0 h-4 w-4 rounded-full bg-red-500 text-[10px] font-medium text-white flex items-center justify-center">
               {unreadCount}
