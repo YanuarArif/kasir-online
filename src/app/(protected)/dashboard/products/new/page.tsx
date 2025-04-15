@@ -1,8 +1,8 @@
-import AddProductPage from "@/components/pages/dashboard/products/new";
+import EnhancedAddProductPage from "@/components/pages/dashboard/products/new/index";
 import React from "react";
 
 const AddProduct = () => {
-  return <AddProductPage />;
+  return <EnhancedAddProductPage />;
 };
 
 export default AddProduct;

@@ -1,7 +1,7 @@
 import React from "react";
 import Head from "next/head";
 import DashboardLayout from "@/components/layout/dashboardlayout";
-import NewSalePage from "@/components/pages/dashboard/sales/new";
+import EnhancedSalePage from "@/components/pages/dashboard/sales/new/enhanced-index";
 import { getProducts } from "@/lib/get-products";
 
 // This is an async Server Component
@@ -24,7 +24,7 @@ const NewSale = async () => {
         <title>Tambah Penjualan - Kasir Online</title>
       </Head>
 
-      <NewSalePage products={serializedProducts} />
+      <EnhancedSalePage products={serializedProducts} />
     </DashboardLayout>
   );
 };

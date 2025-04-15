@@ -1,7 +1,7 @@
 import React from "react";
 import Head from "next/head";
 import DashboardLayout from "@/components/layout/dashboardlayout";
-import NewPurchasePage from "@/components/pages/dashboard/purchases/new";
+import EnhancedPurchasePage from "@/components/pages/dashboard/purchases/new/enhanced-index";
 import { getProducts } from "@/lib/get-products";
 import { getSuppliers } from "@/lib/get-suppliers";
 
@@ -32,7 +32,10 @@ const NewPurchase = async () => {
         <title>Tambah Pembelian - Kasir Online</title>
       </Head>
 
-      <NewPurchasePage products={serializedProducts} suppliers={suppliers} />
+      <EnhancedPurchasePage
+        products={serializedProducts}
+        suppliers={suppliers}
+      />
     </DashboardLayout>
   );
 };
