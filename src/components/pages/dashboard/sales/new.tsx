@@ -5,10 +5,9 @@ import { useRouter } from "next/navigation";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { SaleSchema } from "@/schemas/zod";
+import { EnhancedSaleSchema } from "./new/types";
 import { addSale } from "@/actions/sales";
 import { Form } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   SaleFormValues,
@@ -32,10 +31,14 @@ const NewSalePage: React.FC<NewSalePageProps> = ({ products }) => {
 
   // Initialize the form
   const form = useForm<SaleFormValues>({
-    resolver: zodResolver(SaleSchema),
+    resolver: zodResolver(EnhancedSaleSchema),
     defaultValues: {
       items: [{ productId: "", quantity: 1, priceAtSale: 0 }],
       totalAmount: 0,
+      customerId: "cust1", // Default to general customer
+      paymentMethod: "cash",
+      printReceipt: true,
+      sendReceipt: false,
     },
   });
 
@@ -98,7 +101,13 @@ const NewSalePage: React.FC<NewSalePageProps> = ({ products }) => {
   const onSubmit = (values: SaleFormValues) => {
     startTransition(async () => {
       try {
-        const result = await addSale(values);
+        // Extract only the fields that are in the original SaleSchema
+        const saleData = {
+          items: values.items,
+          totalAmount: values.totalAmount,
+        };
+
+        const result = await addSale(saleData);
         if (result.success) {
           toast.success(result.success);
           form.reset(); // Reset form on success

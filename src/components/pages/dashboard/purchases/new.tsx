@@ -5,10 +5,9 @@ import { useRouter } from "next/navigation";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { PurchaseSchema } from "@/schemas/zod";
+import { EnhancedPurchaseSchema } from "./new/types";
 import { addPurchase } from "@/actions/purchases";
 import { Form } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   PurchaseFormValues,
@@ -38,12 +37,15 @@ const NewPurchasePage: React.FC<NewPurchasePageProps> = ({
 
   // Initialize the form
   const form = useForm<PurchaseFormValues>({
-    resolver: zodResolver(PurchaseSchema),
+    resolver: zodResolver(EnhancedPurchaseSchema),
     defaultValues: {
       items: [{ productId: "", quantity: 1, costAtPurchase: 0 }],
       totalAmount: 0,
       invoiceRef: "",
       supplierId: "",
+      paymentStatus: "paid",
+      trackDelivery: false,
+      notifyOnArrival: false,
     },
   });
 
@@ -108,7 +110,15 @@ const NewPurchasePage: React.FC<NewPurchasePageProps> = ({
   const onSubmit = (values: PurchaseFormValues) => {
     startTransition(async () => {
       try {
-        const result = await addPurchase(values);
+        // Extract only the fields that are in the original PurchaseSchema
+        const purchaseData = {
+          items: values.items,
+          totalAmount: values.totalAmount,
+          invoiceRef: values.invoiceRef,
+          supplierId: values.supplierId,
+        };
+
+        const result = await addPurchase(purchaseData);
         if (result.success) {
           toast.success(result.success);
           form.reset(); // Reset form on success

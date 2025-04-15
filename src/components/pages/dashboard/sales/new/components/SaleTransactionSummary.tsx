@@ -44,15 +44,17 @@ const SaleTransactionSummary: React.FC<SaleTransactionSummaryProps> = ({
   };
 
   // Get payment method name
-  const paymentMethodName = paymentMethod
-    ? paymentMethods[paymentMethod]
-    : "Tunai";
+  const paymentMethodName =
+    paymentMethod && paymentMethod in paymentMethods
+      ? paymentMethods[paymentMethod]
+      : "Tunai";
 
   // Calculate change
-  const change = amountPaid ? Math.max(0, amountPaid - totalAmount) : 0;
+  const amountPaidValue = amountPaid || 0;
+  const change = Math.max(0, amountPaidValue - totalAmount);
 
   // Check if payment is complete
-  const isPaymentComplete = amountPaid && amountPaid >= totalAmount;
+  const isPaymentComplete = amountPaidValue >= totalAmount;
 
   return (
     <Card className="sticky top-4 bg-card">
@@ -101,12 +103,12 @@ const SaleTransactionSummary: React.FC<SaleTransactionSummaryProps> = ({
                   Rp {totalAmount.toLocaleString("id-ID")}
                 </span>
               </div>
-              {amountPaid > 0 && (
+              {amountPaidValue > 0 && (
                 <>
                   <div className="flex justify-between">
                     <span className="text-sm">Dibayar:</span>
                     <span className="text-sm font-medium">
-                      Rp {amountPaid.toLocaleString("id-ID")}
+                      Rp {amountPaidValue.toLocaleString("id-ID")}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -131,7 +133,7 @@ const SaleTransactionSummary: React.FC<SaleTransactionSummaryProps> = ({
               </span>
             </div>
 
-            {amountPaid > 0 && (
+            {amountPaidValue > 0 && (
               <div className="mt-2 flex justify-end">
                 {isPaymentComplete ? (
                   <Badge className="bg-green-500">
