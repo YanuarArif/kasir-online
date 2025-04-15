@@ -7,6 +7,9 @@ import { useSession } from "next-auth/react";
 import { Role } from "@prisma/client";
 import { RoleBadge } from "@/components/ui/role-badge";
 import { Bars3Icon } from "@heroicons/react/24/outline";
+import AddMenu from "./AddMenu";
+import ActivityMenu from "./ActivityMenu";
+import NotificationMenu from "./NotificationMenu";
 
 interface DashboardNavbarProps {
   pageTitle: string;
@@ -57,8 +60,17 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
           )}
         </div>
 
-        {/* User Menu and Theme Toggle */}
+        {/* Action Icons, Theme Toggle, and User Menu */}
         <div className="ml-4 flex items-center space-x-2 md:ml-6">
+          {/* Add Menu */}
+          <AddMenu />
+
+          {/* Activity Menu */}
+          <ActivityMenu />
+
+          {/* Notification Menu */}
+          <NotificationMenu />
+
           {/* Theme Toggle Button */}
           <ThemeToggle />
 
