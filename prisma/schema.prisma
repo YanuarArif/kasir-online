@@ -19,6 +19,23 @@ enum Role {
   CASHIER
 }
 
+// Define subscription plan types
+enum SubscriptionPlan {
+  FREE
+  BASIC
+  PRO
+  ENTERPRISE
+}
+
+// Define payment status
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  EXPIRED
+  REFUNDED
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -37,6 +54,12 @@ model User {
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
   sessions      Session[]
+
+  // Subscription related
+  currentPlan        SubscriptionPlan @default(FREE)
+  subscriptionExpiry DateTime?
+  subscriptions      Subscription[]
+  payments           Payment[]
 
   // --- User's Own Data ---
   products   Product[] // User's products
@@ -274,4 +297,51 @@ model Customer {
   @@unique([userId, email]) // Customer email is unique for a specific user (if not null)
   @@index([userId]) // Index for user lookup
   @@map("customers")
+}
+
+// --- Subscription and Payment Models ---
+
+model Subscription {
+  id        String           @id @default(cuid())
+  plan      SubscriptionPlan
+  startDate DateTime         @default(now())
+  endDate   DateTime
+  autoRenew Boolean          @default(false)
+  status    String           @default("active") // active, canceled, expired
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  // Relationships
+  userId   String
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payments Payment[]
+
+  @@index([userId])
+  @@map("subscriptions")
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  amount        Decimal       @db.Decimal(12, 2)
+  currency      String        @default("IDR")
+  status        PaymentStatus @default(PENDING)
+  paymentMethod String? // e.g., "credit_card", "bank_transfer", "ewallet"
+  externalId    String? // ID from payment provider (Xendit)
+  externalUrl   String? // Payment URL from Xendit
+  invoiceId     String? // Xendit invoice ID
+  paymentDate   DateTime?
+  expiryDate    DateTime?
+  metadata      Json? // Additional payment data
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Relationships
+  userId         String
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscriptionId String?
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+
+  @@index([userId])
+  @@index([subscriptionId])
+  @@map("payments")
 }
