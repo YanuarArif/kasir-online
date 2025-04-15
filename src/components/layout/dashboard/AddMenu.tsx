@@ -10,7 +10,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { CubeIcon, ShoppingBagIcon, CurrencyDollarIcon } from "@heroicons/react/24/outline";
+import {
+  CubeIcon,
+  ShoppingBagIcon,
+  CurrencyDollarIcon,
+} from "@heroicons/react/24/outline";
 
 const AddMenu = () => {
   return (
@@ -19,7 +23,7 @@ const AddMenu = () => {
         <Button
           variant="ghost"
           size="icon"
-          className="relative h-9 w-9 rounded-full"
+          className="relative h-10 w-10 rounded-md cursor-pointer"
           aria-label="Tambah Baru"
         >
           <PlusIcon className="h-5 w-5" />

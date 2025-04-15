@@ -117,7 +117,7 @@ const NotificationMenu = () => {
         <Button
           variant="ghost"
           size="icon"
-          className="relative h-9 w-9 rounded-full"
+          className="relative h-10 w-10 rounded-md cursor-pointer"
           aria-label="Notifikasi"
         >
           <BellIcon className="h-5 w-5" />
