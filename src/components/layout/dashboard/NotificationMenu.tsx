@@ -11,7 +11,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { getNotifications, markAllNotificationsAsRead, markNotificationAsRead, NotificationItem } from "@/actions/notifications";
+import {
+  getNotifications,
+  markAllNotificationsAsRead,
+  markNotificationAsRead,
+  NotificationItem,
+} from "@/actions/notifications";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -28,7 +33,7 @@ const NotificationMenu = () => {
       const result = await getNotifications(5);
       if (result.success && result.data) {
         setNotifications(result.data);
-        setUnreadCount(result.data.filter(n => !n.isRead).length);
+        setUnreadCount(result.data.filter((n) => !n.isRead).length);
         setError(null);
       } else {
         setError(result.error || "Gagal mengambil notifikasi");
@@ -50,16 +55,18 @@ const NotificationMenu = () => {
       const result = await markNotificationAsRead(id);
       if (result.success) {
         // Update local state to mark notification as read
-        setNotifications(prev => 
-          prev.map(notification => 
-            notification.id === id 
-              ? { ...notification, isRead: true } 
+        setNotifications((prev) =>
+          prev.map((notification) =>
+            notification.id === id
+              ? { ...notification, isRead: true }
               : notification
           )
         );
-        setUnreadCount(prev => Math.max(0, prev - 1));
+        setUnreadCount((prev) => Math.max(0, prev - 1));
       } else {
-        toast.error(result.error || "Gagal menandai notifikasi sebagai telah dibaca");
+        toast.error(
+          result.error || "Gagal menandai notifikasi sebagai telah dibaca"
+        );
       }
     } catch (err) {
       toast.error("Terjadi kesalahan saat menandai notifikasi");
@@ -72,13 +79,15 @@ const NotificationMenu = () => {
       const result = await markAllNotificationsAsRead();
       if (result.success) {
         // Update local state to mark all notifications as read
-        setNotifications(prev => 
-          prev.map(notification => ({ ...notification, isRead: true }))
+        setNotifications((prev) =>
+          prev.map((notification) => ({ ...notification, isRead: true }))
         );
         setUnreadCount(0);
         toast.success("Semua notifikasi telah ditandai sebagai dibaca");
       } else {
-        toast.error(result.error || "Gagal menandai semua notifikasi sebagai telah dibaca");
+        toast.error(
+          result.error || "Gagal menandai semua notifikasi sebagai telah dibaca"
+        );
       }
     } catch (err) {
       toast.error("Terjadi kesalahan saat menandai semua notifikasi");
@@ -123,9 +132,9 @@ const NotificationMenu = () => {
         <div className="flex justify-between items-center p-2">
           <DropdownMenuLabel>Notifikasi</DropdownMenuLabel>
           {unreadCount > 0 && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               className="text-xs h-7"
               onClick={handleMarkAllAsRead}
             >
@@ -134,7 +143,7 @@ const NotificationMenu = () => {
           )}
         </div>
         <DropdownMenuSeparator />
-        
+
         {loading ? (
           <div className="p-2 space-y-2">
             <Skeleton className="h-12 w-full" />
@@ -147,19 +156,31 @@ const NotificationMenu = () => {
           <div className="p-4 text-sm text-gray-500">Tidak ada notifikasi</div>
         ) : (
           notifications.map((notification) => (
-            <DropdownMenuItem 
-              key={notification.id} 
-              className={`flex flex-col items-start p-3 cursor-default ${!notification.isRead ? 'bg-blue-50 dark:bg-blue-900/10' : ''}`}
-              onClick={() => !notification.isRead && handleMarkAsRead(notification.id)}
+            <DropdownMenuItem
+              key={notification.id}
+              className={`flex flex-col items-start p-3 cursor-default ${!notification.isRead ? "bg-blue-50 dark:bg-blue-900/10" : ""}`}
+              onClick={() =>
+                !notification.isRead && handleMarkAsRead(notification.id)
+              }
             >
               <div className="flex items-start w-full">
-                <div className={`mr-2 px-1.5 py-0.5 rounded-md ${getNotificationColor(notification.type)}`}>
-                  <span className="text-xs font-medium uppercase">{notification.type}</span>
+                <div
+                  className={`mr-2 px-1.5 py-0.5 rounded-md ${getNotificationColor(notification.type)}`}
+                >
+                  <span className="text-xs font-medium uppercase">
+                    {notification.type}
+                  </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{notification.title}</p>
-                  <p className="text-xs text-gray-500 mt-1 line-clamp-2">{notification.message}</p>
-                  <p className="text-xs text-gray-400 mt-1">{notification.timestamp}</p>
+                  <p className="text-sm font-medium truncate">
+                    {notification.title}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                    {notification.message}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {notification.timestamp}
+                  </p>
                 </div>
                 {!notification.isRead && (
                   <div className="ml-2 h-2 w-2 rounded-full bg-blue-500"></div>
@@ -168,9 +189,9 @@ const NotificationMenu = () => {
             </DropdownMenuItem>
           ))
         )}
-        
+
         <DropdownMenuSeparator />
-        <Link href="/dashboard/settings/notifications" passHref>
+        <Link href="/dashboard/notifications" passHref>
           <DropdownMenuItem className="cursor-pointer justify-center">
             <span className="text-sm font-medium">Lihat Semua Notifikasi</span>
           </DropdownMenuItem>

@@ -16,6 +16,7 @@ import {
   BuildingStorefrontIcon,
   UserGroupIcon,
   ClockIcon,
+  BellIcon,
 } from "@heroicons/react/24/outline";
 import {
   Tooltip,
@@ -73,6 +74,12 @@ export const navigation = [
     name: "Aktivitas",
     href: "/dashboard/activity",
     icon: ClockIcon,
+    roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
+  },
+  {
+    name: "Notifikasi",
+    href: "/dashboard/notifications",
+    icon: BellIcon,
     roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
   },
   {

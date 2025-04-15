@@ -51,8 +51,9 @@ export const pagePermissions: Record<string, Role[]> = {
   // Reports
   "/dashboard/reports": [Role.OWNER, Role.ADMIN],
 
-  // Activity
+  // Activity and Notifications
   "/dashboard/activity": [Role.OWNER, Role.ADMIN, Role.CASHIER],
+  "/dashboard/notifications": [Role.OWNER, Role.ADMIN, Role.CASHIER],
 };
 
 /**
