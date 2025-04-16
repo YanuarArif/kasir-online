@@ -11,10 +11,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import {
+  getNotifications,
   markAllNotificationsAsRead,
   markNotificationAsRead,
   NotificationItem,
-  NotificationType,
 } from "@/actions/notifications";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
@@ -26,43 +26,32 @@ const NotificationMenu = () => {
   const [loading, setLoading] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  useEffect(() => {
-    // Create static mock data instead of fetching
-    const mockNotifications: NotificationItem[] = [
-      {
-        id: "1",
-        type: "warning" as NotificationType,
-        title: "Stok Menipis",
-        message:
-          "Beberapa produk hampir habis stoknya. Segera lakukan pembelian.",
-        timestamp: "30 menit yang lalu",
-        isRead: false,
-      },
-      {
-        id: "2",
-        type: "success" as NotificationType,
-        title: "Penjualan Berhasil",
-        message: "Penjualan baru telah berhasil dicatat.",
-        timestamp: "2 jam yang lalu",
-        isRead: true,
-      },
-      {
-        id: "3",
-        type: "info" as NotificationType,
-        title: "Pembaruan Sistem",
-        message: "Sistem akan diperbarui pada tanggal 15 bulan ini.",
-        timestamp: "1 hari yang lalu",
-        isRead: false,
-      },
-    ];
+  const fetchNotifications = async () => {
+    setLoading(true);
+    try {
+      const result = await getNotifications(5);
+      if (result.success && result.data) {
+        setNotifications(result.data);
+        setUnreadCount(
+          result.data.filter((n: NotificationItem) => !n.isRead).length
+        );
+      } else {
+        console.error("Failed to fetch notifications:", result.error);
+      }
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    setNotifications(mockNotifications);
-    setUnreadCount(mockNotifications.filter((n) => !n.isRead).length);
-    setLoading(false);
+  useEffect(() => {
+    fetchNotifications();
   }, []);
 
   const handleMarkAsRead = async (id: string) => {
     try {
+      // Call the server action to mark the notification as read
       const result = await markNotificationAsRead(id);
       if (result.success) {
         // Update local state to mark notification as read
@@ -87,6 +76,7 @@ const NotificationMenu = () => {
 
   const handleMarkAllAsRead = async () => {
     try {
+      // Call the server action to mark all notifications as read
       const result = await markAllNotificationsAsRead();
       if (result.success) {
         // Update local state to mark all notifications as read
@@ -95,6 +85,8 @@ const NotificationMenu = () => {
         );
         setUnreadCount(0);
         toast.success("Semua notifikasi telah ditandai sebagai dibaca");
+        // Refresh notifications to ensure we have the latest data
+        fetchNotifications();
       } else {
         toast.error(
           result.error || "Gagal menandai semua notifikasi sebagai telah dibaca"

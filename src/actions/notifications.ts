@@ -3,6 +3,8 @@
 import { getEffectiveUserId } from "@/lib/get-effective-user-id";
 import { formatDistanceToNowStrict } from "date-fns";
 import { id } from "date-fns/locale";
+import { db } from "@/lib/db";
+import { NotificationType as PrismaNotificationType } from "@prisma/client";
 
 export type NotificationType = "info" | "warning" | "success" | "error";
 
@@ -29,8 +31,20 @@ export interface PaginatedNotificationsResult {
   error?: string;
 }
 
-// This is a mock implementation since there's no notifications table in the database yet
-// In a real application, you would fetch this from a notifications table
+// Helper function to convert Prisma NotificationType to our NotificationType
+const mapNotificationType = (type: PrismaNotificationType): NotificationType => {
+  return type.toLowerCase() as NotificationType;
+};
+
+// Helper function to format notification timestamp
+const formatNotificationTimestamp = (date: Date): string => {
+  return formatDistanceToNowStrict(date, {
+    addSuffix: true,
+    locale: id,
+  });
+};
+
+// Get notifications with optional limit
 export const getNotifications = async (
   limit: number = 10
 ): Promise<{
@@ -41,6 +55,7 @@ export const getNotifications = async (
   return getFilteredNotifications({ limit });
 };
 
+// Get filtered notifications with pagination
 export const getFilteredNotifications = async (
   options: {
     limit?: number;
@@ -55,263 +70,123 @@ export const getFilteredNotifications = async (
       return { success: false, error: "Tidak terautentikasi!" };
     }
 
-    // Generate more mock notifications for pagination demo
-    const mockNotifications: NotificationItem[] = generateMockNotifications();
-
-    // Create a mapping of notifications to their actual dates for filtering
-    const notificationDates = new Map<string, Date>();
-    mockNotifications.forEach((notification) => {
-      // Extract the actual date from the relative timestamp (this is a simplification)
-      // In a real app, you'd store the actual date in the database
-      const relativeTimeMatch = notification.timestamp.match(
-        /(\d+)\s+(detik|menit|jam|hari|minggu|bulan|tahun)/i
-      );
-      let date = new Date();
-
-      if (relativeTimeMatch) {
-        const amount = parseInt(relativeTimeMatch[1]);
-        const unit = relativeTimeMatch[2].toLowerCase();
-
-        switch (unit) {
-          case "detik":
-            date = new Date(Date.now() - amount * 1000);
-            break;
-          case "menit":
-            date = new Date(Date.now() - amount * 60 * 1000);
-            break;
-          case "jam":
-            date = new Date(Date.now() - amount * 60 * 60 * 1000);
-            break;
-          case "hari":
-            date = new Date(Date.now() - amount * 24 * 60 * 60 * 1000);
-            break;
-          case "minggu":
-            date = new Date(Date.now() - amount * 7 * 24 * 60 * 60 * 1000);
-            break;
-          case "bulan":
-            date = new Date(Date.now() - amount * 30 * 24 * 60 * 60 * 1000);
-            break;
-          case "tahun":
-            date = new Date(Date.now() - amount * 365 * 24 * 60 * 60 * 1000);
-            break;
-        }
-      }
-
-      notificationDates.set(notification.id, date);
-    });
-
+    // Build the where clause for filtering
+    const where: any = { userId: effectiveUserId };
+        
     // Apply filters if provided
-    let filteredNotifications = [...mockNotifications];
-
     if (options.filters) {
-      const { type, startDate, endDate, readStatus } = options.filters;
-
+      const { type, readStatus, startDate, endDate } = options.filters;
+            
+      // Filter by type
       if (type && type !== "all") {
-        filteredNotifications = filteredNotifications.filter(
-          (notification) => notification.type === type
-        );
+        where.type = type.toUpperCase();
       }
-
-      if (startDate) {
-        filteredNotifications = filteredNotifications.filter((notification) => {
-          const notificationDate = notificationDates.get(notification.id);
-          return notificationDate && notificationDate >= startDate;
-        });
-      }
-
-      if (endDate) {
-        filteredNotifications = filteredNotifications.filter((notification) => {
-          const notificationDate = notificationDates.get(notification.id);
-          return notificationDate && notificationDate <= endDate;
-        });
-      }
-
+            
+      // Filter by read status
       if (readStatus && readStatus !== "all") {
-        filteredNotifications = filteredNotifications.filter((notification) =>
-          readStatus === "read" ? notification.isRead : !notification.isRead
-        );
+        where.isRead = readStatus === "read";
+      }
+            
+      // Filter by date range
+      if (startDate || endDate) {
+        where.createdAt = {};
+        if (startDate) where.createdAt.gte = startDate;
+        if (endDate) where.createdAt.lte = endDate;
       }
     }
 
-    // Sort notifications by date (newest first)
-    filteredNotifications.sort((a, b) => {
-      const aDate = notificationDates.get(a.id);
-      const bDate = notificationDates.get(b.id);
-
-      if (!aDate || !bDate) return 0;
-
-      return bDate.getTime() - aDate.getTime();
-    });
-
-    // Get total count for pagination
-    const totalCount = filteredNotifications.length;
-
-    // Apply pagination
-    const limit = options.limit || 10;
-    const offset = options.offset || 0;
-    const paginatedNotifications = filteredNotifications.slice(
-      offset,
-      offset + limit
-    );
-
-    return { success: true, data: paginatedNotifications, totalCount };
+    //cGol  ppagnaf pgcnsit
+    efetlCofceatotalCount ut({wher };
   } catch (error) {
-    console.error("Error fetching notifications:", error);
-    return { success: false, error: "Gagal mengambil notifikasi." };
-  }
-};
+    console.epagrnarreng notifications:", error);
+   ufe, trli"nm=lim ||10;
+offofse || 0
+// Mark a notification as read
+port//oFmochtnom aab
+omisconste{s awaitdb.findMan({ boolean;
+  errowhere,}> => {
+ try odrBy:
+    conscreafctAd: 'deac',w//iNtwfse ;s
+},
+kip:,
+f (!ev k:lm,
+  retur
 
-// Helper function to generate mock notifications
-function generateMockNotifications(): NotificationItem[] {
-  const baseNotifications = [
-    {
-      id: "1",
-      type: "warning" as NotificationType,
-      title: "Stok Menipis",
-      message:
-        "Beberapa produk hampir habis stoknya. Segera lakukan pembelian.",
-      timestamp: formatDistanceToNowStrict(
-        new Date(Date.now() - 1000 * 60 * 30),
-        {
-          addSuffix: true,
-          locale: id,
-        }
-      ),
-      isRead: false,
-    },
-    {
-      id: "2",
-      type: "success" as NotificationType,
-      title: "Penjualan Berhasil",
-      message: "Penjualan baru telah berhasil dicatat.",
-      timestamp: formatDistanceToNowStrict(
-        new Date(Date.now() - 1000 * 60 * 60 * 2),
-        {
-          addSuffix: true,
-          locale: id,
-        }
-      ),
-      isRead: true,
-    },
-    {
-      id: "3",
-      type: "info" as NotificationType,
-      title: "Pembaruan Sistem",
-      message: "Sistem akan diperbarui pada tanggal 15 bulan ini.",
-      timestamp: formatDistanceToNowStrict(
-        new Date(Date.now() - 1000 * 60 * 60 * 24),
-        {
-          addSuffix: true,
-          locale: id,
-        }
-      ),
-      isRead: false,
-    },
-    {
-      id: "4",
-      type: "error" as NotificationType,
-      title: "Gagal Sinkronisasi",
-      message: "Terjadi kesalahan saat menyinkronkan data.",
-      timestamp: formatDistanceToNowStrict(
-        new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
-        {
-          addSuffix: true,
-          locale: id,
-        }
-      ),
-      isRead: true,
-    },
-    {
-      id: "5",
-      type: "info" as NotificationType,
-      title: "Karyawan Baru",
-      message: "Karyawan baru telah ditambahkan ke sistem.",
-      timestamp: formatDistanceToNowStrict(
-        new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
-        {
-          addSuffix: true,
-          locale: id,
-        }
-      ),
-      isRead: false,
-    },
-  ];
-
-  // Generate additional notifications for pagination demo
-  const additionalNotifications: NotificationItem[] = [];
-  const types: NotificationType[] = ["info", "warning", "success", "error"];
-  const titles = [
-    "Pembaruan Produk",
-    "Perubahan Harga",
-    "Stok Diperbarui",
-    "Laporan Bulanan",
-    "Pengingat Pembayaran",
-    "Pembaruan Aplikasi",
-    "Permintaan Persetujuan",
-    "Transaksi Baru",
-    "Pesan dari Admin",
-    "Pengumuman Penting",
-  ];
-
-  for (let i = 6; i <= 30; i++) {
-    const randomType = types[Math.floor(Math.random() * types.length)];
-    const randomTitle = titles[Math.floor(Math.random() * titles.length)];
-    const randomDaysAgo = Math.floor(Math.random() * 30) + 1; // 1-30 days ago
-    const randomIsRead = Math.random() > 0.5; // 50% chance of being read
-
-    additionalNotifications.push({
-      id: i.toString(),
-      type: randomType,
-      title: randomTitle,
-      message: `Ini adalah notifikasi ${randomType} yang dibuat ${randomDaysAgo} hari yang lalu.`,
-      timestamp: formatDistanceToNowStrict(
-        new Date(Date.now() - 1000 * 60 * 60 * 24 * randomDaysAgo),
-        {
-          addSuffix: true,
-          locale: id,
-        }
-      ),
-      isRead: randomIsRead,
-    });
-  }
-
-  return [...baseNotifications, ...additionalNotifications];
-}
-
-// Mock function to mark a notification as read
-export const markNotificationAsRead = async (
-  id: string
-): Promise<{
-  success: boolean;
-  error?: string;
-}> => {
+   ////Mappethabaseinfication.updayo ou{ Imtype
+    e: {mppdN: NIm[]: new Date()map ({
+      ,
+    })eype:.mapNrror("ErrorTrp otype,
+      eifla:l,tle,
+      meosGgg:amenandai not.mkasai ,telah dibaca.",
+  }sap:/mTimsmp(tffecacerI radA),
+    e csRe{d:nuRrad 
+})
+    // Update all notifications in the database
+    await db 
+     .notification.u 
+     pdateMamapn 
+      
+   
+      where: {
+        userId: effectiveUserId,
+        isRead: false,
+      },
+      data: {
+        isRead: true,
+   Maukw(  },red
+expr   });mrkAReadasync(
+returastr {
+).ePrrm me<{king all notifications as read:", error);
+resuccurn: boole n;
+sus:e,?:ri;
+}>=>{
   try {
-    // In a real app, this would update the database
-    console.log(`Marking notification ${id} as read`);
-    return { success: true };
-  } catch (error) {
-    console.error("Error marking notification as read:", error);
-    return {
-      success: false,
-      error: "Gagal menandai notifikasi sebagai telah dibaca.",
-    };
-  }
-};
+    conr:gefaecnnveUderId = inafkgEffciveUsrId;
 
-// Mock function to mark all notifications as read
-export const markAllNotificationsAsRead = async (): Promise<{
-  success: boolean;
-  error?: string;
-}> => {
+if(!eectvUsrI)t{ a new notification
+rt  dareturnt{a uccss error: "Tidak terautentikasi!" u;erId: string;
+    }ype: NotificationType;
+ing;
+   m//eUpdasg:thnntde
+succow db.ifaio .upd: sMi}y: string;
+}> => whe: {
   try {
-    // In a real app, this would update the database
-    console.log("Marking all notifications as read");
-    return { success: true };
-  } catch (error) {
-    console.error("Error marking all notifications as read:", error);
-    return {
-      success: false,
-      error: "Gagal menandai semua notifikasi sebagai telah dibaca.",
-    };
+    // CurIeffecivUserId
+      // Create notification in database
+      aatata{
+      rtIsRade,t
+       tedAs: e 
+    })}
+    c);cess: true, 
+ta: { id: notification.id } 
+    return}{;uccsstru };
+} c catch (error) cuccess: false, error: "Gagal membuat notifikasi." };
+}consol.(Errormrkingn:r);rurscslorGgendanokssbghbc.";}
+}MrklsradexportmrkAlAsRadasyn()Prms<{
+:ban;r?:sti;}>=>{ty{coseffectiveUsId=wgtEffcvUeI();i!effcveUserId u{uces:fs,r:"Tkeuetiki!"};}
+
+Updtllhabaswatb.ct.pMy{he:userI: eectvUsrIfl  ,: {,dA: nwD(),,
   }
-};
+all ssemua Createa ew notifia
+exportconsceteN =ync (
+ dat: {    usId: sring;
+   ype:nType;
+    title: strig;
+    meag:trig;
+ }
+an;
+  dat?: { id: strig }Covertnotifiction type toPisma num
+   const type = dta.tye.toUperCase()aPrismaNtificationTye;
+
+    // Crenoification int ntificto =awitdb..create({
+      data: {
+        uerId:dat.uerId,
+       type,
+        titl: dta.title,
+        message: ata.message,
+      },
+    }
+ 
+     , 
+      data: {id: notification.id } 
+    cretbt

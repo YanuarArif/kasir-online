@@ -6,6 +6,7 @@ import { db } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { getEffectiveUserId } from "@/lib/get-effective-user-id";
+import { createPurchaseSuccessNotification } from "@/lib/create-system-notification";
 
 export const addPurchase = async (values: z.infer<typeof PurchaseSchema>) => {
   // Get effective user ID (owner ID if employee, user's own ID otherwise)
@@ -75,7 +76,13 @@ export const addPurchase = async (values: z.infer<typeof PurchaseSchema>) => {
       return purchase;
     });
 
-    // 3. Revalidate the purchases page cache
+    // 3. Create a notification for the purchase
+    await createPurchaseSuccessNotification(
+      result.id,
+      result.totalAmount.toNumber()
+    );
+
+    // 4. Revalidate the purchases page cache
     revalidatePath("/dashboard/purchases");
 
     // Serialize the result to convert Decimal to number and Date to string

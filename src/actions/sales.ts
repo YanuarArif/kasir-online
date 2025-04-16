@@ -6,6 +6,10 @@ import { db } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { getEffectiveUserId } from "@/lib/get-effective-user-id";
+import {
+  createSaleSuccessNotification,
+  createLowStockNotification,
+} from "@/lib/create-system-notification";
 
 export const addSale = async (values: z.infer<typeof SaleSchema>) => {
   // Get effective user ID (owner ID if employee, user's own ID otherwise)
@@ -50,8 +54,23 @@ export const addSale = async (values: z.infer<typeof SaleSchema>) => {
         },
       });
 
-      // Update product stock for each item sold
+      // Update product stock for each item sold and check for low stock
+      const lowStockThreshold = 5; // Define a threshold for low stock notifications
+      const lowStockProducts = [];
+
       for (const item of items) {
+        // Get the product to check current stock
+        const product = await tx.product.findUnique({
+          where: { id: item.productId },
+          select: { id: true, name: true, stock: true },
+        });
+
+        if (!product) continue;
+
+        // Calculate new stock level
+        const newStock = product.stock - item.quantity;
+
+        // Update the stock
         await tx.product.update({
           where: { id: item.productId },
           data: {
@@ -60,12 +79,48 @@ export const addSale = async (values: z.infer<typeof SaleSchema>) => {
             },
           },
         });
+
+        // Check if stock is below threshold
+        if (newStock <= lowStockThreshold && newStock > 0) {
+          lowStockProducts.push({
+            id: product.id,
+            name: product.name,
+            stock: newStock,
+          });
+        }
       }
 
       return sale;
     });
 
-    // 3. Revalidate the sales page cache
+    // 3. Create notifications
+    // Sale success notification
+    await createSaleSuccessNotification(
+      result.id,
+      result.totalAmount.toNumber()
+    );
+
+    // Low stock notifications
+    const lowStockProducts = [];
+
+    // Get updated stock levels for products in this sale
+    for (const item of items) {
+      const product = await db.product.findUnique({
+        where: { id: item.productId },
+        select: { id: true, name: true, stock: true },
+      });
+
+      if (product && product.stock <= 5 && product.stock > 0) {
+        lowStockProducts.push(product);
+      }
+    }
+
+    // Create low stock notifications
+    for (const product of lowStockProducts) {
+      await createLowStockNotification(product.name, product.stock);
+    }
+
+    // 4. Revalidate the sales page cache
     revalidatePath("/dashboard/sales");
 
     return {

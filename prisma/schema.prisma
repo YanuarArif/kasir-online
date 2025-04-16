@@ -70,7 +70,8 @@ model User {
   purchases  Purchase[] // Purchases recorded by this user
 
   // Owner-Employee relationship
-  employees Employee[] // Employees managed by this user (if OWNER)
+  employees     Employee[] // Employees managed by this user (if OWNER)
+  notifications Notification[]
 
   @@map("users")
 }
@@ -297,6 +298,32 @@ model Customer {
   @@unique([userId, email]) // Customer email is unique for a specific user (if not null)
   @@index([userId]) // Index for user lookup
   @@map("customers")
+}
+
+// --- Notification Model ---
+
+enum NotificationType {
+  INFO
+  WARNING
+  SUCCESS
+  ERROR
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  type      NotificationType @default(INFO)
+  title     String
+  message   String
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  // Relationships
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("notifications")
 }
 
 // --- Subscription and Payment Models ---
