@@ -9,12 +9,12 @@ import { getEffectiveUserId } from "./get-effective-user-id";
  */
 export async function getSuppliers() {
   const effectiveUserId = await getEffectiveUserId();
-  
+
   if (!effectiveUserId) {
     console.error("User ID not found in session on protected route.");
-    return [];
+    return { suppliers: [], error: "Tidak terautentikasi!" };
   }
-  
+
   try {
     const suppliers = await db.supplier.findMany({
       where: {
@@ -24,11 +24,11 @@ export async function getSuppliers() {
         createdAt: "desc",
       },
     });
-    
-    return suppliers;
+
+    return { suppliers, error: null };
   } catch (error) {
     console.error("Error fetching suppliers:", error);
-    return [];
+    return { suppliers: [], error: "Gagal mengambil data supplier." };
   }
 }
 
@@ -39,12 +39,12 @@ export async function getSuppliers() {
  */
 export async function getSupplierById(id: string) {
   const effectiveUserId = await getEffectiveUserId();
-  
+
   if (!effectiveUserId) {
     console.error("User ID not found in session on protected route.");
     return null;
   }
-  
+
   try {
     const supplier = await db.supplier.findUnique({
       where: {
@@ -52,7 +52,7 @@ export async function getSupplierById(id: string) {
         userId: effectiveUserId,
       },
     });
-    
+
     return supplier;
   } catch (error) {
     console.error("Error fetching supplier:", error);

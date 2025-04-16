@@ -1,6 +1,7 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import EnhancedPurchaseEditPage from "@/components/pages/dashboard/purchases/edit";
+import PurchaseEditErrorFallback from "@/components/pages/dashboard/purchases/edit/error-fallback";
 import { getPurchaseById } from "@/actions/purchases";
 import { getProducts } from "@/lib/get-products";
 import { getSuppliers } from "@/lib/get-suppliers";
@@ -25,34 +26,64 @@ export default async function EditPurchase(props: Props) {
   }
 
   // Fetch products and suppliers for the form
-  const [products, suppliersResult] = await Promise.all([
-    getProducts({
-      includeOutOfStock: true, // Include out of stock products for editing
-      orderBy: "name",
-      orderDirection: "asc",
-    }),
-    getSuppliers(),
-  ]);
+  try {
+    const [products, suppliersResult] = await Promise.all([
+      getProducts({
+        includeOutOfStock: true, // Include out of stock products for editing
+        orderBy: "name",
+        orderDirection: "asc",
+      }),
+      getSuppliers(),
+    ]);
 
-  if (!products || !suppliersResult.suppliers) {
+    console.log("Products loaded:", products ? products.length : 0);
+    console.log("Suppliers result:", suppliersResult);
+
+    // Use the error fallback component if data loading fails
+    if (!products) {
+      return (
+        <DashboardLayout pageTitle="Edit Pembelian">
+          <PurchaseEditErrorFallback
+            purchaseId={id}
+            errorMessage="Gagal memuat data produk. Silakan coba lagi nanti."
+          />
+        </DashboardLayout>
+      );
+    }
+
+    // Check if suppliers were loaded successfully
+    if (suppliersResult.error) {
+      return (
+        <DashboardLayout pageTitle="Edit Pembelian">
+          <PurchaseEditErrorFallback
+            purchaseId={id}
+            errorMessage={
+              suppliersResult.error ||
+              "Gagal memuat data supplier. Silakan coba lagi nanti."
+            }
+          />
+        </DashboardLayout>
+      );
+    }
+
     return (
       <DashboardLayout pageTitle="Edit Pembelian">
-        <div className="container mx-auto px-4 py-6">
-          <p className="text-red-500">
-            Gagal memuat data produk atau supplier. Silakan coba lagi nanti.
-          </p>
-        </div>
+        <EnhancedPurchaseEditPage
+          purchase={purchaseResult.purchase}
+          products={products}
+          suppliers={suppliersResult.suppliers}
+        />
+      </DashboardLayout>
+    );
+  } catch (error) {
+    console.error("Error loading data for purchase edit page:", error);
+    return (
+      <DashboardLayout pageTitle="Edit Pembelian">
+        <PurchaseEditErrorFallback
+          purchaseId={id}
+          errorMessage="Terjadi kesalahan saat memuat data. Silakan coba lagi nanti."
+        />
       </DashboardLayout>
     );
   }
-
-  return (
-    <DashboardLayout pageTitle="Edit Pembelian">
-      <EnhancedPurchaseEditPage 
-        purchase={purchaseResult.purchase} 
-        products={products} 
-        suppliers={suppliersResult.suppliers} 
-      />
-    </DashboardLayout>
-  );
 }

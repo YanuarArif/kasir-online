@@ -1,6 +1,7 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import EnhancedSaleEditPage from "@/components/pages/dashboard/sales/edit";
+import SaleEditErrorFallback from "@/components/pages/dashboard/sales/edit/error-fallback";
 import { getSaleById } from "@/actions/sales";
 import { getProducts } from "@/lib/get-products";
 import DashboardLayout from "@/components/layout/dashboardlayout";
@@ -24,27 +25,44 @@ export default async function EditSale(props: Props) {
   }
 
   // Fetch products for the form
-  const products = await getProducts({
-    includeOutOfStock: true, // Include out of stock products for editing
-    orderBy: "name",
-    orderDirection: "asc",
-  });
+  try {
+    const products = await getProducts({
+      includeOutOfStock: true, // Include out of stock products for editing
+      orderBy: "name",
+      orderDirection: "asc",
+    });
 
-  if (!products) {
+    console.log(
+      "Products loaded for sale edit:",
+      products ? products.length : 0
+    );
+
+    // Use the error fallback component if data loading fails
+    if (!products) {
+      return (
+        <DashboardLayout pageTitle="Edit Penjualan">
+          <SaleEditErrorFallback
+            saleId={id}
+            errorMessage="Gagal memuat data produk. Silakan coba lagi nanti."
+          />
+        </DashboardLayout>
+      );
+    }
+
     return (
       <DashboardLayout pageTitle="Edit Penjualan">
-        <div className="container mx-auto px-4 py-6">
-          <p className="text-red-500">
-            Gagal memuat data produk. Silakan coba lagi nanti.
-          </p>
-        </div>
+        <EnhancedSaleEditPage sale={saleResult.sale} products={products} />
+      </DashboardLayout>
+    );
+  } catch (error) {
+    console.error("Error loading data for sale edit page:", error);
+    return (
+      <DashboardLayout pageTitle="Edit Penjualan">
+        <SaleEditErrorFallback
+          saleId={id}
+          errorMessage="Terjadi kesalahan saat memuat data. Silakan coba lagi nanti."
+        />
       </DashboardLayout>
     );
   }
-
-  return (
-    <DashboardLayout pageTitle="Edit Penjualan">
-      <EnhancedSaleEditPage sale={saleResult.sale} products={products} />
-    </DashboardLayout>
-  );
 }
