@@ -270,8 +270,10 @@ const ProductsPage: NextPage<ProductsPageProps> = (props) => {
                     getStockStatusBadge={getStockStatusBadge}
                     searchTerm={searchTerm}
                   />
+                </div>
 
-                  {/* Pagination */}
+                {/* Pagination - Moved outside the overflow container */}
+                <div className="mt-4">
                   <Pagination
                     currentPage={currentPage}
                     totalPages={Math.ceil(

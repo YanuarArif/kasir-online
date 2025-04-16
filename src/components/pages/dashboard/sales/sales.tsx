@@ -211,8 +211,10 @@ const SalesPage: NextPage<SalesPageProps> = ({ sales }) => {
                     getSortIcon={getSortIcon}
                     searchTerm={searchTerm}
                   />
+                </div>
 
-                  {/* Pagination */}
+                {/* Pagination - Moved outside the overflow container */}
+                <div className="mt-4">
                   <Pagination
                     currentPage={currentPage}
                     totalPages={Math.ceil(filteredSales.length / itemsPerPage)}
