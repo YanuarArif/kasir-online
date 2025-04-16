@@ -59,11 +59,12 @@ const CustomersPage: React.FC<CustomersPageProps> = ({ customers }) => {
             <FunnelIcon className="mr-2 h-5 w-5 text-gray-400 dark:text-gray-500" />
             Filter
           </button>
-          <Link href="/dashboard/customers/new" legacyBehavior>
-            <a className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 dark:hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 w-full sm:w-auto">
-              <PlusIcon className="mr-2 h-5 w-5" />
-              Tambah Pelanggan
-            </a>
+          <Link
+            href="/dashboard/customers/new"
+            className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 dark:hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 w-full sm:w-auto"
+          >
+            <PlusIcon className="mr-2 h-5 w-5" />
+            Tambah Pelanggan
           </Link>
         </div>
       </div>
@@ -114,11 +115,9 @@ const CustomersPage: React.FC<CustomersPageProps> = ({ customers }) => {
                     <td className="px-6 py-4 text-right whitespace-nowrap space-x-3">
                       <Link
                         href={`/dashboard/customers/${customer.id}`}
-                        legacyBehavior
+                        className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 font-medium"
                       >
-                        <a className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 font-medium">
-                          Detail
-                        </a>
+                        Detail
                       </Link>
                     </td>
                   </tr>
@@ -153,11 +152,9 @@ const CustomersPage: React.FC<CustomersPageProps> = ({ customers }) => {
                   </h3>
                   <Link
                     href={`/dashboard/customers/${customer.id}`}
-                    legacyBehavior
+                    className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 font-medium"
                   >
-                    <a className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 font-medium">
-                      Detail
-                    </a>
+                    Detail
                   </Link>
                 </div>
                 <div className="mt-2 space-y-1">
