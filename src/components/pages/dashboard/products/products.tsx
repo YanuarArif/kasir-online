@@ -21,7 +21,6 @@ import { Product, StockCounts, Category, ColumnVisibility } from "./types";
 import { StockSummaryCards } from "./components/StockSummaryCards";
 import { ProductActions } from "./components/ProductActions";
 import { ProductTableDesktop } from "./components/ProductTableDesktop";
-import { ProductListMobile } from "./components/ProductListMobile";
 import { NeedsApprovalTabContent } from "./components/NeedsApprovalTabContent";
 import { WarehouseTabContent } from "./components/WarehouseTabContent";
 
@@ -246,19 +245,12 @@ const ProductsPage: NextPage<ProductsPageProps> = (props) => {
 
                 {/* Products List */}
                 <div className="overflow-x-auto">
-                  {/* Desktop Table View */}
+                  {/* Table View */}
                   <ProductTableDesktop
                     products={filteredProducts}
                     columnVisibility={columnVisibility}
                     handleSort={handleSort}
                     getSortIcon={getSortIcon}
-                    getStockStatusBadge={getStockStatusBadge}
-                    searchTerm={searchTerm}
-                  />
-
-                  {/* Mobile Card View */}
-                  <ProductListMobile
-                    products={filteredProducts}
                     getStockStatusBadge={getStockStatusBadge}
                     searchTerm={searchTerm}
                   />

@@ -20,7 +20,6 @@ import { Sale, SaleCounts, ColumnVisibility } from "./types";
 import { SaleSummaryCards } from "./components/SaleSummaryCards";
 import { SaleActions } from "./components/SaleActions";
 import { SaleTableDesktop } from "./components/SaleTableDesktop";
-import { SaleListMobile } from "./components/SaleListMobile";
 import { NeedsApprovalTabContent } from "./components/NeedsApprovalTabContent";
 import { WarehouseTabContent } from "./components/WarehouseTabContent";
 
@@ -185,18 +184,12 @@ const SalesPage: NextPage<SalesPageProps> = ({ sales }) => {
 
                 {/* Sales List */}
                 <div className="overflow-x-auto">
-                  {/* Desktop Table View */}
+                  {/* Table View */}
                   <SaleTableDesktop
                     sales={filteredSales}
                     columnVisibility={columnVisibility}
                     handleSort={handleSort}
                     getSortIcon={getSortIcon}
-                    searchTerm={searchTerm}
-                  />
-
-                  {/* Mobile Card View */}
-                  <SaleListMobile
-                    sales={filteredSales}
                     searchTerm={searchTerm}
                   />
                 </div>

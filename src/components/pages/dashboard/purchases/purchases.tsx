@@ -20,7 +20,6 @@ import { Purchase, PurchaseCounts, ColumnVisibility } from "./types";
 import { PurchaseSummaryCards } from "./components/StockSummaryCards";
 import { PurchaseActions } from "./components/PurchaseActions";
 import { PurchaseTableDesktop } from "./components/PurchaseTableDesktop";
-import { PurchaseListMobile } from "./components/PurchaseListMobile";
 import { NeedsApprovalTabContent } from "./components/NeedsApprovalTabContent";
 import { WarehouseTabContent } from "./components/WarehouseTabContent";
 
@@ -192,18 +191,12 @@ const PurchasesPage: NextPage<PurchasesPageProps> = ({ purchases }) => {
 
                 {/* Purchases List */}
                 <div className="overflow-x-auto">
-                  {/* Desktop Table View */}
+                  {/* Table View */}
                   <PurchaseTableDesktop
                     purchases={filteredPurchases}
                     columnVisibility={columnVisibility}
                     handleSort={handleSort}
                     getSortIcon={getSortIcon}
-                    searchTerm={searchTerm}
-                  />
-
-                  {/* Mobile Card View */}
-                  <PurchaseListMobile
-                    purchases={filteredPurchases}
                     searchTerm={searchTerm}
                   />
                 </div>
