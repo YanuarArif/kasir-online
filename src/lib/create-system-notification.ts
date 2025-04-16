@@ -1,7 +1,7 @@
 "use server";
 
 import { createNotification } from "@/actions/notifications";
-import { NotificationType } from "@prisma/client";
+import { NotificationType as PrismaNotificationType } from "@prisma/client";
 import { getEffectiveUserId } from "./get-effective-user-id";
 
 /**
@@ -14,19 +14,19 @@ export async function createSystemNotification(
 ): Promise<boolean> {
   try {
     const userId = await getEffectiveUserId();
-    
+
     if (!userId) {
       console.error("Failed to create notification: No authenticated user");
       return false;
     }
-    
+
     const result = await createNotification({
       userId,
       type,
       title,
       message,
     });
-    
+
     return result.success;
   } catch (error) {
     console.error("Error creating system notification:", error);
@@ -87,7 +87,7 @@ export async function createSystemUpdateNotification(
     month: "long",
     year: "numeric",
   });
-  
+
   return createSystemNotification(
     "info",
     "Pembaruan Sistem",
