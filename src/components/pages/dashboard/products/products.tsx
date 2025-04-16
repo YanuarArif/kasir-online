@@ -15,6 +15,7 @@ import React, { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { Pagination } from "@/components/ui/pagination";
 
 // Import types and components
 import { Product, StockCounts, Category, ColumnVisibility } from "./types";
@@ -37,6 +38,11 @@ const ProductsPage: NextPage<ProductsPageProps> = (props) => {
   const [mainTab, setMainTab] = useState("products");
   const [subTab, setSubTab] = useState("all-products");
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(products); // Initialize with products
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [paginatedProducts, setPaginatedProducts] = useState<Product[]>([]);
 
   // Column visibility state
   const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({
@@ -81,6 +87,9 @@ const ProductsPage: NextPage<ProductsPageProps> = (props) => {
   // Filter and sort products based on search term, active tabs, and sort settings
   useEffect(() => {
     let result = [...products]; // Create a copy to avoid mutating the original
+
+    // Reset to first page when filters change
+    setCurrentPage(1);
 
     // Apply search filter
     if (searchTerm) {
@@ -161,6 +170,13 @@ const ProductsPage: NextPage<ProductsPageProps> = (props) => {
 
     setFilteredProducts(result);
   }, [products, searchTerm, mainTab, subTab, sortField, sortDirection]);
+
+  // Apply pagination to filtered products
+  useEffect(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    setPaginatedProducts(filteredProducts.slice(startIndex, endIndex));
+  }, [filteredProducts, currentPage, itemsPerPage]);
 
   // Function to get stock status badge
   const getStockStatusBadge = (stock: number) => {
@@ -247,12 +263,24 @@ const ProductsPage: NextPage<ProductsPageProps> = (props) => {
                 <div className="overflow-x-auto">
                   {/* Table View */}
                   <ProductTableDesktop
-                    products={filteredProducts}
+                    products={paginatedProducts}
                     columnVisibility={columnVisibility}
                     handleSort={handleSort}
                     getSortIcon={getSortIcon}
                     getStockStatusBadge={getStockStatusBadge}
                     searchTerm={searchTerm}
+                  />
+
+                  {/* Pagination */}
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={Math.ceil(
+                      filteredProducts.length / itemsPerPage
+                    )}
+                    onPageChange={setCurrentPage}
+                    itemsPerPage={itemsPerPage}
+                    onItemsPerPageChange={setItemsPerPage}
+                    totalItems={filteredProducts.length}
                   />
                 </div>
               </TabsContent>

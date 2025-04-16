@@ -14,6 +14,7 @@ import React, { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { Pagination } from "@/components/ui/pagination";
 
 // Import types and components
 import { Purchase, PurchaseCounts, ColumnVisibility } from "./types";
@@ -35,6 +36,11 @@ const PurchasesPage: NextPage<PurchasesPageProps> = ({ purchases }) => {
     useState<Purchase[]>(purchases);
   const [sortField, setSortField] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [paginatedPurchases, setPaginatedPurchases] = useState<Purchase[]>([]);
 
   // Column visibility state
   const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({
@@ -63,6 +69,9 @@ const PurchasesPage: NextPage<PurchasesPageProps> = ({ purchases }) => {
 
   // Filter purchases based on search term
   useEffect(() => {
+    // Reset to first page when search term changes
+    setCurrentPage(1);
+
     if (!searchTerm.trim()) {
       setFilteredPurchases(purchases);
       return;
@@ -82,8 +91,18 @@ const PurchasesPage: NextPage<PurchasesPageProps> = ({ purchases }) => {
     setFilteredPurchases(filtered);
   }, [searchTerm, purchases]);
 
+  // Apply pagination to filtered purchases
+  useEffect(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    setPaginatedPurchases(filteredPurchases.slice(startIndex, endIndex));
+  }, [filteredPurchases, currentPage, itemsPerPage]);
+
   // Sort purchases
   const handleSort = (field: string) => {
+    // Reset to first page when sorting changes
+    setCurrentPage(1);
+
     if (sortField === field) {
       // Toggle sort direction if clicking the same field
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -193,11 +212,23 @@ const PurchasesPage: NextPage<PurchasesPageProps> = ({ purchases }) => {
                 <div className="overflow-x-auto">
                   {/* Table View */}
                   <PurchaseTableDesktop
-                    purchases={filteredPurchases}
+                    purchases={paginatedPurchases}
                     columnVisibility={columnVisibility}
                     handleSort={handleSort}
                     getSortIcon={getSortIcon}
                     searchTerm={searchTerm}
+                  />
+
+                  {/* Pagination */}
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={Math.ceil(
+                      filteredPurchases.length / itemsPerPage
+                    )}
+                    onPageChange={setCurrentPage}
+                    itemsPerPage={itemsPerPage}
+                    onItemsPerPageChange={setItemsPerPage}
+                    totalItems={filteredPurchases.length}
                   />
                 </div>
               </TabsContent>

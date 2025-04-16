@@ -14,6 +14,7 @@ import React, { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { Pagination } from "@/components/ui/pagination";
 
 // Import types and components
 import { Sale, SaleCounts, ColumnVisibility } from "./types";
@@ -34,6 +35,11 @@ const SalesPage: NextPage<SalesPageProps> = ({ sales }) => {
   const [filteredSales, setFilteredSales] = useState<Sale[]>(sales);
   const [sortField, setSortField] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [paginatedSales, setPaginatedSales] = useState<Sale[]>([]);
 
   // Column visibility state
   const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({
@@ -68,6 +74,9 @@ const SalesPage: NextPage<SalesPageProps> = ({ sales }) => {
 
   // Filter sales based on search term
   useEffect(() => {
+    // Reset to first page when search term changes
+    setCurrentPage(1);
+
     if (!searchTerm.trim()) {
       setFilteredSales(sales);
       return;
@@ -81,8 +90,18 @@ const SalesPage: NextPage<SalesPageProps> = ({ sales }) => {
     setFilteredSales(filtered);
   }, [searchTerm, sales]);
 
+  // Apply pagination to filtered sales
+  useEffect(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    setPaginatedSales(filteredSales.slice(startIndex, endIndex));
+  }, [filteredSales, currentPage, itemsPerPage]);
+
   // Sort sales
   const handleSort = (field: string) => {
+    // Reset to first page when sorting changes
+    setCurrentPage(1);
+
     if (sortField === field) {
       // Toggle sort direction if clicking the same field
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -186,11 +205,21 @@ const SalesPage: NextPage<SalesPageProps> = ({ sales }) => {
                 <div className="overflow-x-auto">
                   {/* Table View */}
                   <SaleTableDesktop
-                    sales={filteredSales}
+                    sales={paginatedSales}
                     columnVisibility={columnVisibility}
                     handleSort={handleSort}
                     getSortIcon={getSortIcon}
                     searchTerm={searchTerm}
+                  />
+
+                  {/* Pagination */}
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={Math.ceil(filteredSales.length / itemsPerPage)}
+                    onPageChange={setCurrentPage}
+                    itemsPerPage={itemsPerPage}
+                    onItemsPerPageChange={setItemsPerPage}
+                    totalItems={filteredSales.length}
                   />
                 </div>
               </TabsContent>
