@@ -14,9 +14,9 @@ import { Button } from "@/components/ui/button";
 import { EnhancedServiceSchema } from "./types";
 import { ServiceFormValues } from "./types";
 import ServiceFormTabs from "./components/ServiceFormTabs";
-import ServiceFormSummary from "./components/ServiceFormSummary";
 import { ArrowLeft, Check } from "lucide-react";
 import { DeviceType } from "../types";
+import ServiceFormSummary from "./components/ServiceFormSummary";
 
 const AddServicePage: React.FC = () => {
   const router = useRouter();
@@ -182,10 +182,7 @@ const AddServicePage: React.FC = () => {
 
               {/* Summary Sidebar */}
               <div className="lg:col-span-1">
-                <ServiceFormSummary
-                  formValues={formValues}
-                  isPending={isPending}
-                />
+                <ServiceFormSummary formValues={formValues} />
               </div>
             </div>
 

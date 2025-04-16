@@ -6,12 +6,10 @@ import { DeviceType } from "../../types";
 
 interface ServiceFormSummaryProps {
   formValues: ServiceFormValues;
-  isPending: boolean;
 }
 
 const ServiceFormSummary: React.FC<ServiceFormSummaryProps> = ({
   formValues,
-  isPending,
 }) => {
   // Format device type for display
   const getDeviceTypeLabel = (type: DeviceType) => {
@@ -89,15 +87,15 @@ const ServiceFormSummary: React.FC<ServiceFormSummaryProps> = ({
                   {getPriorityLabel(formValues.priorityLevel || "MEDIUM")}
                 </span>
               </div>
-              {formValues.estimatedCost > 0 && (
+              {formValues.estimatedCost && formValues.estimatedCost > 0 && (
                 <div className="flex justify-between">
                   <span className="text-sm">Estimasi Biaya</span>
                   <span className="text-sm font-medium">
-                    {formatCurrency(formValues.estimatedCost)}
+                    {formatCurrency(formValues.estimatedCost || 0)}
                   </span>
                 </div>
               )}
-              {formValues.warrantyPeriod > 0 && (
+              {formValues.warrantyPeriod && formValues.warrantyPeriod > 0 && (
                 <div className="flex justify-between">
                   <span className="text-sm">Garansi</span>
                   <span className="text-sm font-medium">

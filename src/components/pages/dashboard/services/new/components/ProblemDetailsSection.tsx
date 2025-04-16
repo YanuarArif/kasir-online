@@ -13,7 +13,7 @@ import { ServiceFormValues } from "../types";
 import { Input } from "@/components/ui/input";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
-import { id } from "date-fns/locale";
+import { id } from "date-fns/locale/id";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
