@@ -49,9 +49,26 @@ export default async function EditSale(props: Props) {
       );
     }
 
+    // Convert Date objects to strings to match the expected interface
+    const serializedSale = {
+      ...saleResult.sale,
+      saleDate:
+        saleResult.sale.saleDate instanceof Date
+          ? saleResult.sale.saleDate.toISOString()
+          : saleResult.sale.saleDate,
+      createdAt:
+        saleResult.sale.createdAt instanceof Date
+          ? saleResult.sale.createdAt.toISOString()
+          : saleResult.sale.createdAt,
+      updatedAt:
+        saleResult.sale.updatedAt instanceof Date
+          ? saleResult.sale.updatedAt.toISOString()
+          : saleResult.sale.updatedAt,
+    };
+
     return (
       <DashboardLayout pageTitle="Edit Penjualan">
-        <EnhancedSaleEditPage sale={saleResult.sale} products={products} />
+        <EnhancedSaleEditPage sale={serializedSale} products={products} />
       </DashboardLayout>
     );
   } catch (error) {

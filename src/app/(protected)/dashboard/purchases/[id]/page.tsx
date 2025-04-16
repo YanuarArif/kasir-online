@@ -21,5 +21,22 @@ export default async function PurchaseDetail(props: Props) {
     notFound();
   }
 
-  return <PurchaseDetailPage purchase={purchaseResult.purchase} />;
+  // Convert Date objects to strings to match the expected interface
+  const serializedPurchase = {
+    ...purchaseResult.purchase,
+    purchaseDate:
+      purchaseResult.purchase.purchaseDate instanceof Date
+        ? purchaseResult.purchase.purchaseDate.toISOString()
+        : purchaseResult.purchase.purchaseDate,
+    createdAt:
+      purchaseResult.purchase.createdAt instanceof Date
+        ? purchaseResult.purchase.createdAt.toISOString()
+        : purchaseResult.purchase.createdAt,
+    updatedAt:
+      purchaseResult.purchase.updatedAt instanceof Date
+        ? purchaseResult.purchase.updatedAt.toISOString()
+        : purchaseResult.purchase.updatedAt,
+  };
+
+  return <PurchaseDetailPage purchase={serializedPurchase} />;
 }

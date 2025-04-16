@@ -66,10 +66,19 @@ export default async function EditPurchase(props: Props) {
       );
     }
 
+    // Convert Date objects to strings to match the expected interface
+    const serializedPurchase = {
+      ...purchaseResult.purchase,
+      purchaseDate:
+        purchaseResult.purchase.purchaseDate instanceof Date
+          ? purchaseResult.purchase.purchaseDate.toISOString()
+          : purchaseResult.purchase.purchaseDate,
+    };
+
     return (
       <DashboardLayout pageTitle="Edit Pembelian">
         <EnhancedPurchaseEditPage
-          purchase={purchaseResult.purchase}
+          purchase={serializedPurchase}
           products={products}
           suppliers={suppliersResult.suppliers}
         />
