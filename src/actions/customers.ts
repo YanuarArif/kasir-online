@@ -6,6 +6,7 @@ import { db } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth"; // Import auth to get session
 import { getEffectiveUserId } from "@/lib/get-effective-user-id";
+import { createCustomerAddedNotification } from "@/lib/create-system-notification";
 
 export const addCustomer = async (values: z.infer<typeof CustomerSchema>) => {
   // Get effective user ID (owner ID if employee, user's own ID otherwise)
@@ -32,11 +33,12 @@ export const addCustomer = async (values: z.infer<typeof CustomerSchema>) => {
 
   try {
     // 2. Create the customer in the database
+    // If email is empty string, set it to null to avoid unique constraint issues
     const customer = await db.customer.create({
       data: {
         name,
         contactName,
-        email,
+        email: email === "" ? null : email, // Convert empty string to null
         phone,
         address,
         notes,
@@ -44,7 +46,13 @@ export const addCustomer = async (values: z.infer<typeof CustomerSchema>) => {
       },
     });
 
-    // 3. Revalidate the customers page to show the new customer
+    // 3. Create a notification for the new customer
+    await createCustomerAddedNotification(
+      name,
+      contactName || email || phone || "Tidak ada kontak"
+    );
+
+    // 4. Revalidate the customers page to show the new customer
     revalidatePath("/dashboard/customers");
 
     return { success: "Pelanggan berhasil ditambahkan!", customer };
@@ -139,6 +147,7 @@ export const updateCustomer = async (
 
   try {
     // 2. Update the customer in the database
+    // If email is empty string, set it to null to avoid unique constraint issues
     const customer = await db.customer.update({
       where: {
         id,
@@ -147,7 +156,7 @@ export const updateCustomer = async (
       data: {
         name,
         contactName,
-        email,
+        email: email === "" ? null : email, // Convert empty string to null
         phone,
         address,
         notes,

@@ -114,3 +114,23 @@ export async function createSupplierAddedNotification(
     message
   );
 }
+
+/**
+ * Creates a new customer notification for the current user
+ */
+export async function createCustomerAddedNotification(
+  customerName: string,
+  customerContact?: string
+): Promise<boolean> {
+  let message = `Pelanggan baru "${customerName}" telah berhasil ditambahkan.`;
+
+  if (customerContact) {
+    message += ` Kontak: ${customerContact}.`;
+  }
+
+  return createSystemNotification(
+    "success",
+    "Pelanggan Baru Ditambahkan",
+    message
+  );
+}
