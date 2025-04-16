@@ -42,11 +42,14 @@ export default function EnhancedNewCustomerPage() {
   // Handle form submission
   const onSubmit = async (data: EnhancedCustomerFormValues) => {
     try {
-      // Show loading toast
-      toast.loading("Menyimpan data pelanggan...");
+      // Show loading toast with ID so we can dismiss it later
+      const toastId = toast.loading("Menyimpan data pelanggan...");
 
       // Submit the form data
       const result = await addCustomer(data);
+
+      // Dismiss the loading toast
+      toast.dismiss(toastId);
 
       // Handle the result
       if (result.success) {
@@ -57,6 +60,8 @@ export default function EnhancedNewCustomerPage() {
       }
     } catch (error) {
       console.error("Error adding customer:", error);
+      // Dismiss any loading toasts in case of error
+      toast.dismiss();
       toast.error("Terjadi kesalahan saat menambahkan pelanggan");
     }
   };

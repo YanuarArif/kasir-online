@@ -55,6 +55,9 @@ const EnhancedSupplierPage: React.FC = () => {
   // Handle form submission
   const onSubmit = (values: SupplierFormValues) => {
     startTransition(async () => {
+      // Show loading toast with ID so we can dismiss it later
+      const toastId = toast.loading("Menyimpan data supplier...");
+
       try {
         // Extract only the fields that are in the original SupplierSchema
         const supplierData = {
@@ -67,6 +70,10 @@ const EnhancedSupplierPage: React.FC = () => {
         };
 
         const result = await addSupplier(supplierData);
+
+        // Dismiss the loading toast
+        toast.dismiss(toastId);
+
         if (result.success) {
           toast.success(result.success);
           form.reset(); // Reset form on success
@@ -78,6 +85,8 @@ const EnhancedSupplierPage: React.FC = () => {
           toast.error("Terjadi kesalahan yang tidak diketahui.");
         }
       } catch (error) {
+        // Dismiss any loading toasts in case of error
+        toast.dismiss();
         console.error("Submit Error:", error);
         toast.error("Gagal menghubungi server.");
       }
