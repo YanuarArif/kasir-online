@@ -4,17 +4,17 @@ import React from "react";
 import { useSession } from "next-auth/react";
 import { Role } from "@prisma/client";
 import {
-  HomeIcon,
-  ChartBarIcon,
-  TruckIcon,
-  CubeIcon,
-  Cog6ToothIcon,
-  CurrencyDollarIcon,
-  UsersIcon,
-  BuildingStorefrontIcon,
-  UserGroupIcon,
-  WrenchIcon,
-} from "@heroicons/react/24/outline";
+  Home,
+  BarChart,
+  Truck,
+  Package,
+  Settings,
+  DollarSign,
+  Users,
+  Store,
+  UserCog,
+  Wrench,
+} from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NavItem from "./NavItem";
 import CollapsibleNavItem from "./CollapsibleNavItem";
@@ -24,42 +24,42 @@ export const navigation = [
   {
     name: "Ringkasan",
     href: "/dashboard/summaries",
-    icon: HomeIcon,
+    icon: Home,
     roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
   },
   {
     name: "Penjualan",
     href: "/dashboard/sales",
-    icon: CurrencyDollarIcon,
+    icon: DollarSign,
     roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
   },
   {
     name: "Pembelian",
     href: "/dashboard/purchases",
-    icon: TruckIcon,
+    icon: Truck,
     roles: [Role.OWNER, Role.ADMIN], // Only OWNER and ADMIN can access
   },
   {
     name: "Produk",
     href: "/dashboard/products",
-    icon: CubeIcon,
+    icon: Package,
     roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
   },
   {
     name: "Daftar Customers",
     href: "/dashboard/customers",
-    icon: UsersIcon,
+    icon: Users,
     roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
   },
   {
     name: "Suppliers",
     href: "/dashboard/suppliers",
-    icon: BuildingStorefrontIcon,
+    icon: Store,
     roles: [Role.OWNER, Role.ADMIN], // Only OWNER and ADMIN can access
   },
   {
     name: "Layanan",
-    icon: WrenchIcon,
+    icon: Wrench,
     roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
     hasChildren: true,
     children: [
@@ -78,19 +78,19 @@ export const navigation = [
   {
     name: "Karyawan",
     href: "/dashboard/settings/employees",
-    icon: UserGroupIcon,
+    icon: UserCog,
     roles: [Role.OWNER], // Only OWNER can access
   },
   {
     name: "Laporan",
     href: "/dashboard/reports",
-    icon: ChartBarIcon,
+    icon: BarChart,
     roles: [Role.OWNER, Role.ADMIN], // Only OWNER and ADMIN can access
   },
   {
     name: "Pengaturan",
     href: "/dashboard/settings/account",
-    icon: Cog6ToothIcon,
+    icon: Settings,
     roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
   },
 ];

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -126,9 +126,9 @@ const CollapsibleNavItem: React.FC<CollapsibleNavItemProps> = ({
           {/* Chevron icon */}
           <div className="ml-3">
             {isExpanded ? (
-              <ChevronDownIcon className="h-4 w-4 transition-transform duration-200" />
+              <ChevronDown className="h-4 w-4 transition-transform duration-200" />
             ) : (
-              <ChevronRightIcon className="h-4 w-4 transition-transform duration-200" />
+              <ChevronRight className="h-4 w-4 transition-transform duration-200" />
             )}
           </div>
         </button>

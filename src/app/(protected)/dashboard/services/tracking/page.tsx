@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ClockIcon } from "@heroicons/react/24/outline";
+import { Search } from "lucide-react";
 
 const ServiceTrackingPage = () => {
   return (
@@ -17,10 +17,11 @@ const ServiceTrackingPage = () => {
         </CardHeader>
         <CardContent className="pt-6">
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <ClockIcon className="h-16 w-16 text-gray-400 mb-4" />
+            <Search className="h-16 w-16 text-gray-400 mb-4" />
             <h3 className="text-lg font-medium">Halaman Tracking Servis</h3>
             <p className="text-sm text-gray-500 mt-2 max-w-md">
-              Halaman ini akan berisi fitur untuk melacak status layanan servis yang sedang berlangsung.
+              Halaman ini akan berisi fitur untuk melacak status layanan servis
+              yang sedang berlangsung.
             </p>
           </div>
         </CardContent>
