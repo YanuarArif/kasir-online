@@ -33,11 +33,12 @@ export const addSupplier = async (values: z.infer<typeof SupplierSchema>) => {
 
   try {
     // 2. Create the supplier in the database
+    // If email is empty string, set it to null to avoid unique constraint issues
     const supplier = await db.supplier.create({
       data: {
         name,
         contactName,
-        email,
+        email: email === "" ? null : email, // Convert empty string to null
         phone,
         address,
         notes,
@@ -154,7 +155,7 @@ export const updateSupplier = async (
       data: {
         name,
         contactName,
-        email,
+        email: email === "" ? null : email, // Convert empty string to null
         phone,
         address,
         notes,
