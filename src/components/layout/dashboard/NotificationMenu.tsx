@@ -11,10 +11,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import {
-  getNotifications,
   markAllNotificationsAsRead,
   markNotificationAsRead,
   NotificationItem,
+  NotificationType,
 } from "@/actions/notifications";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
@@ -24,30 +24,41 @@ import { Bell } from "lucide-react";
 const NotificationMenu = () => {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  const fetchNotifications = async () => {
-    setLoading(true);
-    try {
-      const result = await getNotifications(5);
-      if (result.success && result.data) {
-        setNotifications(result.data);
-        setUnreadCount(result.data.filter((n) => !n.isRead).length);
-        setError(null);
-      } else {
-        setError(result.error || "Gagal mengambil notifikasi");
-      }
-    } catch (err) {
-      setError("Terjadi kesalahan saat mengambil notifikasi");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchNotifications();
+    // Create static mock data instead of fetching
+    const mockNotifications: NotificationItem[] = [
+      {
+        id: "1",
+        type: "warning" as NotificationType,
+        title: "Stok Menipis",
+        message:
+          "Beberapa produk hampir habis stoknya. Segera lakukan pembelian.",
+        timestamp: "30 menit yang lalu",
+        isRead: false,
+      },
+      {
+        id: "2",
+        type: "success" as NotificationType,
+        title: "Penjualan Berhasil",
+        message: "Penjualan baru telah berhasil dicatat.",
+        timestamp: "2 jam yang lalu",
+        isRead: true,
+      },
+      {
+        id: "3",
+        type: "info" as NotificationType,
+        title: "Pembaruan Sistem",
+        message: "Sistem akan diperbarui pada tanggal 15 bulan ini.",
+        timestamp: "1 hari yang lalu",
+        isRead: false,
+      },
+    ];
+
+    setNotifications(mockNotifications);
+    setUnreadCount(mockNotifications.filter((n) => !n.isRead).length);
+    setLoading(false);
   }, []);
 
   const handleMarkAsRead = async (id: string) => {
@@ -150,8 +161,6 @@ const NotificationMenu = () => {
             <Skeleton className="h-12 w-full" />
             <Skeleton className="h-12 w-full" />
           </div>
-        ) : error ? (
-          <div className="p-4 text-sm text-red-500">{error}</div>
         ) : notifications.length === 0 ? (
           <div className="p-4 text-sm text-gray-500">Tidak ada notifikasi</div>
         ) : (
