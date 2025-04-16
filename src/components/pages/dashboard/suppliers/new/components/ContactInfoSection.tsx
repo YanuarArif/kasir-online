@@ -60,7 +60,7 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({
           <FormItem>
             <FormLabel className="flex items-center gap-1.5">
               <Mail className="h-4 w-4 text-green-600" />
-              Email
+              Email (Opsional)
             </FormLabel>
             <FormControl>
               <Input
@@ -123,9 +123,7 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({
                 className="min-h-24 border-green-200 focus-visible:ring-green-500"
               />
             </FormControl>
-            <FormDescription>
-              Alamat lengkap lokasi supplier
-            </FormDescription>
+            <FormDescription>Alamat lengkap lokasi supplier</FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -163,7 +161,7 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({
           <AtSign className="h-4 w-4 text-green-600" />
           Media Sosial (Opsional)
         </h3>
-        
+
         <FormField
           control={control}
           name="socialMedia.facebook"
@@ -182,7 +180,7 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={control}
           name="socialMedia.instagram"

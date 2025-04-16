@@ -94,3 +94,23 @@ export async function createSystemUpdateNotification(
     `Sistem akan diperbarui pada tanggal ${formattedDate}. Mohon simpan pekerjaan Anda sebelum waktu tersebut.`
   );
 }
+
+/**
+ * Creates a new supplier notification for the current user
+ */
+export async function createSupplierAddedNotification(
+  supplierName: string,
+  supplierContact?: string
+): Promise<boolean> {
+  let message = `Supplier baru "${supplierName}" telah berhasil ditambahkan.`;
+
+  if (supplierContact) {
+    message += ` Kontak: ${supplierContact}.`;
+  }
+
+  return createSystemNotification(
+    "success",
+    "Supplier Baru Ditambahkan",
+    message
+  );
+}

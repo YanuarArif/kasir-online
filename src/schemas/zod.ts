@@ -78,7 +78,11 @@ export const PurchaseSchema = z.object({
 export const CustomerSchema = z.object({
   name: z.string().min(1, { message: "Nama pelanggan wajib diisi" }),
   contactName: z.string().optional(),
-  email: z.string().email({ message: "Email tidak valid" }).optional(),
+  email: z
+    .string()
+    .email({ message: "Email tidak valid" })
+    .optional()
+    .or(z.literal("")),
   phone: z.string().optional(),
   address: z.string().optional(),
   notes: z.string().optional(),
@@ -87,7 +91,11 @@ export const CustomerSchema = z.object({
 export const SupplierSchema = z.object({
   name: z.string().min(1, { message: "Nama supplier wajib diisi" }),
   contactName: z.string().optional(),
-  email: z.string().email({ message: "Email tidak valid" }).optional(),
+  email: z
+    .string()
+    .email({ message: "Email tidak valid" })
+    .optional()
+    .or(z.literal("")),
   phone: z.string().optional(),
   address: z.string().optional(),
   notes: z.string().optional(),

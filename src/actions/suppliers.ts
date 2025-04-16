@@ -6,6 +6,7 @@ import { db } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth"; // Import auth to get session
 import { getEffectiveUserId } from "@/lib/get-effective-user-id";
+import { createSupplierAddedNotification } from "@/lib/create-system-notification";
 
 export const addSupplier = async (values: z.infer<typeof SupplierSchema>) => {
   // Get effective user ID (owner ID if employee, user's own ID otherwise)
@@ -44,7 +45,13 @@ export const addSupplier = async (values: z.infer<typeof SupplierSchema>) => {
       },
     });
 
-    // 3. Revalidate the suppliers page to show the new supplier
+    // 3. Create a notification for the new supplier
+    await createSupplierAddedNotification(
+      name,
+      contactName || email || phone || "Tidak ada kontak"
+    );
+
+    // 4. Revalidate the suppliers page to show the new supplier
     revalidatePath("/dashboard/suppliers");
 
     return { success: "Supplier berhasil ditambahkan!", supplier };
