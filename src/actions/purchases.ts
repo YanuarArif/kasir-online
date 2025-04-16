@@ -184,13 +184,13 @@ export const getPurchases = async () => {
 };
 
 export const getPurchaseById = async (id: string) => {
-  // Get current session
-  const session = await auth();
-  const userId = session?.user?.id;
+  // Get effective user ID (owner ID if employee, user's own ID otherwise)
+  const effectiveUserId = await getEffectiveUserId();
 
-  if (!userId) {
+  if (!effectiveUserId) {
     return { error: "Tidak terautentikasi!" };
   }
+  const userId = effectiveUserId;
 
   try {
     const purchase = await db.purchase.findUnique({
@@ -231,5 +231,153 @@ export const getPurchaseById = async (id: string) => {
   } catch (error) {
     console.error("Database Error:", error);
     return { error: "Gagal mengambil detail pembelian." };
+  }
+};
+
+export const updatePurchase = async (
+  id: string,
+  values: z.infer<typeof PurchaseSchema>
+) => {
+  // Get effective user ID (owner ID if employee, user's own ID otherwise)
+  const effectiveUserId = await getEffectiveUserId();
+
+  if (!effectiveUserId) {
+    return { error: "Tidak terautentikasi!" };
+  }
+  const userId = effectiveUserId;
+
+  // 1. Validate input server-side
+  const validatedFields = PurchaseSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+    console.error(
+      "Validation Error:",
+      validatedFields.error.flatten().fieldErrors
+    );
+    return { error: "Input tidak valid!" };
+  }
+
+  const {
+    items,
+    totalAmount,
+    invoiceRef,
+    supplierId: rawSupplierId,
+  } = validatedFields.data;
+
+  // Ensure supplierId is null if it's an empty string or nullish, otherwise use the ID
+  const supplierId = rawSupplierId ? rawSupplierId : null;
+
+  try {
+    // First, check if the purchase exists and belongs to this user
+    const existingPurchase = await db.purchase.findUnique({
+      where: {
+        id,
+        userId,
+      },
+      include: {
+        items: true,
+      },
+    });
+
+    if (!existingPurchase) {
+      return { error: "Pembelian tidak ditemukan!" };
+    }
+
+    // Get the original items to calculate stock adjustments
+    const originalItems = existingPurchase.items;
+
+    // 2. Update purchase in database with transaction to ensure all operations succeed or fail together
+    const result = await db.$transaction(async (tx) => {
+      // First, delete all existing items
+      await tx.purchaseItem.deleteMany({
+        where: {
+          purchaseId: id,
+        },
+      });
+
+      // Update the purchase record
+      const purchase = await tx.purchase.update({
+        where: {
+          id,
+        },
+        data: {
+          totalAmount,
+          invoiceRef,
+          supplierId,
+          items: {
+            create: items.map((item) => ({
+              quantity: item.quantity,
+              costAtPurchase: item.costAtPurchase,
+              productId: item.productId,
+            })),
+          },
+        },
+        include: {
+          items: true,
+        },
+      });
+
+      // Adjust product stock: first subtract the original quantities, then add the new quantities
+      // This handles both new items, removed items, and quantity changes
+
+      // Subtract original quantities (reverse the original purchase)
+      for (const item of originalItems) {
+        await tx.product.update({
+          where: { id: item.productId },
+          data: {
+            stock: {
+              decrement: item.quantity,
+            },
+          },
+        });
+      }
+
+      // Add new quantities (apply the updated purchase)
+      for (const item of items) {
+        await tx.product.update({
+          where: { id: item.productId },
+          data: {
+            stock: {
+              increment: item.quantity,
+            },
+          },
+        });
+      }
+
+      return purchase;
+    });
+
+    // 3. Revalidate the purchases page cache
+    revalidatePath("/dashboard/purchases");
+    revalidatePath(`/dashboard/purchases/${id}`);
+
+    // Serialize the result to convert Decimal to number and Date to string
+    const serializedResult = {
+      id: result.id,
+      purchaseDate: result.purchaseDate.toISOString(),
+      totalAmount: result.totalAmount.toNumber(),
+      invoiceRef: result.invoiceRef,
+      createdAt: result.createdAt.toISOString(),
+      updatedAt: result.updatedAt.toISOString(),
+      userId: result.userId,
+      supplierId: result.supplierId,
+      items: result.items.map((item) => ({
+        id: item.id,
+        quantity: item.quantity,
+        costAtPurchase: item.costAtPurchase.toNumber(),
+        purchaseId: item.purchaseId,
+        productId: item.productId,
+        createdAt: item.createdAt.toISOString(),
+        updatedAt: item.updatedAt.toISOString(),
+      })),
+    };
+
+    return {
+      success: "Pembelian berhasil diperbarui!",
+      data: serializedResult,
+    };
+  } catch (error) {
+    console.error("Database Error:", error);
+    return { error: "Gagal memperbarui pembelian. Silakan coba lagi." };
   }
 };
