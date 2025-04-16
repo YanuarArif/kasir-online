@@ -79,9 +79,9 @@ const NavbarUserProfile: React.FC = () => {
     const panelHeight = popoverPanelRef.current.offsetHeight || 300; // Fallback height
 
     // For navbar (topbar), position below the button
-    let newTop = buttonRect.bottom + POPOVER_MARGIN;
-    let newLeft = buttonRect.right - panelWidth; // Align right edge with button right edge
-    let newBottom = "auto";
+    let newTop: number | string = buttonRect.bottom + POPOVER_MARGIN;
+    let newLeft: number | string = buttonRect.right - panelWidth; // Align right edge with button right edge
+    let newBottom: number | string = "auto";
 
     // Check bottom overflow
     if (newTop + panelHeight > window.innerHeight - POPOVER_MARGIN) {

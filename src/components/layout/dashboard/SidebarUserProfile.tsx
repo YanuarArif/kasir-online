@@ -31,7 +31,15 @@ import {
 import { createPortal } from "react-dom";
 
 // --- Debounce Utility ---
-function debounce<F extends (...args: any[]) => any>(func: F, waitFor: number) {
+interface DebouncedFunction<F extends (...args: any[]) => any> {
+  (...args: Parameters<F>): void;
+  cancel: () => void;
+}
+
+function debounce<F extends (...args: any[]) => any>(
+  func: F,
+  waitFor: number
+): DebouncedFunction<F> {
   let timeout: ReturnType<typeof setTimeout> | null = null;
   const debounced = (...args: Parameters<F>) => {
     if (timeout !== null) clearTimeout(timeout);
@@ -40,7 +48,8 @@ function debounce<F extends (...args: any[]) => any>(func: F, waitFor: number) {
   debounced.cancel = () => {
     if (timeout !== null) clearTimeout(timeout);
   };
-  return debounced;
+  // Cast to the interface type to ensure TypeScript recognizes 'cancel'
+  return debounced as DebouncedFunction<F>;
 }
 
 // --- Helper for conditional class names ---
@@ -96,9 +105,9 @@ const SidebarUserProfile: React.FC<SidebarUserProfileProps> = ({
     const panelHeight = popoverPanelRef.current.offsetHeight || 300; // Fallback height
 
     // For sidebar, position to the right of the button
-    let newTop = buttonRect.top;
-    let newLeft = buttonRect.right + POPOVER_MARGIN;
-    let newBottom = "auto";
+    let newTop: number | string = buttonRect.top;
+    let newLeft: number | string = buttonRect.right + POPOVER_MARGIN;
+    let newBottom: number | string = "auto";
 
     // If collapsed, position to the right
     if (isCollapsed) {
@@ -204,9 +213,7 @@ const SidebarUserProfile: React.FC<SidebarUserProfileProps> = ({
   return (
     <Popover
       as="div"
-      className={classNames(
-        "flex items-center relative w-full"
-      )}
+      className={classNames("flex items-center relative w-full")}
     >
       {/* Wrapper div for hover/focus triggers */}
       <div
