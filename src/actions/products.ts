@@ -70,3 +70,79 @@ export const addProduct = async (values: z.infer<typeof ProductSchema>) => {
     return { error: "Gagal menambahkan produk ke database." };
   }
 };
+
+export const updateProduct = async (
+  id: string,
+  values: z.infer<typeof ProductSchema>
+) => {
+  // Get effective user ID (owner ID if employee, user's own ID otherwise)
+  const effectiveUserId = await getEffectiveUserId();
+
+  if (!effectiveUserId) {
+    return { error: "Tidak terautentikasi!" };
+  }
+  const userId = effectiveUserId;
+
+  // 1. Validate input server-side
+  const validatedFields = ProductSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+    console.error(
+      "Validation Error:",
+      validatedFields.error.flatten().fieldErrors
+    );
+    return { error: "Input tidak valid!" };
+  }
+
+  const { name, description, sku, price, cost, stock, image } =
+    validatedFields.data;
+
+  try {
+    // Check if product exists and belongs to this user
+    const existingProduct = await db.product.findFirst({
+      where: {
+        id,
+        userId,
+      },
+    });
+
+    if (!existingProduct) {
+      return { error: "Produk tidak ditemukan!" };
+    }
+
+    // 2. Update product in database
+    await db.product.update({
+      where: {
+        id,
+      },
+      data: {
+        name,
+        description,
+        sku,
+        price,
+        cost,
+        stock,
+        image,
+      },
+    });
+
+    // 3. Revalidate the products page cache
+    revalidatePath("/dashboard/products"); // Revalidate the products list
+    revalidatePath(`/dashboard/products/${id}`); // Revalidate the product detail page
+
+    return { success: "Produk berhasil diperbarui!" };
+  } catch (error) {
+    console.error("Database Error:", error);
+    // Handle specific errors like unique constraint violation if needed
+    if (
+      error instanceof Error &&
+      "code" in error &&
+      (error as any).code === "P2002"
+    ) {
+      if ((error as any).meta?.target?.includes("sku")) {
+        return { error: "SKU sudah digunakan untuk pengguna ini!" };
+      }
+    }
+    return { error: "Gagal memperbarui produk." };
+  }
+};
