@@ -1,8 +1,6 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Role } from "@prisma/client";
 import {
@@ -15,15 +13,11 @@ import {
   UsersIcon,
   BuildingStorefrontIcon,
   UserGroupIcon,
-  ClockIcon,
-  BellIcon,
+  WrenchIcon,
 } from "@heroicons/react/24/outline";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import NavItem from "./NavItem";
+import CollapsibleNavItem from "./CollapsibleNavItem";
 
 // Navigation items with role-based access control
 export const navigation = [
@@ -64,6 +58,24 @@ export const navigation = [
     roles: [Role.OWNER, Role.ADMIN], // Only OWNER and ADMIN can access
   },
   {
+    name: "Layanan",
+    icon: WrenchIcon,
+    roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
+    hasChildren: true,
+    children: [
+      {
+        name: "Manajemen Servis",
+        href: "/dashboard/services/management",
+        roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
+      },
+      {
+        name: "Tracking Servis",
+        href: "/dashboard/services/tracking",
+        roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
+      },
+    ],
+  },
+  {
     name: "Karyawan",
     href: "/dashboard/settings/employees",
     icon: UserGroupIcon,
@@ -97,7 +109,6 @@ const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
   isCollapsed = false,
   onItemClick,
 }) => {
-  const pathname = usePathname();
   const { data: session } = useSession();
   const userRole = session?.user?.role as Role | undefined;
 
@@ -113,83 +124,23 @@ const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
     <TooltipProvider delayDuration={100}>
       <nav className="flex-1 space-y-1 px-2 py-4 bg-gray-100 dark:bg-gray-800">
         {filteredNavigation.map((item) => {
-          const isCurrent =
-            item.href === "/dashboard"
-              ? pathname === item.href
-              : pathname.startsWith(item.href);
+          // Check if this is a parent item with children
+          const hasChildren = item.hasChildren && item.children;
 
           return (
-            <div key={item.name}>
-              {isCollapsed ? (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link
-                      href={item.href}
-                      className={classNames(
-                        isCurrent
-                          ? "bg-blue-100 text-blue-700 dark:bg-gray-900 dark:text-white"
-                          : "text-gray-700 hover:bg-gray-200 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white",
-                        "group flex items-center rounded-md px-2 py-2 text-sm font-medium transition-all duration-500 ease-in-out"
-                      )}
-                      onClick={onItemClick}
-                    >
-                      {/* Icon container - always fixed width */}
-                      <div className="w-6 flex-shrink-0 flex justify-center">
-                        <item.icon
-                          className={classNames(
-                            isCurrent
-                              ? "text-blue-600 dark:text-gray-300"
-                              : "text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300",
-                            "h-6 w-6 transition-all duration-500 ease-in-out"
-                          )}
-                          aria-hidden="true"
-                        />
-                      </div>
-
-                      {/* Text container - transitions opacity and width */}
-                      <div
-                        className={classNames(
-                          "ml-3 transition-all duration-500 ease-in-out overflow-hidden",
-                          "opacity-0 w-0"
-                        )}
-                      >
-                        <span className="truncate">{item.name}</span>
-                      </div>
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent side="right" sideOffset={5}>
-                    <p>{item.name}</p>
-                  </TooltipContent>
-                </Tooltip>
+            <div key={item.name} className="space-y-1">
+              {hasChildren ? (
+                <CollapsibleNavItem
+                  item={item as any}
+                  isCollapsed={isCollapsed}
+                  onItemClick={onItemClick}
+                />
               ) : (
-                <Link
-                  href={item.href}
-                  className={classNames(
-                    isCurrent
-                      ? "bg-blue-100 text-blue-700 dark:bg-gray-900 dark:text-white"
-                      : "text-gray-700 hover:bg-gray-200 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white",
-                    "group flex items-center rounded-md px-2 py-2 text-sm font-medium transition-all duration-500 ease-in-out"
-                  )}
-                  onClick={onItemClick}
-                >
-                  {/* Icon container - always fixed width */}
-                  <div className="w-6 flex-shrink-0 flex justify-center">
-                    <item.icon
-                      className={classNames(
-                        isCurrent
-                          ? "text-blue-600 dark:text-gray-300"
-                          : "text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300",
-                        "h-6 w-6 transition-all duration-500 ease-in-out"
-                      )}
-                      aria-hidden="true"
-                    />
-                  </div>
-
-                  {/* Text container - transitions opacity and width */}
-                  <div className="ml-3 flex-1 transition-all duration-500 ease-in-out">
-                    <span className="truncate">{item.name}</span>
-                  </div>
-                </Link>
+                <NavItem
+                  item={item as any}
+                  isCollapsed={isCollapsed}
+                  onItemClick={onItemClick}
+                />
               )}
             </div>
           );
