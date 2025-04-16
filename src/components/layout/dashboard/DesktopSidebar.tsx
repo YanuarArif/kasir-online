@@ -3,7 +3,7 @@
 import React from "react";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import SidebarNavigation, { classNames } from "./SidebarNavigation";
-import UserProfileMenu from "./UserProfileMenu";
+import SidebarUserProfile from "./SidebarUserProfile";
 import {
   Tooltip,
   TooltipContent,
@@ -90,7 +90,7 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
 
         {/* User Profile Section at Bottom */}
         <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 ease-in-out p-1">
-          <UserProfileMenu isCollapsed={isCollapsed} position="sidebar" />
+          <SidebarUserProfile isCollapsed={isCollapsed} />
         </div>
       </div>
     </div>

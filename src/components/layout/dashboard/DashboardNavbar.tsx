@@ -2,7 +2,7 @@
 
 import React from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
-import UserProfileMenu from "./UserProfileMenu";
+import NavbarUserProfile from "./NavbarUserProfile";
 import { useSession } from "next-auth/react";
 import { Role } from "@prisma/client";
 import { RoleBadge } from "@/components/ui/role-badge";
@@ -76,7 +76,7 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
 
           {/* User Menu */}
           <div className="m-3">
-            <UserProfileMenu position="topbar" />
+            <NavbarUserProfile />
           </div>
         </div>
       </div>
