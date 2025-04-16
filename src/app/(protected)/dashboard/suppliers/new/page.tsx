@@ -1,7 +1,7 @@
 import React from "react";
 import Head from "next/head";
 import DashboardLayout from "@/components/layout/dashboardlayout";
-import NewSupplierPage from "@/components/pages/dashboard/suppliers/new";
+import EnhancedSupplierPage from "@/components/pages/dashboard/suppliers/new/enhanced-index";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
@@ -17,7 +17,7 @@ const NewSupplier = async () => {
         <title>Tambah Supplier - Kasir Online</title>
       </Head>
 
-      <NewSupplierPage />
+      <EnhancedSupplierPage />
     </DashboardLayout>
   );
 };
