@@ -1,9 +1,14 @@
 import React from "react";
-import Head from "next/head";
+import { Metadata } from "next";
 import DashboardLayout from "@/components/layout/dashboardlayout";
-import NewCustomerPage from "@/components/pages/dashboard/customers/new";
+import EnhancedNewCustomerPage from "@/components/pages/dashboard/customers/new/enhanced-index";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Tambah Pelanggan | Kasir Online",
+  description: "Tambahkan pelanggan baru ke sistem",
+};
 
 const NewCustomer = async () => {
   const session = await auth();
@@ -13,11 +18,7 @@ const NewCustomer = async () => {
 
   return (
     <DashboardLayout pageTitle="Tambah Pelanggan Baru">
-      <Head>
-        <title>Tambah Pelanggan - Kasir Online</title>
-      </Head>
-
-      <NewCustomerPage />
+      <EnhancedNewCustomerPage />
     </DashboardLayout>
   );
 };

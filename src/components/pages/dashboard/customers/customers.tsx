@@ -1,199 +1,227 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Customer as PrismaCustomer } from "@prisma/client";
+import { toast } from "sonner";
+import { ArrowUpIcon, ArrowDownIcon } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
-import { Customer } from "@prisma/client";
-import {
-  FunnelIcon,
-  MagnifyingGlassIcon,
-  PlusIcon,
-} from "@heroicons/react/24/outline";
 import { format } from "date-fns";
 
+// Import types and components
+import { Customer, ColumnVisibility, CustomerStatus } from "./types";
+import { CustomerStatusCards } from "./components/CustomerStatusCards";
+import { CustomerActions } from "./components/CustomerActions";
+import { CustomerTableDesktop } from "./components/CustomerTableDesktop";
+
 interface CustomersPageProps {
-  customers: Customer[];
+  customers: PrismaCustomer[];
 }
 
-const CustomersPage: React.FC<CustomersPageProps> = ({ customers }) => {
-  const [searchTerm, setSearchTerm] = useState("");
+const CustomersPage: React.FC<CustomersPageProps> = ({
+  customers: initialCustomers,
+}) => {
+  // Convert Prisma customers to our Customer type - using useMemo to avoid recalculation on every render
+  const customers = React.useMemo<Customer[]>(() => {
+    return initialCustomers.map((customer) => ({
+      ...customer,
+      createdAt: new Date(customer.createdAt),
+      updatedAt: new Date(customer.updatedAt),
+    }));
+  }, [initialCustomers]);
 
-  // Filter customers based on search term
-  const filteredCustomers = customers.filter((customer) => {
-    const searchLower = searchTerm.toLowerCase();
-    return (
-      customer.name.toLowerCase().includes(searchLower) ||
-      (customer.email && customer.email.toLowerCase().includes(searchLower)) ||
-      (customer.phone && customer.phone.toLowerCase().includes(searchLower))
-    );
+  // State for search, sort, and pagination
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortField, setSortField] = useState<string>("name");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
+  const [paginatedCustomers, setPaginatedCustomers] = useState<Customer[]>([]);
+
+  // Column visibility state
+  const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({
+    name: true,
+    contactName: true,
+    email: true,
+    phone: true,
+    address: false,
+    createdAt: false,
+    updatedAt: false,
+    notes: false,
   });
+
+  // Calculate customer status - using useMemo to avoid recalculation on every render
+  const customerStatus = React.useMemo<CustomerStatus>(
+    () => ({
+      total: customers.length,
+      active: Math.round(customers.length * 0.8), // Mocking active customers (80%)
+      inactive: Math.round(customers.length * 0.2), // Mocking inactive customers (20%)
+    }),
+    [customers.length]
+  );
+
+  // Initialize filtered customers when customers data changes
+  useEffect(() => {
+    setFilteredCustomers(customers);
+  }, [customers]);
+
+  // Reset page when search or sort changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, sortField, sortDirection]);
+
+  // Filter and sort customers based on search term and sort settings
+  useEffect(() => {
+    let result = [...customers]; // Create a copy to avoid mutating the original
+
+    // Apply search filter
+    if (searchTerm) {
+      result = result.filter(
+        (customer) =>
+          customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (customer.email &&
+            customer.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (customer.phone &&
+            customer.phone.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (customer.contactName &&
+            customer.contactName
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase()))
+      );
+    }
+
+    // Apply sorting
+    result.sort((a, b) => {
+      let aValue: any = a[sortField as keyof Customer];
+      let bValue: any = b[sortField as keyof Customer];
+
+      // Handle null values
+      if (aValue === null) return sortDirection === "asc" ? -1 : 1;
+      if (bValue === null) return sortDirection === "asc" ? 1 : -1;
+
+      // Convert to lowercase for string comparison
+      if (typeof aValue === "string") aValue = aValue.toLowerCase();
+      if (typeof bValue === "string") bValue = bValue.toLowerCase();
+
+      // Compare values
+      if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+      if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    setFilteredCustomers(result);
+  }, [customers, searchTerm, sortField, sortDirection]);
+
+  // Apply pagination to filtered customers
+  useEffect(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    setPaginatedCustomers(filteredCustomers.slice(startIndex, endIndex));
+  }, [filteredCustomers, currentPage, itemsPerPage]);
+
+  // Handle sorting
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      // Toggle direction if same field
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      // Set new field and default to ascending
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  // Get sort icon for table headers
+  const getSortIcon = (field: string) => {
+    if (sortField !== field) return null;
+
+    return sortDirection === "asc" ? (
+      <ArrowUpIcon className="ml-1 h-4 w-4" />
+    ) : (
+      <ArrowDownIcon className="ml-1 h-4 w-4" />
+    );
+  };
+
+  // Calculate total pages for pagination
+  const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
 
   return (
     <div className="space-y-6">
-      {/* Header with search and actions */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        {/* Search */}
-        <div className="relative w-full sm:w-64">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <MagnifyingGlassIcon
-              className="h-5 w-5 text-gray-400 dark:text-gray-500"
-              aria-hidden="true"
+      {/* Status Cards */}
+      <CustomerStatusCards customerStatus={customerStatus} />
+
+      {/* Tabs */}
+      <Tabs defaultValue="all-customers" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="all-customers">Semua Pelanggan</TabsTrigger>
+          <TabsTrigger value="by-category">Berdasarkan Kategori</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="all-customers" className="space-y-6">
+          {/* Header Actions */}
+          <CustomerActions
+            columnVisibility={columnVisibility}
+            setColumnVisibility={setColumnVisibility}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            onFilterClick={() => toast.info("Fitur filter akan segera hadir!")}
+            onImportClick={() => toast.info("Fitur import akan segera hadir!")}
+            onExportClick={() => toast.info("Fitur export akan segera hadir!")}
+          />
+
+          {/* Customers List */}
+          <div className="overflow-x-auto">
+            {/* Table View */}
+            <CustomerTableDesktop
+              customers={paginatedCustomers}
+              columnVisibility={columnVisibility}
+              handleSort={handleSort}
+              getSortIcon={getSortIcon}
+              searchTerm={searchTerm}
             />
           </div>
-          <input
-            type="text"
-            name="search"
-            id="search"
-            className="block w-full rounded-md border-0 py-2 pl-10 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            placeholder="Cari pelanggan..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
 
-        {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-          <button
-            type="button"
-            className="inline-flex items-center justify-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 w-full sm:w-auto"
-          >
-            <FunnelIcon className="mr-2 h-5 w-5 text-gray-400 dark:text-gray-500" />
-            Filter
-          </button>
-          <Link
-            href="/dashboard/customers/new"
-            className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 dark:hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 w-full sm:w-auto"
-          >
-            <PlusIcon className="mr-2 h-5 w-5" />
-            Tambah Pelanggan
-          </Link>
-        </div>
-      </div>
-
-      {/* Customers List */}
-      <div className="space-y-4">
-        {/* Desktop Table View - shadcn style */}
-        <div className="relative overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg hidden sm:block">
-          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-700">
-              <tr>
-                <th scope="col" className="px-6 py-3">
-                  Nama Pelanggan
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Kontak
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Email
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Telepon
-                </th>
-                <th scope="col" className="px-6 py-3 text-right">
-                  <span className="sr-only">Aksi</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredCustomers.length > 0 ? (
-                filteredCustomers.map((customer) => (
-                  <tr
-                    key={customer.id}
-                    className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-                  >
-                    <td className="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">
-                      {customer.name}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {customer.contactName || "-"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {customer.email || "-"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {customer.phone || "-"}
-                    </td>
-                    <td className="px-6 py-4 text-right whitespace-nowrap space-x-3">
-                      <Link
-                        href={`/dashboard/customers/${customer.id}`}
-                        className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 font-medium"
-                      >
-                        Detail
-                      </Link>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
-                  <td
-                    colSpan={5}
-                    className="px-6 py-4 text-center text-gray-500 dark:text-gray-400"
-                  >
-                    {searchTerm
-                      ? "Tidak ada pelanggan yang sesuai dengan pencarian."
-                      : "Belum ada data pelanggan. Tambahkan pelanggan baru."}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Mobile Card View */}
-        <div className="sm:hidden space-y-4">
-          {filteredCustomers.length > 0 ? (
-            filteredCustomers.map((customer) => (
-              <div
-                key={customer.id}
-                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 shadow-sm"
-              >
-                <div className="flex justify-between items-start">
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                    {customer.name}
-                  </h3>
-                  <Link
-                    href={`/dashboard/customers/${customer.id}`}
-                    className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 font-medium"
-                  >
-                    Detail
-                  </Link>
-                </div>
-                <div className="mt-2 space-y-1">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    <span className="font-medium text-gray-700 dark:text-gray-300">
-                      Kontak:
-                    </span>{" "}
-                    {customer.contactName || "-"}
-                  </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    <span className="font-medium text-gray-700 dark:text-gray-300">
-                      Email:
-                    </span>{" "}
-                    {customer.email || "-"}
-                  </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    <span className="font-medium text-gray-700 dark:text-gray-300">
-                      Telepon:
-                    </span>{" "}
-                    {customer.phone || "-"}
-                  </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    <span className="font-medium text-gray-700 dark:text-gray-300">
-                      Terdaftar:
-                    </span>{" "}
-                    {format(new Date(customer.createdAt), "dd/MM/yyyy")}
-                  </p>
-                </div>
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-between items-center mt-4">
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Menampilkan {(currentPage - 1) * itemsPerPage + 1} hingga{" "}
+                {Math.min(currentPage * itemsPerPage, filteredCustomers.length)}{" "}
+                dari {filteredCustomers.length} pelanggan
               </div>
-            ))
-          ) : (
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-center text-gray-500 dark:text-gray-400">
-              {searchTerm
-                ? "Tidak ada pelanggan yang sesuai dengan pencarian."
-                : "Belum ada data pelanggan. Tambahkan pelanggan baru."}
+              <div className="flex space-x-2">
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50"
+                >
+                  Sebelumnya
+                </button>
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50"
+                >
+                  Berikutnya
+                </button>
+              </div>
             </div>
           )}
-        </div>
-      </div>
+        </TabsContent>
+
+        <TabsContent value="by-category" className="space-y-6">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <p className="text-center text-gray-500 dark:text-gray-400">
+              Fitur pengelompokan berdasarkan kategori akan segera hadir!
+            </p>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
