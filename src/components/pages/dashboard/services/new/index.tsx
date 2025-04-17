@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { addService } from "@/actions/services";
 
 import DashboardLayout from "@/components/layout/dashboardlayout";
 import { Form } from "@/components/ui/form";
@@ -100,42 +101,50 @@ const AddServicePage: React.FC = () => {
   const onSubmit = (values: ServiceFormValues) => {
     startTransition(async () => {
       try {
-        // In a real implementation, you would send the data to the server
-        // For now, we'll just simulate the submission
-        console.log("Service data:", values);
+        // Show loading toast
+        const toastId = toast.loading("Menyimpan data servis...");
 
-        // Simulate API call delay
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        // Send the data to the server
+        const result = await addService(values);
 
-        // Show success message
-        toast.success("Servis berhasil ditambahkan");
+        // Dismiss the loading toast
+        toast.dismiss(toastId);
 
-        // Reset form and state
-        form.reset({
-          serviceNumber: generateServiceNumber(),
-          customerName: "",
-          customerPhone: "",
-          customerEmail: "",
-          deviceType: DeviceType.OTHER,
-          deviceBrand: "",
-          deviceModel: "",
-          deviceSerialNumber: "",
-          problemDescription: "",
-          estimatedCost: 0,
-          estimatedCompletionDate: "",
-          diagnosisNotes: "",
-          repairNotes: "",
-          customerAddress: "",
-          warrantyPeriod: 0,
-          priorityLevel: "MEDIUM",
-          customerId: "",
-          attachments: [],
-        });
+        if (result.success) {
+          // Show success message
+          toast.success(result.success);
 
-        setAttachments([]);
+          // Reset form and state
+          form.reset({
+            serviceNumber: generateServiceNumber(),
+            customerName: "",
+            customerPhone: "",
+            customerEmail: "",
+            deviceType: DeviceType.OTHER,
+            deviceBrand: "",
+            deviceModel: "",
+            deviceSerialNumber: "",
+            problemDescription: "",
+            estimatedCost: 0,
+            estimatedCompletionDate: "",
+            diagnosisNotes: "",
+            repairNotes: "",
+            customerAddress: "",
+            warrantyPeriod: 0,
+            priorityLevel: "MEDIUM",
+            customerId: "",
+            attachments: [],
+          });
 
-        // Redirect to services page
-        router.push("/dashboard/services/management");
+          setAttachments([]);
+
+          // Redirect to services page
+          router.push("/dashboard/services/management");
+        } else if (result.error) {
+          toast.error(result.error);
+        } else {
+          toast.error("Terjadi kesalahan yang tidak diketahui.");
+        }
       } catch (error) {
         console.error("Submit Error:", error);
         toast.error("Gagal menghubungi server.");

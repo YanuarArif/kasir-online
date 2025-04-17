@@ -1,10 +1,7 @@
 import ServicesPage from "@/components/pages/dashboard/services/services";
 import React from "react";
 import { getEffectiveUserId } from "@/lib/get-effective-user-id";
-import {
-  mockServices,
-  mockServiceCounts,
-} from "@/components/pages/dashboard/services/mockData";
+import { getServices, calculateServiceCounts } from "@/lib/get-services";
 
 // This is an async Server Component
 const Services = async () => {
@@ -28,10 +25,9 @@ const Services = async () => {
       );
     }
 
-    // Using mock data for now since the schema was just created
-    // In a real implementation, we would fetch from the database
-    const services = mockServices;
-    const serviceCounts = mockServiceCounts;
+    // Fetch real service data from the database
+    const services = await getServices();
+    const serviceCounts = await calculateServiceCounts(services);
 
     // Return the ServicesPage component with data
     return <ServicesPage services={services} serviceCounts={serviceCounts} />;
