@@ -1,6 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Sale, ColumnVisibility } from "../types"; // Import from the types file
+import { Eye, Pencil, Trash } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { deleteSale } from "@/actions/sales";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface SaleTableDesktopProps {
   sales: Sale[];
@@ -17,6 +33,31 @@ export const SaleTableDesktop: React.FC<SaleTableDesktopProps> = ({
   getSortIcon,
   searchTerm,
 }) => {
+  const router = useRouter();
+  const [saleToDelete, setSaleToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Handle delete sale
+  const handleDeleteSale = async (id: string) => {
+    setIsDeleting(true);
+    try {
+      const result = await deleteSale(id);
+      if (result.success) {
+        toast.success(result.success);
+        // Refresh the page to show updated data
+        router.refresh();
+      } else if (result.error) {
+        toast.error(result.error);
+      }
+    } catch (error) {
+      console.error("Error deleting sale:", error);
+      toast.error("Terjadi kesalahan saat menghapus penjualan.");
+    } finally {
+      setIsDeleting(false);
+      setSaleToDelete(null);
+    }
+  };
+
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString("id-ID", {
       day: "numeric",
@@ -113,13 +154,66 @@ export const SaleTableDesktop: React.FC<SaleTableDesktopProps> = ({
                     Rp {sale.totalAmount.toLocaleString("id-ID")}
                   </td>
                 )}
-                <td className="px-6 py-4 text-right whitespace-nowrap space-x-3">
-                  <Link
-                    href={`/dashboard/sales/${sale.id}`}
-                    className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium"
-                  >
-                    Detail
-                  </Link>
+                <td className="px-6 py-4 text-right whitespace-nowrap">
+                  <div className="flex justify-end space-x-1">
+                    <Link href={`/dashboard/sales/${sale.id}`} passHref>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                      >
+                        <Eye className="h-4 w-4" />
+                        <span className="sr-only">View</span>
+                      </Button>
+                    </Link>
+                    <Link href={`/dashboard/sales/${sale.id}/edit`} passHref>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                      >
+                        <Pencil className="h-4 w-4" />
+                        <span className="sr-only">Edit</span>
+                      </Button>
+                    </Link>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-red-500 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                        >
+                          <Trash className="h-4 w-4" />
+                          <span className="sr-only">Delete</span>
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Apakah Anda yakin ingin menghapus penjualan ini?
+                            Tindakan ini tidak dapat dibatalkan dan akan
+                            mengembalikan stok produk.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Batal</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => {
+                              setSaleToDelete(sale.id);
+                              handleDeleteSale(sale.id);
+                            }}
+                            disabled={isDeleting && saleToDelete === sale.id}
+                            className="bg-red-500 hover:bg-red-600"
+                          >
+                            {isDeleting && saleToDelete === sale.id
+                              ? "Menghapus..."
+                              : "Hapus"}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </td>
               </tr>
             ))

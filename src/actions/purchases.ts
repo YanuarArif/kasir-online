@@ -388,3 +388,71 @@ export const updatePurchase = async (
     return { error: "Gagal memperbarui pembelian. Silakan coba lagi." };
   }
 };
+
+export const deletePurchase = async (id: string) => {
+  // Get effective user ID (owner ID if employee, user's own ID otherwise)
+  const effectiveUserId = await getEffectiveUserId();
+
+  if (!effectiveUserId) {
+    return { error: "Tidak terautentikasi!" };
+  }
+  const userId = effectiveUserId;
+
+  try {
+    // First, check if the purchase exists and belongs to this user
+    const existingPurchase = await db.purchase.findUnique({
+      where: {
+        id,
+        userId,
+      },
+      include: {
+        items: true,
+      },
+    });
+
+    if (!existingPurchase) {
+      return { error: "Pembelian tidak ditemukan!" };
+    }
+
+    // Get the original items to revert stock changes
+    const originalItems = existingPurchase.items;
+
+    // Use a transaction to ensure all operations succeed or fail together
+    await db.$transaction(async (tx) => {
+      // First, revert the stock changes by decrementing the stock for each item
+      for (const item of originalItems) {
+        await tx.product.update({
+          where: { id: item.productId },
+          data: {
+            stock: {
+              decrement: item.quantity,
+            },
+          },
+        });
+      }
+
+      // Delete all purchase items
+      await tx.purchaseItem.deleteMany({
+        where: {
+          purchaseId: id,
+        },
+      });
+
+      // Delete the purchase
+      await tx.purchase.delete({
+        where: {
+          id,
+          userId, // Ensure the purchase belongs to the current user
+        },
+      });
+    });
+
+    // Revalidate the purchases page cache
+    revalidatePath("/dashboard/purchases");
+
+    return { success: "Pembelian berhasil dihapus!" };
+  } catch (error) {
+    console.error("Database Error:", error);
+    return { error: "Gagal menghapus pembelian. Silakan coba lagi." };
+  }
+};

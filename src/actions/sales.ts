@@ -346,3 +346,71 @@ export const updateSale = async (
     return { error: "Gagal memperbarui penjualan. Silakan coba lagi." };
   }
 };
+
+export const deleteSale = async (id: string) => {
+  // Get effective user ID (owner ID if employee, user's own ID otherwise)
+  const effectiveUserId = await getEffectiveUserId();
+
+  if (!effectiveUserId) {
+    return { error: "Tidak terautentikasi!" };
+  }
+  const userId = effectiveUserId;
+
+  try {
+    // First, check if the sale exists and belongs to this user
+    const existingSale = await db.sale.findUnique({
+      where: {
+        id,
+        userId,
+      },
+      include: {
+        items: true,
+      },
+    });
+
+    if (!existingSale) {
+      return { error: "Penjualan tidak ditemukan!" };
+    }
+
+    // Get the original items to revert stock changes
+    const originalItems = existingSale.items;
+
+    // Use a transaction to ensure all operations succeed or fail together
+    await db.$transaction(async (tx) => {
+      // First, revert the stock changes by incrementing the stock for each item
+      for (const item of originalItems) {
+        await tx.product.update({
+          where: { id: item.productId },
+          data: {
+            stock: {
+              increment: item.quantity,
+            },
+          },
+        });
+      }
+
+      // Delete all sale items
+      await tx.saleItem.deleteMany({
+        where: {
+          saleId: id,
+        },
+      });
+
+      // Delete the sale
+      await tx.sale.delete({
+        where: {
+          id,
+          userId, // Ensure the sale belongs to the current user
+        },
+      });
+    });
+
+    // Revalidate the sales page cache
+    revalidatePath("/dashboard/sales");
+
+    return { success: "Penjualan berhasil dihapus!" };
+  } catch (error) {
+    console.error("Database Error:", error);
+    return { error: "Gagal menghapus penjualan. Silakan coba lagi." };
+  }
+};
