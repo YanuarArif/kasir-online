@@ -81,12 +81,12 @@ export const addService = async (values: z.infer<typeof ServiceSchema>) => {
     // 4. Revalidate the services page cache
     revalidatePath("/dashboard/services/management");
 
-    return { 
+    return {
       success: "Servis berhasil ditambahkan!",
       service: {
         id: service.id,
         serviceNumber: service.serviceNumber,
-      }
+      },
     };
   } catch (error) {
     console.error("Database Error:", error);
@@ -162,12 +162,12 @@ export const updateService = async (
     revalidatePath("/dashboard/services/management");
     revalidatePath(`/dashboard/services/management/${id}`);
 
-    return { 
+    return {
       success: "Servis berhasil diperbarui!",
       service: {
         id: service.id,
         serviceNumber: service.serviceNumber,
-      }
+      },
     };
   } catch (error) {
     console.error("Database Error:", error);
@@ -201,9 +201,11 @@ export const updateServiceStatus = async (
       data: {
         status,
         // Update completion date if status is COMPLETED
-        completedDate: status === ServiceStatus.COMPLETED ? new Date() : undefined,
+        completedDate:
+          status === ServiceStatus.COMPLETED ? new Date() : undefined,
         // Update delivery date if status is DELIVERED
-        deliveredDate: status === ServiceStatus.DELIVERED ? new Date() : undefined,
+        deliveredDate:
+          status === ServiceStatus.DELIVERED ? new Date() : undefined,
       },
     });
 
@@ -221,15 +223,53 @@ export const updateServiceStatus = async (
     revalidatePath("/dashboard/services/management");
     revalidatePath(`/dashboard/services/management/${id}`);
 
-    return { 
+    return {
       success: "Status servis berhasil diperbarui!",
       service: {
         id: service.id,
         status: service.status,
-      }
+      },
     };
   } catch (error) {
     console.error("Database Error:", error);
     return { error: "Gagal memperbarui status servis." };
+  }
+};
+
+/**
+ * Delete a service from the database
+ */
+export const deleteService = async (id: string) => {
+  // Get effective user ID (owner ID if employee, user's own ID otherwise)
+  const effectiveUserId = await getEffectiveUserId();
+
+  if (!effectiveUserId) {
+    return { error: "Tidak terautentikasi!" };
+  }
+  const userId = effectiveUserId;
+
+  try {
+    // 1. First delete all service history entries
+    await db.serviceStatusHistory.deleteMany({
+      where: {
+        serviceId: id,
+      },
+    });
+
+    // 2. Delete the service
+    await db.service.delete({
+      where: {
+        id,
+        userId, // Ensure the service belongs to the current user
+      },
+    });
+
+    // 3. Revalidate the services page cache
+    revalidatePath("/dashboard/services/management");
+
+    return { success: "Servis berhasil dihapus!" };
+  } catch (error) {
+    console.error("Database Error:", error);
+    return { error: "Gagal menghapus servis." };
   }
 };

@@ -154,3 +154,79 @@ export async function calculateServiceCounts(
     total: services.length,
   };
 }
+
+/**
+ * Fetches a single service by ID
+ * @param id Service ID
+ * @returns Service object or null if not found
+ */
+export async function getServiceById(id: string): Promise<Service | null> {
+  const effectiveUserId = await getEffectiveUserId();
+
+  if (!effectiveUserId) {
+    console.error("User ID not found in session on protected route.");
+    return null;
+  }
+
+  try {
+    const service = await db.service.findUnique({
+      where: {
+        id,
+        userId: effectiveUserId,
+      },
+      include: {
+        serviceHistory: true,
+      },
+    });
+
+    if (!service) {
+      return null;
+    }
+
+    // Convert database model to frontend Service type
+    return {
+      id: service.id,
+      serviceNumber: service.serviceNumber,
+      customerName: service.customerName,
+      customerPhone: service.customerPhone,
+      customerEmail: service.customerEmail || undefined,
+      deviceType: mapPrismaDeviceType(service.deviceType),
+      deviceBrand: service.deviceBrand,
+      deviceModel: service.deviceModel,
+      deviceSerialNumber: service.deviceSerialNumber || undefined,
+      problemDescription: service.problemDescription,
+      diagnosisNotes: service.diagnosisNotes || undefined,
+      repairNotes: service.repairNotes || undefined,
+      estimatedCost: service.estimatedCost
+        ? service.estimatedCost.toNumber()
+        : undefined,
+      finalCost: service.finalCost ? service.finalCost.toNumber() : undefined,
+      status: mapPrismaServiceStatus(service.status),
+      receivedDate: service.receivedDate.toISOString(),
+      estimatedCompletionDate: service.estimatedCompletionDate
+        ? service.estimatedCompletionDate.toISOString()
+        : undefined,
+      completedDate: service.completedDate
+        ? service.completedDate.toISOString()
+        : undefined,
+      deliveredDate: service.deliveredDate
+        ? service.deliveredDate.toISOString()
+        : undefined,
+      createdAt: service.createdAt.toISOString(),
+      updatedAt: service.updatedAt.toISOString(),
+      userId: service.userId,
+      customerId: service.customerId || undefined,
+      serviceHistory: service.serviceHistory.map((history) => ({
+        id: history.id,
+        status: mapPrismaServiceStatus(history.status),
+        notes: history.notes || undefined,
+        changedAt: history.changedAt.toISOString(),
+        changedBy: history.changedBy,
+        serviceId: history.serviceId,
+      })),
+    };
+  } catch (error) {
+    console.error("Error fetching service:", error);
+    return null;
+  }
+}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -13,6 +13,20 @@ import { Eye, Pencil, Trash } from "lucide-react";
 import { Service, ColumnVisibility, ServiceStatus } from "../types";
 import Link from "next/link";
 import { formatDate } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { deleteService } from "@/actions/services";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface ServiceTableDesktopProps {
   services: Service[];
@@ -31,6 +45,30 @@ export const ServiceTableDesktop: React.FC<ServiceTableDesktopProps> = ({
   getStatusBadge,
   searchTerm,
 }) => {
+  const router = useRouter();
+  const [serviceToDelete, setServiceToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Handle delete service
+  const handleDeleteService = async (id: string) => {
+    setIsDeleting(true);
+    try {
+      const result = await deleteService(id);
+      if (result.success) {
+        toast.success(result.success);
+        // Refresh the page to show updated data
+        router.refresh();
+      } else if (result.error) {
+        toast.error(result.error);
+      }
+    } catch (error) {
+      console.error("Error deleting service:", error);
+      toast.error("Terjadi kesalahan saat menghapus servis.");
+    } finally {
+      setIsDeleting(false);
+      setServiceToDelete(null);
+    }
+  };
   if (services.length === 0) {
     return (
       <div className="rounded-md border border-dashed p-8 text-center">
@@ -228,14 +266,43 @@ export const ServiceTableDesktop: React.FC<ServiceTableDesktopProps> = ({
                     <span className="sr-only">Edit</span>
                   </Button>
                 </Link>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-red-500 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  <Trash className="h-4 w-4" />
-                  <span className="sr-only">Delete</span>
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-red-500 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      <Trash className="h-4 w-4" />
+                      <span className="sr-only">Delete</span>
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Apakah Anda yakin ingin menghapus servis{" "}
+                        {service.serviceNumber}? Tindakan ini tidak dapat
+                        dibatalkan.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Batal</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => {
+                          setServiceToDelete(service.id);
+                          handleDeleteService(service.id);
+                        }}
+                        disabled={isDeleting && serviceToDelete === service.id}
+                        className="bg-red-500 hover:bg-red-600"
+                      >
+                        {isDeleting && serviceToDelete === service.id
+                          ? "Menghapus..."
+                          : "Hapus"}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </TableCell>
           </TableRow>
