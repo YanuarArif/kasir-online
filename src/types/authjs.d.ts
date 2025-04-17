@@ -6,6 +6,7 @@ declare module "next-auth" {
   interface Session {
     user: {
       role: Role;
+      loginTimestamp?: number; // Timestamp when the user logged in
       isEmployee?: boolean;
       ownerId?: string;
       employeeId?: string;
@@ -33,6 +34,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     sub: string;
     role: Role;
+    loginTimestamp?: number; // Timestamp when the user logged in
     isEmployee?: boolean;
     ownerId?: string;
     employeeId?: string;

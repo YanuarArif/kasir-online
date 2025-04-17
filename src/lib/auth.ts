@@ -13,10 +13,19 @@ const combinedProviders = [
   }),
 ];
 
+// 6 hours in seconds
+const SIX_HOURS = 6 * 60 * 60;
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: combinedProviders,
   adapter: PrismaAdapter(database),
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+    maxAge: SIX_HOURS, // 6 hours in seconds
+  },
+  jwt: {
+    maxAge: SIX_HOURS, // 6 hours in seconds
+  },
   pages: { signIn: "/login" },
   // Callbacks untuk pengganti middleware
   callbacks: {
@@ -67,6 +76,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // This ensures Google OAuth users always have a role
         token.role = user.role || Role.OWNER;
 
+        // Add login timestamp
+        token.loginTimestamp = Date.now();
+
+        // Update lastLogin in the database
+        try {
+          await database.user.update({
+            where: { id: user.id },
+            data: {
+              lastLogin: new Date(),
+            },
+          });
+        } catch (error) {
+          console.error("Error updating lastLogin:", error);
+        }
+
         // For Google OAuth users, ensure role is set in the database
         if (account?.provider === "google" && !user.role) {
           try {
@@ -115,6 +139,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       if (token.role && session.user) {
         session.user.role = token.role as Role; // Add role to session.user
+      }
+      if (token.loginTimestamp && session.user) {
+        session.user.loginTimestamp = token.loginTimestamp; // Add login timestamp to session.user
       }
 
       // Add employee-specific data if this is an employee login
