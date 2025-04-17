@@ -51,7 +51,7 @@ export const ServiceTableDesktop: React.FC<ServiceTableDesktopProps> = ({
           {/* Service Number */}
           {columnVisibility.serviceNumber && (
             <TableHead
-              className="w-[120px] cursor-pointer"
+              className="w-[120px] cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
               onClick={() => handleSort("serviceNumber")}
             >
               <div className="flex items-center">
@@ -63,7 +63,7 @@ export const ServiceTableDesktop: React.FC<ServiceTableDesktopProps> = ({
           {/* Customer Name */}
           {columnVisibility.customerName && (
             <TableHead
-              className="cursor-pointer"
+              className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
               onClick={() => handleSort("customerName")}
             >
               <div className="flex items-center">
@@ -75,7 +75,7 @@ export const ServiceTableDesktop: React.FC<ServiceTableDesktopProps> = ({
           {/* Device Type */}
           {columnVisibility.deviceType && (
             <TableHead
-              className="cursor-pointer"
+              className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
               onClick={() => handleSort("deviceType")}
             >
               <div className="flex items-center">
@@ -87,7 +87,7 @@ export const ServiceTableDesktop: React.FC<ServiceTableDesktopProps> = ({
           {/* Device Brand */}
           {columnVisibility.deviceBrand && (
             <TableHead
-              className="cursor-pointer"
+              className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
               onClick={() => handleSort("deviceBrand")}
             >
               <div className="flex items-center">
@@ -99,7 +99,7 @@ export const ServiceTableDesktop: React.FC<ServiceTableDesktopProps> = ({
           {/* Device Model */}
           {columnVisibility.deviceModel && (
             <TableHead
-              className="cursor-pointer"
+              className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
               onClick={() => handleSort("deviceModel")}
             >
               <div className="flex items-center">
@@ -111,7 +111,7 @@ export const ServiceTableDesktop: React.FC<ServiceTableDesktopProps> = ({
           {/* Status */}
           {columnVisibility.status && (
             <TableHead
-              className="cursor-pointer"
+              className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
               onClick={() => handleSort("status")}
             >
               <div className="flex items-center">
@@ -123,7 +123,7 @@ export const ServiceTableDesktop: React.FC<ServiceTableDesktopProps> = ({
           {/* Received Date */}
           {columnVisibility.receivedDate && (
             <TableHead
-              className="cursor-pointer"
+              className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
               onClick={() => handleSort("receivedDate")}
             >
               <div className="flex items-center">
@@ -135,7 +135,7 @@ export const ServiceTableDesktop: React.FC<ServiceTableDesktopProps> = ({
           {/* Estimated Completion Date */}
           {columnVisibility.estimatedCompletionDate && (
             <TableHead
-              className="cursor-pointer"
+              className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
               onClick={() => handleSort("estimatedCompletionDate")}
             >
               <div className="flex items-center">
@@ -206,7 +206,11 @@ export const ServiceTableDesktop: React.FC<ServiceTableDesktopProps> = ({
                   href={`/dashboard/services/management/${service.id}`}
                   passHref
                 >
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
                     <Eye className="h-4 w-4" />
                     <span className="sr-only">View</span>
                   </Button>
@@ -215,7 +219,11 @@ export const ServiceTableDesktop: React.FC<ServiceTableDesktopProps> = ({
                   href={`/dashboard/services/management/${service.id}/edit`}
                   passHref
                 >
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
                     <Pencil className="h-4 w-4" />
                     <span className="sr-only">Edit</span>
                   </Button>
@@ -223,7 +231,7 @@ export const ServiceTableDesktop: React.FC<ServiceTableDesktopProps> = ({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 text-red-500"
+                  className="h-8 w-8 text-red-500 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
                   <Trash className="h-4 w-4" />
                   <span className="sr-only">Delete</span>

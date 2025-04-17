@@ -62,7 +62,7 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({
                     variant="outline"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isPending || isUploading}
-                    className="gap-2"
+                    className="gap-2 cursor-pointer"
                   >
                     <Paperclip className="h-4 w-4" />
                     <span>Tambah Lampiran</span>
@@ -103,7 +103,7 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({
                             type="button"
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8 p-0 text-red-500"
+                            className="h-8 w-8 p-0 text-red-500 cursor-pointer"
                             onClick={() => {
                               const newAttachments = [...attachments];
                               newAttachments.splice(index, 1);

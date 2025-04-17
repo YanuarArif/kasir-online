@@ -8,13 +8,19 @@ export const StatusServiceTabContent: React.FC = () => {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="pending" className="w-full">
-        <TabsList className="mb-4 grid w-full grid-cols-4">
-          <TabsTrigger value="pending">Servis Masuk</TabsTrigger>
-          <TabsTrigger value="in-progress">Diproses</TabsTrigger>
-          <TabsTrigger value="waiting-for-parts">
+        <TabsList className="mb-4 grid w-full grid-cols-4 cursor-pointer">
+          <TabsTrigger value="pending" className="cursor-pointer">
+            Servis Masuk
+          </TabsTrigger>
+          <TabsTrigger value="in-progress" className="cursor-pointer">
+            Diproses
+          </TabsTrigger>
+          <TabsTrigger value="waiting-for-parts" className="cursor-pointer">
             Menunggu Sparepart
           </TabsTrigger>
-          <TabsTrigger value="completed">Selesai</TabsTrigger>
+          <TabsTrigger value="completed" className="cursor-pointer">
+            Selesai
+          </TabsTrigger>
         </TabsList>
 
         {/* Servis Masuk Tab */}

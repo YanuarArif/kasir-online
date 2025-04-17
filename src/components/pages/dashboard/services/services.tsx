@@ -238,9 +238,13 @@ const ServicesPage: React.FC<ServicesPageProps> = (props) => {
           onValueChange={setMainTab}
           className="w-full"
         >
-          <TabsList className="mb-4">
-            <TabsTrigger value="data-servis">Data Servis</TabsTrigger>
-            <TabsTrigger value="status-servis">Status Servis</TabsTrigger>
+          <TabsList className="mb-4 cursor-pointer">
+            <TabsTrigger value="data-servis" className="cursor-pointer">
+              Data Servis
+            </TabsTrigger>
+            <TabsTrigger value="status-servis" className="cursor-pointer">
+              Status Servis
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="data-servis" className="space-y-6">

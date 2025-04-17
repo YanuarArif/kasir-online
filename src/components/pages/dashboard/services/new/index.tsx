@@ -156,8 +156,11 @@ const AddServicePage: React.FC = () => {
               Tambahkan servis baru ke sistem manajemen servis Anda
             </p>
           </div>
-          <Button variant="outline" asChild className="gap-2">
-            <Link href="/dashboard/services/management">
+          <Button variant="outline" asChild className="gap-2 cursor-pointer">
+            <Link
+              href="/dashboard/services/management"
+              className="cursor-pointer"
+            >
               <ArrowLeft className="h-4 w-4" />
               Kembali
             </Link>
@@ -194,9 +197,18 @@ const AddServicePage: React.FC = () => {
                 asChild
                 disabled={isPending}
               >
-                <Link href="/dashboard/services/management">Batal</Link>
+                <Link
+                  href="/dashboard/services/management"
+                  className="cursor-pointer"
+                >
+                  Batal
+                </Link>
               </Button>
-              <Button type="submit" disabled={isPending} className="gap-2">
+              <Button
+                type="submit"
+                disabled={isPending}
+                className="gap-2 cursor-pointer"
+              >
                 {isPending ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>

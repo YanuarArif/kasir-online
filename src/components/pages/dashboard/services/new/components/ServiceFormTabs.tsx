@@ -42,18 +42,27 @@ const ServiceFormTabs: React.FC<ServiceFormTabsProps> = ({
   return (
     <Tabs defaultValue="customer" className="w-full">
       <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 pb-4 border-b border-gray-200 dark:border-gray-700">
-        <TabsList className="grid grid-cols-3 w-full">
-          <TabsTrigger value="customer" className="flex items-center gap-2">
+        <TabsList className="grid grid-cols-3 w-full cursor-pointer">
+          <TabsTrigger
+            value="customer"
+            className="flex items-center gap-2 cursor-pointer"
+          >
             <User className="h-4 w-4" />
             <span className="hidden sm:inline">Informasi Pelanggan</span>
             <span className="sm:hidden">Pelanggan</span>
           </TabsTrigger>
-          <TabsTrigger value="device" className="flex items-center gap-2">
+          <TabsTrigger
+            value="device"
+            className="flex items-center gap-2 cursor-pointer"
+          >
             <Smartphone className="h-4 w-4" />
             <span className="hidden sm:inline">Informasi Perangkat</span>
             <span className="sm:hidden">Perangkat</span>
           </TabsTrigger>
-          <TabsTrigger value="problem" className="flex items-center gap-2">
+          <TabsTrigger
+            value="problem"
+            className="flex items-center gap-2 cursor-pointer"
+          >
             <FileText className="h-4 w-4" />
             <span className="hidden sm:inline">Detail & Lampiran</span>
             <span className="sm:hidden">Detail</span>

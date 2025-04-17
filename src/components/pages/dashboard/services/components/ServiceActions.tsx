@@ -59,7 +59,7 @@ export const ServiceActions: React.FC<ServiceActionsProps> = ({
         <Button
           variant="outline"
           size="sm"
-          className="h-8 gap-1"
+          className="h-8 gap-1 cursor-pointer"
           onClick={onFilterClick}
         >
           <Filter className="h-3.5 w-3.5" />
@@ -70,7 +70,7 @@ export const ServiceActions: React.FC<ServiceActionsProps> = ({
         <Button
           variant="outline"
           size="sm"
-          className="h-8 gap-1"
+          className="h-8 gap-1 cursor-pointer"
           onClick={onImportClick}
         >
           <Download className="h-3.5 w-3.5" />
@@ -81,7 +81,7 @@ export const ServiceActions: React.FC<ServiceActionsProps> = ({
         <Button
           variant="outline"
           size="sm"
-          className="h-8 gap-1"
+          className="h-8 gap-1 cursor-pointer"
           onClick={onExportClick}
         >
           <Upload className="h-3.5 w-3.5" />
@@ -91,7 +91,11 @@ export const ServiceActions: React.FC<ServiceActionsProps> = ({
         {/* Column Visibility */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-8 gap-1">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 gap-1 cursor-pointer"
+            >
               <SlidersHorizontal className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Kolom</span>
             </Button>
@@ -101,6 +105,7 @@ export const ServiceActions: React.FC<ServiceActionsProps> = ({
             <DropdownMenuSeparator />
             <DropdownMenuCheckboxItem
               checked={columnVisibility.serviceNumber}
+              className="cursor-pointer"
               onCheckedChange={(checked) =>
                 setColumnVisibility((prev) => ({
                   ...prev,
@@ -112,6 +117,7 @@ export const ServiceActions: React.FC<ServiceActionsProps> = ({
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               checked={columnVisibility.customerName}
+              className="cursor-pointer"
               onCheckedChange={(checked) =>
                 setColumnVisibility((prev) => ({
                   ...prev,
@@ -123,6 +129,7 @@ export const ServiceActions: React.FC<ServiceActionsProps> = ({
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               checked={columnVisibility.deviceType}
+              className="cursor-pointer"
               onCheckedChange={(checked) =>
                 setColumnVisibility((prev) => ({
                   ...prev,
@@ -134,6 +141,7 @@ export const ServiceActions: React.FC<ServiceActionsProps> = ({
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               checked={columnVisibility.deviceBrand}
+              className="cursor-pointer"
               onCheckedChange={(checked) =>
                 setColumnVisibility((prev) => ({
                   ...prev,
@@ -145,6 +153,7 @@ export const ServiceActions: React.FC<ServiceActionsProps> = ({
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               checked={columnVisibility.deviceModel}
+              className="cursor-pointer"
               onCheckedChange={(checked) =>
                 setColumnVisibility((prev) => ({
                   ...prev,
@@ -156,6 +165,7 @@ export const ServiceActions: React.FC<ServiceActionsProps> = ({
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               checked={columnVisibility.status}
+              className="cursor-pointer"
               onCheckedChange={(checked) =>
                 setColumnVisibility((prev) => ({
                   ...prev,
@@ -167,6 +177,7 @@ export const ServiceActions: React.FC<ServiceActionsProps> = ({
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               checked={columnVisibility.receivedDate}
+              className="cursor-pointer"
               onCheckedChange={(checked) =>
                 setColumnVisibility((prev) => ({
                   ...prev,
@@ -178,6 +189,7 @@ export const ServiceActions: React.FC<ServiceActionsProps> = ({
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               checked={columnVisibility.estimatedCompletionDate}
+              className="cursor-pointer"
               onCheckedChange={(checked) =>
                 setColumnVisibility((prev) => ({
                   ...prev,
@@ -192,7 +204,7 @@ export const ServiceActions: React.FC<ServiceActionsProps> = ({
 
         {/* Add New Service Button */}
         <Link href="/dashboard/services/management/new" passHref>
-          <Button size="sm" className="h-8 gap-1">
+          <Button size="sm" className="h-8 gap-1 cursor-pointer">
             <Plus className="h-3.5 w-3.5" />
             <span>Tambah Servis</span>
           </Button>
