@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  Fragment,
+} from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, ChevronRight } from "lucide-react";
@@ -10,6 +16,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { classNames } from "./SidebarNavigation";
+import { createPortal } from "react-dom";
+import { Transition } from "@headlessui/react";
 
 interface NavItemChild {
   name: string;
@@ -81,82 +89,145 @@ const CollapsibleNavItem: React.FC<CollapsibleNavItemProps> = ({
     if (isChildActive && !isExpanded) {
       setIsExpanded(true);
     }
-  }, [isChildActive, pathname]);
+  }, [isChildActive, pathname, isExpanded]);
 
   // Check if this is the Layanan menu item
   const isLayananMenu = item.name === "Layanan";
 
-  // Get the position of the button for Layanan menu
-  const [menuPosition, setMenuPosition] = useState(0);
-  const buttonRef = React.useRef<HTMLButtonElement>(null);
+  // For Layanan menu dropdown positioning
+  const [menuPosition, setMenuPosition] = useState({
+    top: 0,
+    left: 0,
+    opacity: 0,
+  });
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [showLayananDropdown, setShowLayananDropdown] = useState(false);
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Update the position when the component mounts or when the sidebar collapses/expands
-  useEffect(() => {
+  // Calculate position for the Layanan dropdown
+  const calculatePosition = useCallback(() => {
     if (isLayananMenu && isCollapsed && buttonRef.current) {
-      const updatePosition = () => {
-        if (buttonRef.current) {
-          const rect = buttonRef.current.getBoundingClientRect();
-          setMenuPosition(rect.top);
-        }
-      };
+      const buttonRect = buttonRef.current.getBoundingClientRect();
 
-      // Initial position
-      updatePosition();
-
-      // Update on resize and scroll
-      window.addEventListener("resize", updatePosition);
-      window.addEventListener("scroll", updatePosition);
-
-      // Run update position on a short delay to ensure DOM is fully rendered
-      const timer = setTimeout(updatePosition, 100);
-
-      return () => {
-        window.removeEventListener("resize", updatePosition);
-        window.removeEventListener("scroll", updatePosition);
-        clearTimeout(timer);
-      };
+      setMenuPosition({
+        top: buttonRect.top,
+        left: buttonRect.right + 8, // 8px margin
+        opacity: 1,
+      });
     }
   }, [isLayananMenu, isCollapsed]);
+
+  // Debounced position update
+  const updatePosition = useCallback(() => {
+    if (isLayananMenu && isCollapsed) {
+      calculatePosition();
+    }
+  }, [isLayananMenu, isCollapsed, calculatePosition]);
+
+  // Open dropdown
+  const openDropdown = useCallback(() => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+    setShowLayananDropdown(true);
+    // Calculate position after render
+    requestAnimationFrame(() => {
+      calculatePosition();
+    });
+  }, [calculatePosition]);
+
+  // Close dropdown with delay
+  const closeDropdown = useCallback(() => {
+    closeTimeoutRef.current = setTimeout(() => {
+      setShowLayananDropdown(false);
+    }, 150); // 150ms delay to allow moving to dropdown
+  }, []);
+
+  // Add event listeners
+  useEffect(() => {
+    if (isLayananMenu && isCollapsed && showLayananDropdown) {
+      const handleResize = () => {
+        requestAnimationFrame(updatePosition);
+      };
+      const handleScroll = () => {
+        requestAnimationFrame(updatePosition);
+      };
+
+      window.addEventListener("resize", handleResize);
+      window.addEventListener("scroll", handleScroll, true);
+
+      // Initial position
+      calculatePosition();
+
+      return () => {
+        window.removeEventListener("resize", handleResize);
+        window.removeEventListener("scroll", handleScroll, true);
+      };
+    }
+  }, [
+    isLayananMenu,
+    isCollapsed,
+    showLayananDropdown,
+    updatePosition,
+    calculatePosition,
+  ]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="space-y-1">
       {/* Parent Item */}
       {isCollapsed ? (
         isLayananMenu ? (
-          <button
-            ref={buttonRef}
-            onClick={toggleExpand}
-            className={classNames(
-              isChildActive
-                ? "bg-blue-100 text-blue-700 dark:bg-gray-900 dark:text-white"
-                : "text-gray-700 hover:bg-gray-200 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white",
-              "group relative flex w-full items-center rounded-md px-2 py-2 text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 z-20",
-              "layanan-menu"
-            )}
+          <div
+            onMouseEnter={openDropdown}
+            onMouseLeave={closeDropdown}
+            className="w-full"
           >
-            {/* Icon container - always fixed width */}
-            <div className="w-6 flex-shrink-0 flex justify-center">
-              <item.icon
-                className={classNames(
-                  isChildActive
-                    ? "text-blue-600 dark:text-gray-300"
-                    : "text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300",
-                  "h-6 w-6 transition-all duration-500 ease-in-out"
-                )}
-                aria-hidden="true"
-              />
-            </div>
-
-            {/* Text container - transitions opacity and width */}
-            <div
+            <button
+              ref={buttonRef}
+              onClick={toggleExpand}
               className={classNames(
-                "ml-3 transition-all duration-500 ease-in-out overflow-hidden",
-                "opacity-0 w-0"
+                isChildActive
+                  ? "bg-blue-100 text-blue-700 dark:bg-gray-900 dark:text-white"
+                  : "text-gray-700 hover:bg-gray-200 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white",
+                "group relative flex w-full items-center rounded-md px-2 py-2 text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 z-20",
+                "layanan-menu"
               )}
             >
-              <span className="truncate">{item.name}</span>
-            </div>
-          </button>
+              {/* Icon container - always fixed width */}
+              <div className="w-6 flex-shrink-0 flex justify-center">
+                <item.icon
+                  className={classNames(
+                    isChildActive
+                      ? "text-blue-600 dark:text-gray-300"
+                      : "text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300",
+                    "h-6 w-6 transition-all duration-500 ease-in-out"
+                  )}
+                  aria-hidden="true"
+                />
+              </div>
+
+              {/* Text container - transitions opacity and width */}
+              <div
+                className={classNames(
+                  "ml-3 transition-all duration-500 ease-in-out overflow-hidden",
+                  "opacity-0 w-0"
+                )}
+              >
+                <span className="truncate">{item.name}</span>
+              </div>
+            </button>
+          </div>
         ) : (
           <Tooltip>
             <TooltipTrigger asChild>
@@ -240,33 +311,9 @@ const CollapsibleNavItem: React.FC<CollapsibleNavItemProps> = ({
       )}
 
       {/* Child Items - Shown when expanded or when hovering over parent in collapsed mode */}
-      {(isExpanded || isCollapsed) && (
-        <div
-          style={
-            isCollapsed && isLayananMenu
-              ? {
-                  position: "fixed",
-                  left: "4rem",
-                  top: `${menuPosition}px`,
-                  zIndex: 9999,
-                  display: "none",
-                  marginTop: "0",
-                }
-              : {}
-          }
-          className={classNames(
-            isCollapsed
-              ? isLayananMenu
-                ? "w-48 rounded-md shadow-lg z-[9999] bg-white dark:bg-gray-800 overflow-hidden border border-gray-200 dark:border-gray-700 transition-all duration-200 ease-in-out"
-                : "absolute left-full top-0 ml-1 w-40 rounded-md shadow-lg z-50 bg-white dark:bg-gray-800 overflow-hidden border border-gray-200 dark:border-gray-700 transition-all duration-200 ease-in-out"
-              : "ml-8 space-y-0.5 mt-1 relative",
-            isCollapsed
-              ? isLayananMenu
-                ? "opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transform scale-95 group-hover:scale-100 transition-all duration-200 ease-in-out layanan-submenu"
-                : "opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transform scale-95 group-hover:scale-100 transition-all duration-200 ease-in-out"
-              : ""
-          )}
-        >
+      {/* Regular submenu for expanded sidebar */}
+      {!isCollapsed && isExpanded && (
+        <div className={classNames("ml-8 space-y-0.5 mt-1 relative")}>
           {/* Vertical line for submenu */}
           {!isCollapsed && (
             <div className="absolute left-[-20px] top-0 bottom-0 w-0.5 bg-gray-400 dark:bg-gray-600"></div>
@@ -316,6 +363,81 @@ const CollapsibleNavItem: React.FC<CollapsibleNavItemProps> = ({
           })}
         </div>
       )}
+
+      {/* Portal for Layanan dropdown in collapsed mode */}
+      {isCollapsed &&
+        isLayananMenu &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <Transition
+            as={Fragment}
+            show={showLayananDropdown}
+            enter="transition ease-out duration-100"
+            enterFrom="transform opacity-0 scale-95"
+            enterTo="transform opacity-100 scale-100"
+            leave="transition ease-in duration-75"
+            leaveFrom="transform opacity-100 scale-100"
+            leaveTo="transform opacity-0 scale-95"
+          >
+            <div
+              ref={dropdownRef}
+              onMouseEnter={openDropdown}
+              onMouseLeave={closeDropdown}
+              className="fixed z-[9999] w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 overflow-hidden border border-gray-200 dark:border-gray-700 transition-all duration-200 ease-in-out"
+              style={{
+                top: `${menuPosition.top}px`,
+                left: `${menuPosition.left}px`,
+                opacity: menuPosition.opacity,
+                transition: "opacity 100ms ease-out",
+              }}
+            >
+              {item.children.map((child) => {
+                const isChildItemActive =
+                  child.href && pathname.startsWith(child.href);
+                const ChildIcon = child.icon;
+
+                return (
+                  <Link
+                    key={child.name}
+                    href={child.href}
+                    className={classNames(
+                      isChildItemActive
+                        ? "bg-blue-50 text-blue-700 dark:bg-gray-800 dark:text-white"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white",
+                      "group flex items-center rounded-md px-2 py-1.5 text-xs font-medium transition-all duration-300 ease-in-out",
+                      "border-b border-gray-200 dark:border-gray-700 last:border-0"
+                    )}
+                    onClick={onItemClick}
+                  >
+                    {/* Icon if available */}
+                    {ChildIcon && (
+                      <div className="w-6 flex-shrink-0 flex justify-center">
+                        <ChildIcon
+                          className={classNames(
+                            isChildItemActive
+                              ? "text-blue-600 dark:text-gray-300"
+                              : "text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300",
+                            "h-3.5 w-3.5 transition-all duration-500 ease-in-out"
+                          )}
+                          aria-hidden="true"
+                        />
+                      </div>
+                    )}
+                    <div
+                      className={classNames(
+                        ChildIcon ? "ml-2" : "ml-4",
+                        "flex-1"
+                      )}
+                    >
+                      <span className="truncate">{child.name}</span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </Transition>,
+          document.body
+        )}
     </div>
   );
 };
