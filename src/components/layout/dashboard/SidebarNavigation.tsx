@@ -131,13 +131,20 @@ const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
           // Check if this is a parent item with children
           const hasChildren = item.hasChildren && item.children;
 
+          // Special handling for Layanan menu
+          const isLayananMenu = item.name === "Layanan";
+
           return (
-            <div key={item.name} className="space-y-1">
+            <div
+              key={item.name}
+              className={`space-y-1 ${isLayananMenu && isCollapsed ? "group relative" : ""}`}
+            >
               {hasChildren ? (
                 <CollapsibleNavItem
                   item={item as any}
                   isCollapsed={isCollapsed}
                   onItemClick={onItemClick}
+                  defaultExpanded={isLayananMenu && isCollapsed}
                 />
               ) : (
                 <NavItem

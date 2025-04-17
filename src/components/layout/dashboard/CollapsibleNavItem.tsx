@@ -83,49 +83,121 @@ const CollapsibleNavItem: React.FC<CollapsibleNavItemProps> = ({
     }
   }, [isChildActive, pathname]);
 
+  // Check if this is the Layanan menu item
+  const isLayananMenu = item.name === "Layanan";
+
+  // Get the position of the button for Layanan menu
+  const [menuPosition, setMenuPosition] = useState(0);
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
+
+  // Update the position when the component mounts or when the sidebar collapses/expands
+  useEffect(() => {
+    if (isLayananMenu && isCollapsed && buttonRef.current) {
+      const updatePosition = () => {
+        if (buttonRef.current) {
+          const rect = buttonRef.current.getBoundingClientRect();
+          setMenuPosition(rect.top);
+        }
+      };
+
+      // Initial position
+      updatePosition();
+
+      // Update on resize and scroll
+      window.addEventListener("resize", updatePosition);
+      window.addEventListener("scroll", updatePosition);
+
+      // Run update position on a short delay to ensure DOM is fully rendered
+      const timer = setTimeout(updatePosition, 100);
+
+      return () => {
+        window.removeEventListener("resize", updatePosition);
+        window.removeEventListener("scroll", updatePosition);
+        clearTimeout(timer);
+      };
+    }
+  }, [isLayananMenu, isCollapsed]);
+
   return (
     <div className="space-y-1">
       {/* Parent Item */}
       {isCollapsed ? (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              onClick={toggleExpand}
+        isLayananMenu ? (
+          <button
+            ref={buttonRef}
+            onClick={toggleExpand}
+            className={classNames(
+              isChildActive
+                ? "bg-blue-100 text-blue-700 dark:bg-gray-900 dark:text-white"
+                : "text-gray-700 hover:bg-gray-200 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white",
+              "group relative flex w-full items-center rounded-md px-2 py-2 text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 z-20",
+              "layanan-menu"
+            )}
+          >
+            {/* Icon container - always fixed width */}
+            <div className="w-6 flex-shrink-0 flex justify-center">
+              <item.icon
+                className={classNames(
+                  isChildActive
+                    ? "text-blue-600 dark:text-gray-300"
+                    : "text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300",
+                  "h-6 w-6 transition-all duration-500 ease-in-out"
+                )}
+                aria-hidden="true"
+              />
+            </div>
+
+            {/* Text container - transitions opacity and width */}
+            <div
               className={classNames(
-                isChildActive
-                  ? "bg-blue-100 text-blue-700 dark:bg-gray-900 dark:text-white"
-                  : "text-gray-700 hover:bg-gray-200 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white",
-                "group relative flex w-full items-center rounded-md px-2 py-2 text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 z-20"
+                "ml-3 transition-all duration-500 ease-in-out overflow-hidden",
+                "opacity-0 w-0"
               )}
             >
-              {/* Icon container - always fixed width */}
-              <div className="w-6 flex-shrink-0 flex justify-center">
-                <item.icon
-                  className={classNames(
-                    isChildActive
-                      ? "text-blue-600 dark:text-gray-300"
-                      : "text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300",
-                    "h-6 w-6 transition-all duration-500 ease-in-out"
-                  )}
-                  aria-hidden="true"
-                />
-              </div>
-
-              {/* Text container - transitions opacity and width */}
-              <div
+              <span className="truncate">{item.name}</span>
+            </div>
+          </button>
+        ) : (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={toggleExpand}
                 className={classNames(
-                  "ml-3 transition-all duration-500 ease-in-out overflow-hidden",
-                  "opacity-0 w-0"
+                  isChildActive
+                    ? "bg-blue-100 text-blue-700 dark:bg-gray-900 dark:text-white"
+                    : "text-gray-700 hover:bg-gray-200 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white",
+                  "group relative flex w-full items-center rounded-md px-2 py-2 text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 z-20"
                 )}
               >
-                <span className="truncate">{item.name}</span>
-              </div>
-            </button>
-          </TooltipTrigger>
-          <TooltipContent side="right" sideOffset={5}>
-            <p>{item.name}</p>
-          </TooltipContent>
-        </Tooltip>
+                {/* Icon container - always fixed width */}
+                <div className="w-6 flex-shrink-0 flex justify-center">
+                  <item.icon
+                    className={classNames(
+                      isChildActive
+                        ? "text-blue-600 dark:text-gray-300"
+                        : "text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300",
+                      "h-6 w-6 transition-all duration-500 ease-in-out"
+                    )}
+                    aria-hidden="true"
+                  />
+                </div>
+
+                {/* Text container - transitions opacity and width */}
+                <div
+                  className={classNames(
+                    "ml-3 transition-all duration-500 ease-in-out overflow-hidden",
+                    "opacity-0 w-0"
+                  )}
+                >
+                  <span className="truncate">{item.name}</span>
+                </div>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right" sideOffset={5}>
+              <p>{item.name}</p>
+            </TooltipContent>
+          </Tooltip>
+        )
       ) : (
         <button
           onClick={toggleExpand}
@@ -170,12 +242,28 @@ const CollapsibleNavItem: React.FC<CollapsibleNavItemProps> = ({
       {/* Child Items - Shown when expanded or when hovering over parent in collapsed mode */}
       {(isExpanded || isCollapsed) && (
         <div
+          style={
+            isCollapsed && isLayananMenu
+              ? {
+                  position: "fixed",
+                  left: "4rem",
+                  top: `${menuPosition}px`,
+                  zIndex: 9999,
+                  display: "none",
+                  marginTop: "0",
+                }
+              : {}
+          }
           className={classNames(
             isCollapsed
-              ? "absolute left-full top-0 ml-1 w-40 rounded-md shadow-lg z-50 bg-white dark:bg-gray-800 overflow-hidden border border-gray-200 dark:border-gray-700 transition-all duration-200 ease-in-out"
+              ? isLayananMenu
+                ? "w-48 rounded-md shadow-lg z-[9999] bg-white dark:bg-gray-800 overflow-hidden border border-gray-200 dark:border-gray-700 transition-all duration-200 ease-in-out"
+                : "absolute left-full top-0 ml-1 w-40 rounded-md shadow-lg z-50 bg-white dark:bg-gray-800 overflow-hidden border border-gray-200 dark:border-gray-700 transition-all duration-200 ease-in-out"
               : "ml-8 space-y-0.5 mt-1 relative",
             isCollapsed
-              ? "opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transform scale-95 group-hover:scale-100 transition-all duration-200 ease-in-out"
+              ? isLayananMenu
+                ? "opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transform scale-95 group-hover:scale-100 transition-all duration-200 ease-in-out layanan-submenu"
+                : "opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transform scale-95 group-hover:scale-100 transition-all duration-200 ease-in-out"
               : ""
           )}
         >

@@ -234,3 +234,30 @@ body {
     0.6
   ); /* Thumb color on hover in dark mode */
 }
+
+/* Custom styles for Layanan menu in collapsed sidebar */
+.layanan-menu:hover + .layanan-submenu,
+.layanan-submenu:hover {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transform: scale(1) !important;
+  display: block !important;
+}
+
+/* Ensure the Layanan submenu is visible on hover */
+.group:hover .layanan-submenu {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transform: scale(1) !important;
+  display: block !important;
+}
+
+/* Fix for Layanan menu dropdown positioning */
+.layanan-menu {
+  position: relative;
+}
+
+/* Ensure Layanan submenu is on top of everything */
+.layanan-submenu {
+  z-index: 9999 !important;
+}
