@@ -58,11 +58,31 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
 
     // Add user ID and role to the JWT
-    jwt({ token, user }) {
+    async jwt({ token, user, account, trigger }) {
       // Ensure user and user.id exist before assigning
       if (user?.id) {
         token.sub = user.id; // 'sub' is the standard JWT claim for subject (user ID)
-        token.role = user.role; // Add role if it exists on the user object
+
+        // Add role if it exists on the user object, otherwise default to OWNER
+        // This ensures Google OAuth users always have a role
+        token.role = user.role || Role.OWNER;
+
+        // For Google OAuth users, ensure role is set in the database
+        if (account?.provider === "google" && !user.role) {
+          try {
+            // Try to update the user record with the OWNER role
+            await database.user.update({
+              where: { id: user.id },
+              data: {
+                role: Role.OWNER,
+                provider: "google",
+              },
+            });
+          } catch (error) {
+            console.error("Error updating user role:", error);
+            // Even if the update fails, we'll still set the role in the token
+          }
+        }
 
         // Add employee-specific data if this is an employee login
         if (user.isEmployee) {
@@ -71,6 +91,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           token.employeeId = user.employeeId;
         }
       }
+
+      // If this is a token update (not initial sign-in)
+      if (trigger === "update" && token.sub) {
+        // Fetch the latest user data from the database
+        const latestUser = await database.user.findUnique({
+          where: { id: token.sub },
+        });
+
+        // Update the token with the latest role if available
+        if (latestUser?.role) {
+          token.role = latestUser.role;
+        }
+      }
+
       return token;
     },
 
@@ -95,33 +129,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
     // Callback untuk menambahkan logika tambahan setelah autentikasi berhasil
     async signIn({ user, account }) {
-      // Update lastLogin timestamp for all login types
-      if (user?.id) {
-        await database.user.update({
-          where: { id: user.id },
-          data: {
-            lastLogin: new Date(),
-          },
-        });
-      }
-
-      // Block Google login if email exists but isn't verified
-      if (account?.provider === "google") {
+      // For existing users with credentials provider, verify their email if they sign in with Google
+      if (account?.provider === "google" && user.email) {
         const existingUser = await database.user.findUnique({
-          where: { email: user.email! },
+          where: { email: user.email },
         });
 
+        // If user exists but was created with credentials and email isn't verified
         if (
           existingUser &&
           existingUser.provider === "credentials" &&
           !existingUser.emailVerified
         ) {
-          await database.user.update({
-            where: { id: existingUser.id },
-            data: {
-              emailVerified: new Date(),
-            },
-          });
+          try {
+            await database.user.update({
+              where: { id: existingUser.id },
+              data: {
+                emailVerified: new Date(),
+              },
+            });
+          } catch (error) {
+            console.error("Error updating email verification status:", error);
+          }
         }
       }
       return true;
