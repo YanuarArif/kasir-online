@@ -1,6 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Product, ColumnVisibility } from "../types"; // Import from the new types file
+import { Eye, Pencil, Trash } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { deleteProduct } from "@/actions/products";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface ProductTableDesktopProps {
   products: Product[];
@@ -19,6 +35,30 @@ export const ProductTableDesktop: React.FC<ProductTableDesktopProps> = ({
   getStockStatusBadge,
   searchTerm,
 }) => {
+  const router = useRouter();
+  const [productToDelete, setProductToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Handle delete product
+  const handleDeleteProduct = async (id: string) => {
+    setIsDeleting(true);
+    try {
+      const result = await deleteProduct(id);
+      if (result.success) {
+        toast.success(result.success);
+        // Refresh the page to show updated data
+        router.refresh();
+      } else if (result.error) {
+        toast.error(result.error);
+      }
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      toast.error("Terjadi kesalahan saat menghapus produk.");
+    } finally {
+      setIsDeleting(false);
+      setProductToDelete(null);
+    }
+  };
   return (
     <div className="relative overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg">
       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -174,13 +214,70 @@ export const ProductTableDesktop: React.FC<ProductTableDesktopProps> = ({
                     - {/* Placeholder for discount price */}
                   </td>
                 )}
-                <td className="px-6 py-4 text-right whitespace-nowrap space-x-3">
-                  <Link
-                    href={`/dashboard/products/${product.id}`}
-                    className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium"
-                  >
-                    Detail
-                  </Link>
+                <td className="px-6 py-4 text-right whitespace-nowrap">
+                  <div className="flex justify-end space-x-1">
+                    <Link href={`/dashboard/products/${product.id}`} passHref>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                      >
+                        <Eye className="h-4 w-4" />
+                        <span className="sr-only">View</span>
+                      </Button>
+                    </Link>
+                    <Link
+                      href={`/dashboard/products/${product.id}/edit`}
+                      passHref
+                    >
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                      >
+                        <Pencil className="h-4 w-4" />
+                        <span className="sr-only">Edit</span>
+                      </Button>
+                    </Link>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-red-500 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                        >
+                          <Trash className="h-4 w-4" />
+                          <span className="sr-only">Delete</span>
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Apakah Anda yakin ingin menghapus produk{" "}
+                            {product.name}? Tindakan ini tidak dapat dibatalkan.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Batal</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => {
+                              setProductToDelete(product.id);
+                              handleDeleteProduct(product.id);
+                            }}
+                            disabled={
+                              isDeleting && productToDelete === product.id
+                            }
+                            className="bg-red-500 hover:bg-red-600"
+                          >
+                            {isDeleting && productToDelete === product.id
+                              ? "Menghapus..."
+                              : "Hapus"}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </td>
               </tr>
             ))

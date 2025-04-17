@@ -146,3 +146,42 @@ export const updateProduct = async (
     return { error: "Gagal memperbarui produk." };
   }
 };
+
+export const deleteProduct = async (id: string) => {
+  // Get effective user ID (owner ID if employee, user's own ID otherwise)
+  const effectiveUserId = await getEffectiveUserId();
+
+  if (!effectiveUserId) {
+    return { error: "Tidak terautentikasi!" };
+  }
+  const userId = effectiveUserId;
+
+  try {
+    // Check if product exists and belongs to this user
+    const existingProduct = await db.product.findFirst({
+      where: {
+        id,
+        userId,
+      },
+    });
+
+    if (!existingProduct) {
+      return { error: "Produk tidak ditemukan!" };
+    }
+
+    // Delete the product
+    await db.product.delete({
+      where: {
+        id,
+      },
+    });
+
+    // Revalidate the products page cache
+    revalidatePath("/dashboard/products");
+
+    return { success: "Produk berhasil dihapus!" };
+  } catch (error) {
+    console.error("Database Error:", error);
+    return { error: "Gagal menghapus produk. Silakan coba lagi." };
+  }
+};

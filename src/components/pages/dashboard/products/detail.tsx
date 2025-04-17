@@ -7,15 +7,24 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { Trash } from "lucide-react";
+import { toast } from "sonner";
 
 import DashboardLayout from "@/components/layout/dashboardlayout";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { deleteProduct } from "@/actions/products";
 
 interface Category {
   id: string;
@@ -43,6 +52,26 @@ interface ProductDetailPageProps {
 
 const ProductDetailPage: NextPage<ProductDetailPageProps> = ({ product }) => {
   const router = useRouter();
+  const [isDeleting, setIsDeleting] = React.useState(false);
+
+  // Handle delete product
+  const handleDeleteProduct = async () => {
+    setIsDeleting(true);
+    try {
+      const result = await deleteProduct(product.id);
+      if (result.success) {
+        toast.success(result.success);
+        router.push("/dashboard/products");
+      } else if (result.error) {
+        toast.error(result.error);
+      }
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      toast.error("Terjadi kesalahan saat menghapus produk.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <DashboardLayout pageTitle="Detail Produk">
@@ -99,22 +128,22 @@ const ProductDetailPage: NextPage<ProductDetailPageProps> = ({ product }) => {
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div className="font-medium">SKU</div>
                     <div>{product.sku || "-"}</div>
-                    
+
                     <div className="font-medium">Harga Jual</div>
                     <div>Rp {product.price.toLocaleString("id-ID")}</div>
-                    
+
                     <div className="font-medium">Harga Beli</div>
                     <div>
                       {product.cost
                         ? `Rp ${product.cost.toLocaleString("id-ID")}`
                         : "-"}
                     </div>
-                    
+
                     <div className="font-medium">Stok</div>
                     <div className={product.stock <= 0 ? "text-red-600" : ""}>
                       {product.stock > 0 ? product.stock : "Habis"}
                     </div>
-                    
+
                     <div className="font-medium">Kategori</div>
                     <div>{product.category?.name || "-"}</div>
                   </div>
@@ -141,7 +170,7 @@ const ProductDetailPage: NextPage<ProductDetailPageProps> = ({ product }) => {
                         year: "numeric",
                       })}
                     </div>
-                    
+
                     <div>Terakhir diperbarui</div>
                     <div>
                       {new Date(product.updatedAt).toLocaleDateString("id-ID", {
@@ -160,6 +189,33 @@ const ProductDetailPage: NextPage<ProductDetailPageProps> = ({ product }) => {
                       Edit Produk
                     </Link>
                   </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" className="gap-2">
+                        <Trash className="h-4 w-4" />
+                        Hapus Produk
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Apakah Anda yakin ingin menghapus produk{" "}
+                          {product.name}? Tindakan ini tidak dapat dibatalkan.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Batal</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={handleDeleteProduct}
+                          disabled={isDeleting}
+                          className="bg-red-500 hover:bg-red-600"
+                        >
+                          {isDeleting ? "Menghapus..." : "Hapus"}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
             </div>
