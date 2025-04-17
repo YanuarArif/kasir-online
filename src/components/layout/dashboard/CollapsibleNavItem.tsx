@@ -67,6 +67,7 @@ const CollapsibleNavItem: React.FC<CollapsibleNavItemProps> = ({
 
   // Toggle expanded state and save to localStorage
   const toggleExpand = () => {
+    // Always allow toggling, even when a child is active
     setIsExpanded((prev) => {
       const newState = !prev;
       // Save to localStorage
@@ -84,12 +85,16 @@ const CollapsibleNavItem: React.FC<CollapsibleNavItemProps> = ({
     }
   }, [isExpanded, storageKey]);
 
-  // Auto-expand menu when a child item is active
+  // Auto-expand menu when a child item is active, but only on initial load
   useEffect(() => {
+    // Only auto-expand on initial render, not on subsequent navigation
     if (isChildActive && !isExpanded) {
       setIsExpanded(true);
     }
-  }, [isChildActive, pathname, isExpanded]);
+    // We're intentionally not including isExpanded in the dependency array
+    // This ensures the effect only runs when the active state or pathname changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isChildActive, pathname]);
 
   // Check if this is the Layanan menu item
   const isLayananMenu = item.name === "Layanan";
