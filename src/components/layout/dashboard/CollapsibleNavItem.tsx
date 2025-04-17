@@ -372,18 +372,18 @@ const CollapsibleNavItem: React.FC<CollapsibleNavItemProps> = ({
           <Transition
             as={Fragment}
             show={showLayananDropdown}
-            enter="transition ease-out duration-100"
-            enterFrom="transform opacity-0 scale-95"
-            enterTo="transform opacity-100 scale-100"
-            leave="transition ease-in duration-75"
-            leaveFrom="transform opacity-100 scale-100"
-            leaveTo="transform opacity-0 scale-95"
+            enter="transition ease-out duration-200"
+            enterFrom="transform opacity-0 scale-95 translate-y-2"
+            enterTo="transform opacity-100 scale-100 translate-y-0"
+            leave="transition ease-in duration-150"
+            leaveFrom="transform opacity-100 scale-100 translate-y-0"
+            leaveTo="transform opacity-0 scale-95 translate-y-2"
           >
             <div
               ref={dropdownRef}
               onMouseEnter={openDropdown}
               onMouseLeave={closeDropdown}
-              className="fixed z-[9999] w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 overflow-hidden border border-gray-200 dark:border-gray-700 transition-all duration-200 ease-in-out"
+              className="fixed z-[9999] w-56 rounded-lg shadow-2xl bg-white dark:bg-gray-800 overflow-hidden border border-gray-200 dark:border-gray-700 transition-all duration-200 ease-in-out ring-1 ring-black/5 dark:ring-white/10"
               style={{
                 top: `${menuPosition.top}px`,
                 left: `${menuPosition.left}px`,
@@ -391,6 +391,12 @@ const CollapsibleNavItem: React.FC<CollapsibleNavItemProps> = ({
                 transition: "opacity 100ms ease-out",
               }}
             >
+              {/* Header */}
+              <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+                <h3 className="text-xs font-semibold text-gray-800 dark:text-gray-200">
+                  {item.name}
+                </h3>
+              </div>
               {item.children.map((child) => {
                 const isChildItemActive =
                   child.href && pathname.startsWith(child.href);
@@ -402,33 +408,28 @@ const CollapsibleNavItem: React.FC<CollapsibleNavItemProps> = ({
                     href={child.href}
                     className={classNames(
                       isChildItemActive
-                        ? "bg-blue-50 text-blue-700 dark:bg-gray-800 dark:text-white"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white",
-                      "group flex items-center rounded-md px-2 py-1.5 text-xs font-medium transition-all duration-300 ease-in-out",
+                        ? "bg-blue-50 text-blue-700 dark:bg-gray-700 dark:text-white border-l-4 border-blue-500 dark:border-blue-400"
+                        : "text-gray-700 hover:bg-blue-50/50 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-gray-700/70 dark:hover:text-white border-l-4 border-transparent hover:border-blue-300 dark:hover:border-blue-500/50",
+                      "group flex items-center px-4 py-2 text-xs font-medium transition-all duration-300 ease-in-out",
                       "border-b border-gray-200 dark:border-gray-700 last:border-0"
                     )}
                     onClick={onItemClick}
                   >
                     {/* Icon if available */}
                     {ChildIcon && (
-                      <div className="w-6 flex-shrink-0 flex justify-center">
+                      <div className="w-6 h-6 flex-shrink-0 flex items-center justify-center rounded-full bg-blue-50 dark:bg-gray-700 mr-2">
                         <ChildIcon
                           className={classNames(
                             isChildItemActive
-                              ? "text-blue-600 dark:text-gray-300"
-                              : "text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300",
-                            "h-3.5 w-3.5 transition-all duration-500 ease-in-out"
+                              ? "text-blue-600 dark:text-blue-300"
+                              : "text-blue-500 group-hover:text-blue-600 dark:text-gray-300 dark:group-hover:text-blue-300",
+                            "h-3.5 w-3.5 transition-all duration-300 ease-in-out"
                           )}
                           aria-hidden="true"
                         />
                       </div>
                     )}
-                    <div
-                      className={classNames(
-                        ChildIcon ? "ml-2" : "ml-4",
-                        "flex-1"
-                      )}
-                    >
+                    <div className="flex-1">
                       <span className="truncate">{child.name}</span>
                     </div>
                   </Link>
