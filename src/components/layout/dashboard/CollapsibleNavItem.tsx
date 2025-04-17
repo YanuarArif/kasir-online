@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, ChevronRight } from "lucide-react";
@@ -14,6 +14,7 @@ import { classNames } from "./SidebarNavigation";
 interface NavItemChild {
   name: string;
   href: string;
+  icon?: React.ElementType;
   roles?: string[];
 }
 
@@ -38,17 +39,49 @@ const CollapsibleNavItem: React.FC<CollapsibleNavItemProps> = ({
   defaultExpanded = false,
 }) => {
   const pathname = usePathname();
-  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+  // Create a unique key for this menu item to store in localStorage
+  const storageKey = `nav-expanded-${item.name.toLowerCase().replace(/\s+/g, "-")}`;
+
+  // Initialize state from localStorage or default value
+  const [isExpanded, setIsExpanded] = useState(() => {
+    // Only run in browser environment
+    if (typeof window !== "undefined") {
+      const savedState = localStorage.getItem(storageKey);
+      return savedState !== null ? savedState === "true" : defaultExpanded;
+    }
+    return defaultExpanded;
+  });
 
   // Check if any child is active
   const isChildActive = item.children.some(
     (child) => child.href && pathname.startsWith(child.href)
   );
 
-  // Toggle expanded state
+  // Toggle expanded state and save to localStorage
   const toggleExpand = () => {
-    setIsExpanded((prev) => !prev);
+    setIsExpanded((prev) => {
+      const newState = !prev;
+      // Save to localStorage
+      if (typeof window !== "undefined") {
+        localStorage.setItem(storageKey, String(newState));
+      }
+      return newState;
+    });
   };
+
+  // Update localStorage when isExpanded changes
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(storageKey, String(isExpanded));
+    }
+  }, [isExpanded, storageKey]);
+
+  // Auto-expand menu when a child item is active
+  useEffect(() => {
+    if (isChildActive && !isExpanded) {
+      setIsExpanded(true);
+    }
+  }, [isChildActive, pathname]);
 
   return (
     <div className="space-y-1">
@@ -62,7 +95,7 @@ const CollapsibleNavItem: React.FC<CollapsibleNavItemProps> = ({
                 isChildActive
                   ? "bg-blue-100 text-blue-700 dark:bg-gray-900 dark:text-white"
                   : "text-gray-700 hover:bg-gray-200 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white",
-                "group flex w-full items-center rounded-md px-2 py-2 text-sm font-medium transition-all duration-500 ease-in-out"
+                "group relative flex w-full items-center rounded-md px-2 py-2 text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 z-20"
               )}
             >
               {/* Icon container - always fixed width */}
@@ -100,7 +133,7 @@ const CollapsibleNavItem: React.FC<CollapsibleNavItemProps> = ({
             isChildActive
               ? "bg-blue-100 text-blue-700 dark:bg-gray-900 dark:text-white"
               : "text-gray-700 hover:bg-gray-200 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white",
-            "group flex w-full items-center justify-between rounded-md px-2 py-2 text-sm font-medium transition-all duration-500 ease-in-out"
+            "group flex w-full items-center justify-between rounded-md px-2 py-2 text-sm font-medium transition-all duration-500 ease-in-out cursor-pointer"
           )}
         >
           <div className="flex items-center">
@@ -134,12 +167,27 @@ const CollapsibleNavItem: React.FC<CollapsibleNavItemProps> = ({
         </button>
       )}
 
-      {/* Child Items */}
-      {isExpanded && !isCollapsed && (
-        <div className="ml-8 space-y-1 mt-1">
+      {/* Child Items - Shown when expanded or when hovering over parent in collapsed mode */}
+      {(isExpanded || isCollapsed) && (
+        <div
+          className={classNames(
+            isCollapsed
+              ? "absolute left-full top-0 ml-1 w-40 rounded-md shadow-lg z-50 bg-white dark:bg-gray-800 overflow-hidden border border-gray-200 dark:border-gray-700 transition-all duration-200 ease-in-out"
+              : "ml-8 space-y-0.5 mt-1 relative",
+            isCollapsed
+              ? "opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transform scale-95 group-hover:scale-100 transition-all duration-200 ease-in-out"
+              : ""
+          )}
+        >
+          {/* Vertical line for submenu */}
+          {!isCollapsed && (
+            <div className="absolute left-[-20px] top-0 bottom-0 w-0.5 bg-gray-400 dark:bg-gray-600"></div>
+          )}
+
           {item.children.map((child) => {
             const isChildItemActive =
               child.href && pathname.startsWith(child.href);
+            const ChildIcon = child.icon;
 
             return (
               <Link
@@ -149,11 +197,30 @@ const CollapsibleNavItem: React.FC<CollapsibleNavItemProps> = ({
                   isChildItemActive
                     ? "bg-blue-50 text-blue-700 dark:bg-gray-800 dark:text-white"
                     : "text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white",
-                  "group flex items-center rounded-md px-2 py-2 text-sm font-medium transition-all duration-300 ease-in-out"
+                  "group flex items-center rounded-md px-2 py-1.5 text-xs font-medium transition-all duration-300 ease-in-out",
+                  isCollapsed
+                    ? "border-b border-gray-200 dark:border-gray-700 last:border-0"
+                    : ""
                 )}
                 onClick={onItemClick}
               >
-                <div className="ml-3 flex-1">
+                {/* Icon if available */}
+                {ChildIcon && (
+                  <div className="w-6 flex-shrink-0 flex justify-center">
+                    <ChildIcon
+                      className={classNames(
+                        isChildItemActive
+                          ? "text-blue-600 dark:text-gray-300"
+                          : "text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300",
+                        "h-3.5 w-3.5 transition-all duration-500 ease-in-out"
+                      )}
+                      aria-hidden="true"
+                    />
+                  </div>
+                )}
+                <div
+                  className={classNames(ChildIcon ? "ml-2" : "ml-4", "flex-1")}
+                >
                   <span className="truncate">{child.name}</span>
                 </div>
               </Link>

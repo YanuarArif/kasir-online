@@ -14,6 +14,8 @@ import {
   Store,
   UserCog,
   Wrench,
+  ClipboardList,
+  Search,
 } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NavItem from "./NavItem";
@@ -66,11 +68,13 @@ export const navigation = [
       {
         name: "Manajemen Servis",
         href: "/dashboard/services/management",
+        icon: ClipboardList,
         roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
       },
       {
         name: "Tracking Servis",
         href: "/dashboard/services/tracking",
+        icon: Search,
         roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
       },
     ],
