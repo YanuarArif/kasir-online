@@ -172,7 +172,7 @@ const DashboardHomePage: NextPage = () => {
   // Render loading skeletons
   if (isLoading) {
     return (
-      <DashboardLayout pageTitle="Dashboard Utama">
+      <DashboardLayout>
         <Head>
           <title>Memuat Dashboard... - Kasir Online</title>
         </Head>
@@ -196,7 +196,7 @@ const DashboardHomePage: NextPage = () => {
   // Render error message
   if (error) {
     return (
-      <DashboardLayout pageTitle="Dashboard Utama">
+      <DashboardLayout>
         <Head>
           <title>Error - Kasir Online</title>
         </Head>
@@ -215,7 +215,7 @@ const DashboardHomePage: NextPage = () => {
     // This case should ideally be covered by loading/error states,
     // but acts as a fallback if some data fails partially without throwing a blocking error.
     return (
-      <DashboardLayout pageTitle="Dashboard Utama">
+      <DashboardLayout>
         <Head>
           <title>Dashboard - Kasir Online</title>
         </Head>
@@ -226,7 +226,7 @@ const DashboardHomePage: NextPage = () => {
   }
 
   return (
-    <DashboardLayout pageTitle="Dashboard Utama">
+    <DashboardLayout>
       <Head>
         <title>Dashboard - Kasir Online</title>
       </Head>

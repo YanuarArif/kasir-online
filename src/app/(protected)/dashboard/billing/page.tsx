@@ -24,7 +24,7 @@ const Billing = async () => {
   };
 
   return (
-    <DashboardLayout pageTitle="Tagihan">
+    <DashboardLayout>
       <Head>
         <title>Tagihan - Kasir Online</title>
       </Head>

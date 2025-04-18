@@ -21,7 +21,7 @@ const Suppliers = async () => {
   }
 
   return (
-    <DashboardLayout pageTitle="Suppliers">
+    <DashboardLayout>
       <Head>
         <title>Suppliers - Kasir Online</title>
       </Head>

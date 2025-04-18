@@ -52,7 +52,7 @@ const SettingsPage: NextPage<SettingsPageProps> = ({ user }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   return (
-    <DashboardLayout pageTitle="Pengaturan">
+    <DashboardLayout>
       <Head>
         <title>Pengaturan - Kasir Online</title>
       </Head>

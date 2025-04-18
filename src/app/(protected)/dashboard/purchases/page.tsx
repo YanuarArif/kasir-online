@@ -18,7 +18,7 @@ const Purchases = async () => {
 
   return (
     <ProtectedRoute allowedRoles={[Role.OWNER, Role.ADMIN]}>
-      <DashboardLayout pageTitle="Pembelian">
+      <DashboardLayout>
         <Head>
           <title>Pembelian - Kasir Online</title>
         </Head>

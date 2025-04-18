@@ -128,7 +128,7 @@ const AddProductPage: NextPage = () => {
   };
 
   return (
-    <DashboardLayout pageTitle="Tambah Produk Baru">
+    <DashboardLayout>
       <Head>
         <title>Tambah Produk - Kasir Online</title>
       </Head>

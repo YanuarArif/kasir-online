@@ -19,7 +19,7 @@ const NewSale = async () => {
   }
 
   return (
-    <DashboardLayout pageTitle="Tambah Penjualan Baru">
+    <DashboardLayout>
       <Head>
         <title>Tambah Penjualan - Kasir Online</title>
       </Head>

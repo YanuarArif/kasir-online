@@ -60,7 +60,7 @@ const ReportsPage: NextPage = () => {
   };
 
   return (
-    <DashboardLayout pageTitle="Laporan">
+    <DashboardLayout>
       <Head>
         <title>Laporan - Kasir Online</title>
       </Head>

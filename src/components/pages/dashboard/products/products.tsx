@@ -233,7 +233,7 @@ const ProductsPage: NextPage<ProductsPageProps> = (props) => {
   };
 
   return (
-    <DashboardLayout pageTitle="Produk">
+    <DashboardLayout>
       <Head>
         <title>Produk - Kasir Online</title>
       </Head>

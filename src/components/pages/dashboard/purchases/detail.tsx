@@ -90,7 +90,7 @@ const PurchaseDetailPage: NextPage<PurchaseDetailPageProps> = ({
   };
 
   return (
-    <DashboardLayout pageTitle="Detail Pembelian">
+    <DashboardLayout>
       <Head>
         <title>Detail Pembelian - Kasir Online</title>
       </Head>

@@ -12,7 +12,7 @@ const AppearanceSettingsPage = async () => {
   }
 
   return (
-    <DashboardLayout pageTitle="Pengaturan Tampilan">
+    <DashboardLayout>
       <SettingsLayout>
         <AppearanceSettings />
       </SettingsLayout>

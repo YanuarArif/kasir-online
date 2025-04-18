@@ -10,7 +10,7 @@ const Summaries = async () => {
   if (!session) redirect("/login");
 
   return (
-    <DashboardLayout pageTitle="Ringkasan">
+    <DashboardLayout>
       <Head>
         <title>Ringkasan - Kasir Online</title>
       </Head>

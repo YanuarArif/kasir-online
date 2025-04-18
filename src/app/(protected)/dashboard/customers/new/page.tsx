@@ -17,7 +17,7 @@ const NewCustomer = async () => {
   }
 
   return (
-    <DashboardLayout pageTitle="Tambah Pelanggan Baru">
+    <DashboardLayout>
       <EnhancedNewCustomerPage />
     </DashboardLayout>
   );

@@ -35,10 +35,13 @@ const NewSalePage: React.FC<NewSalePageProps> = ({ products }) => {
     defaultValues: {
       items: [{ productId: "", quantity: 1, priceAtSale: 0 }],
       totalAmount: 0,
-      customerId: "cust1", // Default to general customer
+      customerId: "default", // Default to general customer
+      customerNIK: "",
+      customerNPWP: "",
+      invoiceRef: "",
       paymentMethod: "cash",
-      printReceipt: true,
-      sendReceipt: false,
+      amountPaid: 0,
+      notes: "",
     },
   });
 

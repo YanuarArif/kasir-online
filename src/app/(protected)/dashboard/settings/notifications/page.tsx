@@ -12,7 +12,7 @@ const NotificationsSettingsPage = async () => {
   }
 
   return (
-    <DashboardLayout pageTitle="Pengaturan Notifikasi">
+    <DashboardLayout>
       <SettingsLayout>
         <NotificationsSettings />
       </SettingsLayout>

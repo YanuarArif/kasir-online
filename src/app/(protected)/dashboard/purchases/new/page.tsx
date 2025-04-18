@@ -22,7 +22,7 @@ const NewPurchase = async () => {
   // If no products were found, it could be due to authentication issues
   if (!serializedProducts || serializedProducts.length === 0) {
     return (
-      <DashboardLayout pageTitle="Tambah Pembelian Baru">
+      <DashboardLayout>
         <div className="container mx-auto px-4 py-6">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 text-center">
             <h2 className="text-xl font-semibold mb-4">Error</h2>
@@ -47,7 +47,7 @@ const NewPurchase = async () => {
   // The user can add a supplier later or proceed without one
 
   return (
-    <DashboardLayout pageTitle="Tambah Pembelian Baru">
+    <DashboardLayout>
       <Head>
         <title>Tambah Pembelian - Kasir Online</title>
       </Head>

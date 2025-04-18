@@ -156,7 +156,7 @@ const AddServicePage: React.FC = () => {
   const formValues = form.watch();
 
   return (
-    <DashboardLayout pageTitle="Tambah Servis Baru">
+    <DashboardLayout>
       <div className="container mx-auto px-4 py-6">
         <div className="flex items-center justify-between mb-6">
           <div>

@@ -7,7 +7,7 @@ import { Role } from "@prisma/client";
 const NotificationsPageContainer = async () => {
   return (
     <ProtectedRoute allowedRoles={[Role.OWNER, Role.ADMIN, Role.CASHIER]}>
-      <DashboardLayout pageTitle="Notifikasi">
+      <DashboardLayout>
         <NotificationsPage />
       </DashboardLayout>
     </ProtectedRoute>

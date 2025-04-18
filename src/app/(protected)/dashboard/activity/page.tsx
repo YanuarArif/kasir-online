@@ -7,7 +7,7 @@ import { Role } from "@prisma/client";
 const ActivityPageContainer = async () => {
   return (
     <ProtectedRoute allowedRoles={[Role.OWNER, Role.ADMIN, Role.CASHIER]}>
-      <DashboardLayout pageTitle="Aktivitas Sistem">
+      <DashboardLayout>
         <ActivityPage />
       </DashboardLayout>
     </ProtectedRoute>

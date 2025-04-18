@@ -25,7 +25,7 @@ export default async function PaymentPendingPage(props: any) {
   }
 
   return (
-    <DashboardLayout pageTitle="Menunggu Pembayaran">
+    <DashboardLayout>
       <SettingsLayout>
         <div className="flex justify-center py-8">
           <PaymentStatus

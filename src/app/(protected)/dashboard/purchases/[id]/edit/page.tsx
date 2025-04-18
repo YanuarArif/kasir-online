@@ -42,7 +42,7 @@ export default async function EditPurchase(props: Props) {
     // Use the error fallback component if data loading fails
     if (!products) {
       return (
-        <DashboardLayout pageTitle="Edit Pembelian">
+        <DashboardLayout>
           <PurchaseEditErrorFallback
             purchaseId={id}
             errorMessage="Gagal memuat data produk. Silakan coba lagi nanti."
@@ -54,7 +54,7 @@ export default async function EditPurchase(props: Props) {
     // Check if suppliers were loaded successfully
     if (suppliersResult.error) {
       return (
-        <DashboardLayout pageTitle="Edit Pembelian">
+        <DashboardLayout>
           <PurchaseEditErrorFallback
             purchaseId={id}
             errorMessage={
@@ -76,7 +76,7 @@ export default async function EditPurchase(props: Props) {
     };
 
     return (
-      <DashboardLayout pageTitle="Edit Pembelian">
+      <DashboardLayout>
         <EnhancedPurchaseEditPage
           purchase={serializedPurchase}
           products={products}
@@ -87,7 +87,7 @@ export default async function EditPurchase(props: Props) {
   } catch (error) {
     console.error("Error loading data for purchase edit page:", error);
     return (
-      <DashboardLayout pageTitle="Edit Pembelian">
+      <DashboardLayout>
         <PurchaseEditErrorFallback
           purchaseId={id}
           errorMessage="Terjadi kesalahan saat memuat data. Silakan coba lagi nanti."

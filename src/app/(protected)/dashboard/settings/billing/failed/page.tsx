@@ -25,7 +25,7 @@ export default async function PaymentFailedPage(props: any) {
   }
 
   return (
-    <DashboardLayout pageTitle="Pembayaran Gagal">
+    <DashboardLayout>
       <SettingsLayout>
         <div className="flex justify-center py-8">
           <PaymentStatus

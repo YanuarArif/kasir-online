@@ -12,7 +12,7 @@ const BusinessSettingsPage = async () => {
   }
 
   return (
-    <DashboardLayout pageTitle="Pengaturan Bisnis">
+    <DashboardLayout>
       <SettingsLayout>
         <BusinessSettings />
       </SettingsLayout>

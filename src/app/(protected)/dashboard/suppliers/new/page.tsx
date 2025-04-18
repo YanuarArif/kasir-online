@@ -12,7 +12,7 @@ const NewSupplier = async () => {
   }
 
   return (
-    <DashboardLayout pageTitle="Tambah Supplier Baru">
+    <DashboardLayout>
       <Head>
         <title>Tambah Supplier - Kasir Online</title>
       </Head>

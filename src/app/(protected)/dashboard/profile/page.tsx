@@ -89,7 +89,7 @@ const ProfilePage = async () => {
   }
 
   return (
-    <DashboardLayout pageTitle="Profil Pengguna">
+    <DashboardLayout>
       <Head>
         <title>Profil Pengguna - Kasir Online</title>
       </Head>

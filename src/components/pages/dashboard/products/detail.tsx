@@ -74,7 +74,7 @@ const ProductDetailPage: NextPage<ProductDetailPageProps> = ({ product }) => {
   };
 
   return (
-    <DashboardLayout pageTitle="Detail Produk">
+    <DashboardLayout>
       <Head>
         <title>{product.name} - Kasir Online</title>
       </Head>

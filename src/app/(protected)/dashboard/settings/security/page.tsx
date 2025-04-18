@@ -12,7 +12,7 @@ const SecuritySettingsPage = async () => {
   }
 
   return (
-    <DashboardLayout pageTitle="Pengaturan Keamanan">
+    <DashboardLayout>
       <SettingsLayout>
         <SecuritySettings />
       </SettingsLayout>

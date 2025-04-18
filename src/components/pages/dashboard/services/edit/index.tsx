@@ -123,7 +123,7 @@ const ServiceEditPage: React.FC<ServiceEditPageProps> = ({ service }) => {
   const formValues = form.watch();
 
   return (
-    <DashboardLayout pageTitle="Edit Servis">
+    <DashboardLayout>
       <div className="container mx-auto px-4 py-6">
         <div className="flex items-center justify-between mb-6">
           <div>

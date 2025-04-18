@@ -131,7 +131,7 @@ const EnhancedAddProductPage: React.FC = () => {
   const formValues = form.watch();
 
   return (
-    <DashboardLayout pageTitle="Tambah Produk Baru">
+    <DashboardLayout>
       <div className="container mx-auto px-4 py-6">
         <div className="flex items-center justify-between mb-6">
           <div>

@@ -40,7 +40,7 @@ export default async function EditSale(props: Props) {
     // Use the error fallback component if data loading fails
     if (!products) {
       return (
-        <DashboardLayout pageTitle="Edit Penjualan">
+        <DashboardLayout>
           <SaleEditErrorFallback
             saleId={id}
             errorMessage="Gagal memuat data produk. Silakan coba lagi nanti."
@@ -67,14 +67,14 @@ export default async function EditSale(props: Props) {
     };
 
     return (
-      <DashboardLayout pageTitle="Edit Penjualan">
+      <DashboardLayout>
         <EnhancedSaleEditPage sale={serializedSale} products={products} />
       </DashboardLayout>
     );
   } catch (error) {
     console.error("Error loading data for sale edit page:", error);
     return (
-      <DashboardLayout pageTitle="Edit Penjualan">
+      <DashboardLayout>
         <SaleEditErrorFallback
           saleId={id}
           errorMessage="Terjadi kesalahan saat memuat data. Silakan coba lagi nanti."

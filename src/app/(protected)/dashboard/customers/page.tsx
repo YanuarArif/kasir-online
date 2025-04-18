@@ -26,7 +26,7 @@ const Customers = async () => {
   }
 
   return (
-    <DashboardLayout pageTitle="Daftar Pelanggan">
+    <DashboardLayout>
       {/* Pass the fetched customers to the client component */}
       <CustomersPage customers={customers || []} />
     </DashboardLayout>

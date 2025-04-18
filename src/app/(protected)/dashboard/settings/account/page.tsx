@@ -42,7 +42,7 @@ const AccountSettingsPage = async () => {
   };
 
   return (
-    <DashboardLayout pageTitle="Pengaturan Akun">
+    <DashboardLayout>
       <SettingsLayout>
         <AccountSettings user={userData} />
       </SettingsLayout>

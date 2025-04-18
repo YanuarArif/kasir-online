@@ -54,10 +54,12 @@ const EnhancedSaleEditPage: React.FC<EnhancedSaleEditPageProps> = ({
         priceAtSale: item.priceAtSale,
       })),
       totalAmount: sale.totalAmount,
-      customerId: "cust1", // Default to general customer
+      customerId: "default", // Default to general customer
+      customerNIK: "",
+      customerNPWP: "",
       paymentMethod: "cash",
-      printReceipt: false,
-      sendReceipt: false,
+      amountPaid: 0,
+      notes: "",
     },
   });
 

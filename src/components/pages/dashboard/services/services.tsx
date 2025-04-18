@@ -229,7 +229,7 @@ const ServicesPage: React.FC<ServicesPageProps> = (props) => {
   };
 
   return (
-    <DashboardLayout pageTitle="Manajemen Servis">
+    <DashboardLayout>
       <div className="space-y-6">
         {/* Main Tabs */}
         <Tabs

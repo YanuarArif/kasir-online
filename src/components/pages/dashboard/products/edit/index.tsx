@@ -43,12 +43,16 @@ interface EditProductPageProps {
   product: Product;
 }
 
-const EnhancedEditProductPage: React.FC<EditProductPageProps> = ({ product }) => {
+const EnhancedEditProductPage: React.FC<EditProductPageProps> = ({
+  product,
+}) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [imageUrl, setImageUrl] = React.useState<string>(product.image || "");
   const [isUploading, setIsUploading] = React.useState(false);
-  const [previewUrl, setPreviewUrl] = React.useState<string>(product.image || "");
+  const [previewUrl, setPreviewUrl] = React.useState<string>(
+    product.image || ""
+  );
   const [fileInputKey, setFileInputKey] = React.useState<number>(0);
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
@@ -149,7 +153,7 @@ const EnhancedEditProductPage: React.FC<EditProductPageProps> = ({ product }) =>
   const formValues = form.watch();
 
   return (
-    <DashboardLayout pageTitle="Edit Produk">
+    <DashboardLayout>
       <div className="container mx-auto px-4 py-6">
         <div className="flex items-center justify-between mb-6">
           <div>

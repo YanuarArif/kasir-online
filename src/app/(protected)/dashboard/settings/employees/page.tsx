@@ -8,7 +8,7 @@ import { ProtectedRoute } from "@/components/auth/protected-route";
 const EmployeesSettingsPage = async () => {
   return (
     <ProtectedRoute allowedRoles={[Role.OWNER]}>
-      <DashboardLayout pageTitle="Pengaturan Karyawan">
+      <DashboardLayout>
         <SettingsLayout>
           <EmployeeManagement />
         </SettingsLayout>

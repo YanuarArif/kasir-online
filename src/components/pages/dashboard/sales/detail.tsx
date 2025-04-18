@@ -79,7 +79,7 @@ const SaleDetailPage: NextPage<SaleDetailPageProps> = ({ sale }) => {
   };
 
   return (
-    <DashboardLayout pageTitle="Detail Penjualan">
+    <DashboardLayout>
       <Head>
         <title>Detail Penjualan - Kasir Online</title>
       </Head>

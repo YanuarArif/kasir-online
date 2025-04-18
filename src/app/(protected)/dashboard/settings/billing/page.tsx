@@ -25,7 +25,7 @@ const BillingSettingsPage = async () => {
   };
 
   return (
-    <DashboardLayout pageTitle="Tagihan & Langganan">
+    <DashboardLayout>
       <SettingsLayout>
         <BillingSettings initialData={subscriptionData} />
       </SettingsLayout>

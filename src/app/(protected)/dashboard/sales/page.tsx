@@ -29,7 +29,7 @@ const Sales = async () => {
   }
 
   return (
-    <DashboardLayout pageTitle="Penjualan">
+    <DashboardLayout>
       <Head>
         <title>Penjualan - Kasir Online</title>
       </Head>
