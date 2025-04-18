@@ -36,7 +36,10 @@ interface EnhancedSaleEditPageProps {
   products: Product[];
 }
 
-const EnhancedSaleEditPage: React.FC<EnhancedSaleEditPageProps> = ({ sale, products }) => {
+const EnhancedSaleEditPage: React.FC<EnhancedSaleEditPageProps> = ({
+  sale,
+  products,
+}) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [totalAmount, setTotalAmount] = useState<number>(sale.totalAmount);
@@ -45,10 +48,10 @@ const EnhancedSaleEditPage: React.FC<EnhancedSaleEditPageProps> = ({ sale, produ
   const form = useForm<SaleFormValues>({
     resolver: zodResolver(EnhancedSaleSchema),
     defaultValues: {
-      items: sale.items.map(item => ({
+      items: sale.items.map((item) => ({
         productId: item.productId,
         quantity: item.quantity,
-        priceAtSale: item.priceAtSale
+        priceAtSale: item.priceAtSale,
       })),
       totalAmount: sale.totalAmount,
       customerId: "cust1", // Default to general customer
