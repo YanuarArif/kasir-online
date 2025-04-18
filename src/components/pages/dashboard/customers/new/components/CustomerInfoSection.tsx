@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Building, Tag } from "lucide-react";
+import { Building, Tag, CreditCard, UserCheck } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { customerCategories } from "../../types";
 import { EnhancedCustomerFormValues } from "../types";
@@ -44,6 +44,42 @@ export const CustomerInfoSection: React.FC<CustomerInfoSectionProps> = ({
             </FormLabel>
             <FormControl>
               <Input placeholder="Nama pelanggan" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      {/* NIK (Indonesian National ID) */}
+      <FormField
+        control={form.control}
+        name="NIK"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="flex items-center gap-1.5">
+              <UserCheck className="h-4 w-4 text-blue-600" />
+              NIK (Nomor Induk Kependudukan)
+            </FormLabel>
+            <FormControl>
+              <Input placeholder="Masukkan NIK" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      {/* NPWP (Indonesian Tax ID) */}
+      <FormField
+        control={form.control}
+        name="NPWP"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="flex items-center gap-1.5">
+              <CreditCard className="h-4 w-4 text-green-600" />
+              NPWP (Nomor Pokok Wajib Pajak)
+            </FormLabel>
+            <FormControl>
+              <Input placeholder="Masukkan NPWP" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>

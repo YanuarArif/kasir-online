@@ -6,6 +6,8 @@ export interface Customer {
   phone: string | null;
   address: string | null;
   notes: string | null;
+  NIK: string | null;
+  NPWP: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -16,6 +18,8 @@ export interface ColumnVisibility {
   email: boolean;
   phone: boolean;
   address: boolean;
+  NIK: boolean;
+  NPWP: boolean;
   createdAt: boolean;
   updatedAt: boolean;
   notes: boolean;

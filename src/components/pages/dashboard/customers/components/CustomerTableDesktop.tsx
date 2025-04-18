@@ -4,7 +4,16 @@ import { Customer, ColumnVisibility } from "../types";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
-import { User, Mail, Phone, MapPin, Calendar, FileText } from "lucide-react";
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  FileText,
+  CreditCard,
+  UserCheck,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface CustomerTableDesktopProps {
@@ -84,6 +93,30 @@ export const CustomerTableDesktop: React.FC<CustomerTableDesktopProps> = ({
                 <div className="flex items-center">
                   Alamat
                   {getSortIcon("address")}
+                </div>
+              </th>
+            )}
+            {columnVisibility.NIK && (
+              <th
+                scope="col"
+                className="px-6 py-3 cursor-pointer"
+                onClick={() => handleSort("NIK")}
+              >
+                <div className="flex items-center">
+                  NIK
+                  {getSortIcon("NIK")}
+                </div>
+              </th>
+            )}
+            {columnVisibility.NPWP && (
+              <th
+                scope="col"
+                className="px-6 py-3 cursor-pointer"
+                onClick={() => handleSort("NPWP")}
+              >
+                <div className="flex items-center">
+                  NPWP
+                  {getSortIcon("NPWP")}
                 </div>
               </th>
             )}
@@ -186,7 +219,37 @@ export const CustomerTableDesktop: React.FC<CustomerTableDesktopProps> = ({
                       {customer.address ? (
                         <>
                           <MapPin className="h-4 w-4 mr-1 text-gray-400 mt-0.5" />
-                          <span className="line-clamp-2">{customer.address}</span>
+                          <span className="line-clamp-2">
+                            {customer.address}
+                          </span>
+                        </>
+                      ) : (
+                        "-"
+                      )}
+                    </div>
+                  </td>
+                )}
+                {columnVisibility.NIK && (
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      {customer.NIK ? (
+                        <>
+                          <UserCheck className="h-4 w-4 mr-1 text-gray-400" />
+                          {customer.NIK}
+                        </>
+                      ) : (
+                        "-"
+                      )}
+                    </div>
+                  </td>
+                )}
+                {columnVisibility.NPWP && (
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      {customer.NPWP ? (
+                        <>
+                          <CreditCard className="h-4 w-4 mr-1 text-gray-400" />
+                          {customer.NPWP}
                         </>
                       ) : (
                         "-"
@@ -198,7 +261,9 @@ export const CustomerTableDesktop: React.FC<CustomerTableDesktopProps> = ({
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <Calendar className="h-4 w-4 mr-1 text-gray-400" />
-                      {format(customer.createdAt, "dd MMM yyyy", { locale: id })}
+                      {format(customer.createdAt, "dd MMM yyyy", {
+                        locale: id,
+                      })}
                     </div>
                   </td>
                 )}
@@ -206,7 +271,9 @@ export const CustomerTableDesktop: React.FC<CustomerTableDesktopProps> = ({
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <Calendar className="h-4 w-4 mr-1 text-gray-400" />
-                      {format(customer.updatedAt, "dd MMM yyyy", { locale: id })}
+                      {format(customer.updatedAt, "dd MMM yyyy", {
+                        locale: id,
+                      })}
                     </div>
                   </td>
                 )}
@@ -241,7 +308,9 @@ export const CustomerTableDesktop: React.FC<CustomerTableDesktopProps> = ({
           ) : (
             <tr className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
               <td
-                colSpan={Object.values(columnVisibility).filter(Boolean).length + 1}
+                colSpan={
+                  Object.values(columnVisibility).filter(Boolean).length + 1
+                }
                 className="px-6 py-4 text-center text-gray-500 dark:text-gray-400"
               >
                 {searchTerm

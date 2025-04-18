@@ -100,9 +100,7 @@ export const CustomerActions: React.FC<CustomerActionsProps> = ({
                 )}
                 Nama Pelanggan
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => toggleColumn("contactName")}
-              >
+              <DropdownMenuItem onClick={() => toggleColumn("contactName")}>
                 {columnVisibility.contactName ? (
                   <Eye className="mr-2 h-4 w-4" />
                 ) : (
@@ -110,9 +108,7 @@ export const CustomerActions: React.FC<CustomerActionsProps> = ({
                 )}
                 Nama Kontak
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => toggleColumn("email")}
-              >
+              <DropdownMenuItem onClick={() => toggleColumn("email")}>
                 {columnVisibility.email ? (
                   <Eye className="mr-2 h-4 w-4" />
                 ) : (
@@ -120,9 +116,7 @@ export const CustomerActions: React.FC<CustomerActionsProps> = ({
                 )}
                 Email
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => toggleColumn("phone")}
-              >
+              <DropdownMenuItem onClick={() => toggleColumn("phone")}>
                 {columnVisibility.phone ? (
                   <Eye className="mr-2 h-4 w-4" />
                 ) : (
@@ -130,9 +124,7 @@ export const CustomerActions: React.FC<CustomerActionsProps> = ({
                 )}
                 Telepon
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => toggleColumn("address")}
-              >
+              <DropdownMenuItem onClick={() => toggleColumn("address")}>
                 {columnVisibility.address ? (
                   <Eye className="mr-2 h-4 w-4" />
                 ) : (
@@ -140,9 +132,23 @@ export const CustomerActions: React.FC<CustomerActionsProps> = ({
                 )}
                 Alamat
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => toggleColumn("createdAt")}
-              >
+              <DropdownMenuItem onClick={() => toggleColumn("NIK")}>
+                {columnVisibility.NIK ? (
+                  <Eye className="mr-2 h-4 w-4" />
+                ) : (
+                  <EyeOff className="mr-2 h-4 w-4" />
+                )}
+                NIK
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toggleColumn("NPWP")}>
+                {columnVisibility.NPWP ? (
+                  <Eye className="mr-2 h-4 w-4" />
+                ) : (
+                  <EyeOff className="mr-2 h-4 w-4" />
+                )}
+                NPWP
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toggleColumn("createdAt")}>
                 {columnVisibility.createdAt ? (
                   <Eye className="mr-2 h-4 w-4" />
                 ) : (
@@ -150,9 +156,7 @@ export const CustomerActions: React.FC<CustomerActionsProps> = ({
                 )}
                 Tanggal Dibuat
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => toggleColumn("updatedAt")}
-              >
+              <DropdownMenuItem onClick={() => toggleColumn("updatedAt")}>
                 {columnVisibility.updatedAt ? (
                   <Eye className="mr-2 h-4 w-4" />
                 ) : (
@@ -160,9 +164,7 @@ export const CustomerActions: React.FC<CustomerActionsProps> = ({
                 )}
                 Tanggal Diperbarui
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => toggleColumn("notes")}
-              >
+              <DropdownMenuItem onClick={() => toggleColumn("notes")}>
                 {columnVisibility.notes ? (
                   <Eye className="mr-2 h-4 w-4" />
                 ) : (

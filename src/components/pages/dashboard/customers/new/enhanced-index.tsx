@@ -35,6 +35,8 @@ export default function EnhancedNewCustomerPage() {
       phone: "",
       address: "",
       notes: "",
+      NIK: "",
+      NPWP: "",
       category: "regular",
     },
   });

@@ -46,6 +46,8 @@ const CustomersPage: React.FC<CustomersPageProps> = ({
     email: true,
     phone: true,
     address: false,
+    NIK: false,
+    NPWP: false,
     createdAt: false,
     updatedAt: false,
     notes: false,
