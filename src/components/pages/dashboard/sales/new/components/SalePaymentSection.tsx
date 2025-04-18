@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { SaleFormValues } from "../types";
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -50,8 +50,6 @@ const SalePaymentSection: React.FC<SalePaymentSectionProps> = ({
 
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-medium">Informasi Pembayaran</h3>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Payment Method */}
         <FormField
@@ -130,7 +128,7 @@ const SalePaymentSection: React.FC<SalePaymentSectionProps> = ({
       {/* Additional Options */}
       <div className="space-y-4">
         <h4 className="text-sm font-medium">Opsi Tambahan</h4>
-        
+
         <FormField
           control={control}
           name="printReceipt"
@@ -152,7 +150,7 @@ const SalePaymentSection: React.FC<SalePaymentSectionProps> = ({
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={control}
           name="sendReceipt"

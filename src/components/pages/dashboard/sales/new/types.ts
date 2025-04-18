@@ -6,6 +6,8 @@ export const EnhancedSaleSchema = SaleSchema.extend({
   // Additional fields for the enhanced UI
   customerId: z.string().optional(),
   invoiceRef: z.string().optional(),
+  customerNIK: z.string().optional(),
+  customerNPWP: z.string().optional(),
   paymentMethod: z.string().default("cash"),
   amountPaid: z.coerce.number().nonnegative().optional(),
   printReceipt: z.boolean().default(true),
@@ -31,4 +33,6 @@ export interface Customer {
   email?: string;
   phone?: string;
   address?: string;
+  NIK?: string;
+  NPWP?: string;
 }

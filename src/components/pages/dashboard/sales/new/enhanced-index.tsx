@@ -31,9 +31,13 @@ const EnhancedSalePage: React.FC<EnhancedSalePageProps> = ({ products }) => {
       items: [{ productId: "", quantity: 1, priceAtSale: 0 }],
       totalAmount: 0,
       customerId: "cust1", // Default to general customer
+      customerNIK: "",
+      customerNPWP: "",
       paymentMethod: "cash",
+      amountPaid: 0,
       printReceipt: true,
       sendReceipt: false,
+      notes: "",
     },
   });
 
