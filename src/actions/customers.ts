@@ -28,7 +28,7 @@ export const addCustomer = async (values: z.infer<typeof CustomerSchema>) => {
     return { error: "Input tidak valid!" };
   }
 
-  const { name, contactName, email, phone, address, notes } =
+  const { name, contactName, email, phone, address, notes, NIK, NPWP } =
     validatedFields.data;
 
   try {
@@ -42,6 +42,8 @@ export const addCustomer = async (values: z.infer<typeof CustomerSchema>) => {
         phone,
         address,
         notes,
+        NIK,
+        NPWP,
         userId, // Associate with the current user
       },
     });
@@ -142,7 +144,7 @@ export const updateCustomer = async (
     return { error: "Input tidak valid!" };
   }
 
-  const { name, contactName, email, phone, address, notes } =
+  const { name, contactName, email, phone, address, notes, NIK, NPWP } =
     validatedFields.data;
 
   try {
@@ -160,6 +162,8 @@ export const updateCustomer = async (
         phone,
         address,
         notes,
+        NIK,
+        NPWP,
       },
     });
 

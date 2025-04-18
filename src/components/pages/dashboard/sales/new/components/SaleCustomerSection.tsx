@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Control } from "react-hook-form";
 import {
   FormControl,
@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { SaleFormValues } from "../types";
+import { SaleFormValues, Customer } from "../types";
 import {
   Select,
   SelectContent,
@@ -19,8 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, User } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
+import { Plus, User, Loader2, RefreshCw } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -30,79 +29,106 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { toast } from "sonner";
+import { addCustomer } from "@/actions/customers";
+import { getCustomersAction } from "@/actions/get-customers-action";
 
 interface SaleCustomerSectionProps {
   control: Control<SaleFormValues>;
   isPending: boolean;
 }
 
-// Mock customer data
-const mockCustomers = [
-  {
-    id: "cust1",
-    name: "Pelanggan Umum",
-    phone: "-",
-    email: "-",
-    NIK: "-",
-    NPWP: "-",
-  },
-  {
-    id: "cust2",
-    name: "PT Maju Jaya",
-    phone: "08123456789",
-    email: "info@majujaya.com",
-    NIK: "3201234567890001",
-    NPWP: "01.234.567.8-901.000",
-  },
-  {
-    id: "cust3",
-    name: "Toko Sejahtera",
-    phone: "08198765432",
-    email: "toko@sejahtera.com",
-    NIK: "3209876543210001",
-    NPWP: "02.345.678.9-012.000",
-  },
-];
+// Default customer for general sales
+const defaultCustomer = {
+  id: "default",
+  name: "Pelanggan Umum",
+  phone: "-",
+  email: "-",
+  NIK: "-",
+  NPWP: "-",
+};
 
 const SaleCustomerSection: React.FC<SaleCustomerSectionProps> = ({
   control,
   isPending,
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState(mockCustomers[0]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [customers, setCustomers] = useState<Customer[]>([defaultCustomer]);
+  const [selectedCustomer, setSelectedCustomer] =
+    useState<Customer>(defaultCustomer);
   const [newCustomer, setNewCustomer] = useState({
     name: "",
+    contactName: "",
     phone: "",
     email: "",
     address: "",
+    notes: "",
     NIK: "",
     NPWP: "",
   });
 
+  // Function to fetch customers
+  const fetchCustomers = async () => {
+    try {
+      setIsLoading(true);
+      const result = await getCustomersAction();
+
+      if (result.success && result.customers) {
+        // Map the customers to include NIK and NPWP fields
+        const mappedCustomers = result.customers.map((customer) => ({
+          id: customer.id,
+          name: customer.name,
+          phone: customer.phone || "-",
+          email: customer.email || "-",
+          address: customer.address || "-",
+          NIK: customer.NIK || "-",
+          NPWP: customer.NPWP || "-",
+        }));
+
+        // Add the default customer at the beginning
+        setCustomers([defaultCustomer, ...mappedCustomers]);
+      } else {
+        toast.error("Gagal memuat data pelanggan");
+      }
+    } catch (error) {
+      console.error("Error fetching customers:", error);
+      toast.error("Gagal memuat data pelanggan");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Fetch customers on component mount
+  useEffect(() => {
+    fetchCustomers();
+  }, []);
+
+  // Add event listener for tab visibility changes
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        // Refresh customers when tab becomes visible again
+        fetchCustomers();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
   // Handle customer selection
   const handleCustomerSelect = (customerId: string) => {
-    const customer = mockCustomers.find((c) => c.id === customerId);
+    const customer = customers.find((c) => c.id === customerId);
     if (customer) {
       setSelectedCustomer(customer);
-      // Update form values
-      control._formValues.customerId = customerId;
 
-      // Set NIK and NPWP fields if available
-      if (customer.NIK && customer.NIK !== "-") {
-        control._formValues.customerNIK = customer.NIK;
-        control.setValue("customerNIK", customer.NIK);
-      } else {
-        control._formValues.customerNIK = "";
-        control.setValue("customerNIK", "");
-      }
-
-      if (customer.NPWP && customer.NPWP !== "-") {
-        control._formValues.customerNPWP = customer.NPWP;
-        control.setValue("customerNPWP", customer.NPWP);
-      } else {
-        control._formValues.customerNPWP = "";
-        control.setValue("customerNPWP", "");
-      }
+      // Update NIK and NPWP fields if available
+      // We'll handle this in the form field components instead of directly manipulating the form values
     }
   };
 
@@ -115,49 +141,148 @@ const SaleCustomerSection: React.FC<SaleCustomerSectionProps> = ({
   };
 
   // Handle new customer save
-  const handleSaveNewCustomer = () => {
+  const handleSaveNewCustomer = async () => {
     // Validate required fields
     if (!newCustomer.name) {
-      alert("Nama pelanggan harus diisi");
+      toast.error("Nama pelanggan harus diisi");
       return;
     }
 
-    // Create a new customer ID (in a real app, this would be handled by the backend)
-    const newId = `cust${mockCustomers.length + 1}`;
+    try {
+      setIsSubmitting(true);
 
-    // Create the new customer object
-    const customerToAdd = {
-      id: newId,
-      name: newCustomer.name,
-      phone: newCustomer.phone || "-",
-      email: newCustomer.email || "-",
-      address: newCustomer.address || "-",
-      NIK: newCustomer.NIK || "-",
-      NPWP: newCustomer.NPWP || "-",
-    };
+      // Prepare customer data for submission
+      const customerData = {
+        name: newCustomer.name,
+        contactName: newCustomer.contactName,
+        email: newCustomer.email,
+        phone: newCustomer.phone,
+        address: newCustomer.address,
+        notes: newCustomer.notes,
+        // NIK and NPWP are handled by the server action
+      };
 
-    // Add to mock customers (in a real app, this would be an API call)
-    mockCustomers.push(customerToAdd);
+      // Call the server action to add the customer
+      const result = await addCustomer(customerData);
 
-    // Select the new customer
-    setSelectedCustomer(customerToAdd);
-    control._formValues.customerId = newId;
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
 
-    // Reset the form and close the dialog
-    setNewCustomer({
-      name: "",
-      phone: "",
-      email: "",
-      address: "",
-      NIK: "",
-      NPWP: "",
-    });
-    setIsDialogOpen(false);
+      if (result.success && result.customer) {
+        toast.success("Pelanggan berhasil ditambahkan");
+
+        // Create a customer object for the UI
+        const newCustomerObj = {
+          id: result.customer.id,
+          name: result.customer.name,
+          phone: result.customer.phone || "-",
+          email: result.customer.email || "-",
+          address: result.customer.address || "-",
+          NIK: result.customer.NIK || "-",
+          NPWP: result.customer.NPWP || "-",
+        };
+
+        // Add to customers list
+        setCustomers((prev) => [
+          defaultCustomer,
+          newCustomerObj,
+          ...prev.slice(1),
+        ]);
+
+        // Select the new customer
+        setSelectedCustomer(newCustomerObj);
+
+        // Update the customerId field in the form
+        const customerIdField = document.querySelector(
+          'select[name="customerId"]'
+        ) as HTMLSelectElement;
+        if (customerIdField) {
+          // Create a new option for the new customer if it doesn't exist
+          const option = document.createElement("option");
+          option.value = newCustomerObj.id;
+          option.text = newCustomerObj.name;
+          customerIdField.add(option);
+          customerIdField.value = newCustomerObj.id;
+
+          // Also update the form control value
+          control._formValues.customerId = newCustomerObj.id;
+        }
+
+        // Update NIK and NPWP fields
+        const nikField = document.querySelector(
+          'input[name="customerNIK"]'
+        ) as HTMLInputElement;
+        const npwpField = document.querySelector(
+          'input[name="customerNPWP"]'
+        ) as HTMLInputElement;
+
+        // Update NIK field
+        if (nikField) {
+          if (newCustomer.NIK) {
+            nikField.value = newCustomer.NIK;
+            // Also update the form control value
+            control._formValues.customerNIK = newCustomer.NIK;
+          } else {
+            nikField.value = "";
+            // Also update the form control value
+            control._formValues.customerNIK = "";
+          }
+        }
+
+        // Update NPWP field
+        if (npwpField) {
+          if (newCustomer.NPWP) {
+            npwpField.value = newCustomer.NPWP;
+            // Also update the form control value
+            control._formValues.customerNPWP = newCustomer.NPWP;
+          } else {
+            npwpField.value = "";
+            // Also update the form control value
+            control._formValues.customerNPWP = "";
+          }
+        }
+
+        // Reset the form and close the dialog
+        setNewCustomer({
+          name: "",
+          contactName: "",
+          phone: "",
+          email: "",
+          address: "",
+          notes: "",
+          NIK: "",
+          NPWP: "",
+        });
+        setIsDialogOpen(false);
+      }
+    } catch (error) {
+      console.error("Error adding customer:", error);
+      toast.error("Terjadi kesalahan saat menambahkan pelanggan");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end items-center">
+      <div className="flex justify-end items-center gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1"
+          onClick={fetchCustomers}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <RefreshCw className="h-4 w-4" />
+          )}
+          Refresh
+        </Button>
+
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button variant="outline" size="sm" className="gap-1">
@@ -181,6 +306,17 @@ const SaleCustomerSection: React.FC<SaleCustomerSectionProps> = ({
                   value={newCustomer.name}
                   onChange={(e) =>
                     handleNewCustomerChange("name", e.target.value)
+                  }
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <FormLabel className="text-right">Nama Kontak</FormLabel>
+                <Input
+                  className="col-span-3"
+                  placeholder="Nama kontak pelanggan"
+                  value={newCustomer.contactName}
+                  onChange={(e) =>
+                    handleNewCustomerChange("contactName", e.target.value)
                   }
                 />
               </div>
@@ -240,12 +376,32 @@ const SaleCustomerSection: React.FC<SaleCustomerSectionProps> = ({
                   }
                 />
               </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <FormLabel className="text-right">Catatan</FormLabel>
+                <Input
+                  className="col-span-3"
+                  placeholder="Catatan tambahan"
+                  value={newCustomer.notes}
+                  onChange={(e) =>
+                    handleNewCustomerChange("notes", e.target.value)
+                  }
+                />
+              </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                 Batal
               </Button>
-              <Button onClick={handleSaveNewCustomer}>Simpan</Button>
+              <Button onClick={handleSaveNewCustomer} disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Menyimpan...
+                  </>
+                ) : (
+                  "Simpan"
+                )}
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -263,16 +419,62 @@ const SaleCustomerSection: React.FC<SaleCustomerSectionProps> = ({
                 onValueChange={(value) => {
                   field.onChange(value);
                   handleCustomerSelect(value);
+
+                  // Find the selected customer
+                  const customer = customers.find((c) => c.id === value);
+                  if (customer) {
+                    // Update NIK and NPWP fields
+                    // Find the form fields
+                    const nikField = document.querySelector(
+                      'input[name="customerNIK"]'
+                    ) as HTMLInputElement;
+                    const npwpField = document.querySelector(
+                      'input[name="customerNPWP"]'
+                    ) as HTMLInputElement;
+
+                    // Update NIK field
+                    if (nikField) {
+                      if (customer.NIK && customer.NIK !== "-") {
+                        nikField.value = customer.NIK;
+                        // Also update the form control value
+                        control._formValues.customerNIK = customer.NIK;
+                      } else {
+                        nikField.value = "";
+                        // Also update the form control value
+                        control._formValues.customerNIK = "";
+                      }
+                    }
+
+                    // Update NPWP field
+                    if (npwpField) {
+                      if (customer.NPWP && customer.NPWP !== "-") {
+                        npwpField.value = customer.NPWP;
+                        // Also update the form control value
+                        control._formValues.customerNPWP = customer.NPWP;
+                      } else {
+                        npwpField.value = "";
+                        // Also update the form control value
+                        control._formValues.customerNPWP = "";
+                      }
+                    }
+                  }
                 }}
-                defaultValue={field.value || mockCustomers[0].id}
+                defaultValue={field.value || defaultCustomer.id}
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Pilih pelanggan" />
+                    {isLoading ? (
+                      <div className="flex items-center">
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Memuat pelanggan...
+                      </div>
+                    ) : (
+                      <SelectValue placeholder="Pilih pelanggan" />
+                    )}
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {mockCustomers.map((customer) => (
+                  {customers.map((customer) => (
                     <SelectItem key={customer.id} value={customer.id}>
                       {customer.name}
                     </SelectItem>

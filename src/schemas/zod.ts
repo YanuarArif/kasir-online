@@ -86,6 +86,8 @@ export const CustomerSchema = z.object({
   phone: z.string().optional(),
   address: z.string().optional(),
   notes: z.string().optional(),
+  NIK: z.string().optional(),
+  NPWP: z.string().optional(),
 });
 
 export const SupplierSchema = z.object({
