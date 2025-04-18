@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
   CardContent,
@@ -15,7 +16,6 @@ import SaleCustomerSection from "./SaleCustomerSection";
 import SaleItemsHeader from "./SaleItemsHeader";
 import SaleItemRow from "./SaleItemRow";
 import SalePaymentSection from "./SalePaymentSection";
-import { Separator } from "@/components/ui/separator";
 
 interface SaleFormTabsProps {
   control: Control<SaleFormValues>;
@@ -41,72 +41,95 @@ const SaleFormTabs: React.FC<SaleFormTabsProps> = ({
   totalAmount,
 }) => {
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Formulir Penjualan</CardTitle>
-        <CardDescription>
-          Isi semua informasi penjualan dalam satu formulir
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-8">
-        {/* Customer Section */}
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <User className="h-5 w-5 text-primary" />
-            <h3 className="text-lg font-medium">Informasi Pelanggan</h3>
-          </div>
-          <SaleCustomerSection control={control} isPending={isPending} />
-        </div>
+    <Tabs defaultValue="items" className="w-full">
+      <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 pb-4 border-b border-gray-200 dark:border-gray-700">
+        <TabsList className="grid grid-cols-3 w-full">
+          <TabsTrigger value="customer" className="flex items-center gap-2">
+            <User className="h-4 w-4" />
+            <span className="hidden sm:inline">Pelanggan</span>
+            <span className="sm:hidden">Pelanggan</span>
+          </TabsTrigger>
+          <TabsTrigger value="items" className="flex items-center gap-2">
+            <Package className="h-4 w-4" />
+            <span className="hidden sm:inline">Item Penjualan</span>
+            <span className="sm:hidden">Item</span>
+          </TabsTrigger>
+          <TabsTrigger value="payment" className="flex items-center gap-2">
+            <CreditCard className="h-4 w-4" />
+            <span className="hidden sm:inline">Pembayaran</span>
+            <span className="sm:hidden">Bayar</span>
+          </TabsTrigger>
+        </TabsList>
+      </div>
 
-        <Separator />
+      <TabsContent value="customer" className="mt-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Informasi Pelanggan</CardTitle>
+            <CardDescription>
+              Pilih pelanggan atau tambahkan pelanggan baru
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <SaleCustomerSection control={control} isPending={isPending} />
+          </CardContent>
+        </Card>
+      </TabsContent>
 
-        {/* Items Section */}
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <Package className="h-5 w-5 text-primary" />
-            <h3 className="text-lg font-medium">Item Penjualan</h3>
-          </div>
-          <div className="space-y-4">
-            <SaleItemsHeader
-              onAddItem={() =>
-                append({ productId: "", quantity: 1, priceAtSale: 0 })
-              }
-              isPending={isPending}
-            />
-
-            {fields.map((field, index) => (
-              <SaleItemRow
-                key={field.id}
-                control={control}
-                index={index}
-                field={field}
-                products={products}
-                items={items}
-                remove={remove}
-                handleProductChange={handleProductChange}
+      <TabsContent value="items" className="mt-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Item Penjualan</CardTitle>
+            <CardDescription>
+              Tambahkan produk yang dibeli oleh pelanggan
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <SaleItemsHeader
+                onAddItem={() =>
+                  append({ productId: "", quantity: 1, priceAtSale: 0 })
+                }
                 isPending={isPending}
-                canRemove={fields.length > 1}
               />
-            ))}
-          </div>
-        </div>
 
-        <Separator />
+              {fields.map((field, index) => (
+                <SaleItemRow
+                  key={field.id}
+                  control={control}
+                  index={index}
+                  field={field}
+                  products={products}
+                  items={items}
+                  remove={remove}
+                  handleProductChange={handleProductChange}
+                  isPending={isPending}
+                  canRemove={fields.length > 1}
+                />
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </TabsContent>
 
-        {/* Payment Section */}
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <CreditCard className="h-5 w-5 text-primary" />
-            <h3 className="text-lg font-medium">Informasi Pembayaran</h3>
-          </div>
-          <SalePaymentSection
-            control={control}
-            isPending={isPending}
-            totalAmount={totalAmount}
-          />
-        </div>
-      </CardContent>
-    </Card>
+      <TabsContent value="payment" className="mt-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Informasi Pembayaran</CardTitle>
+            <CardDescription>
+              Pilih metode pembayaran dan masukkan jumlah yang dibayarkan
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <SalePaymentSection
+              control={control}
+              isPending={isPending}
+              totalAmount={totalAmount}
+            />
+          </CardContent>
+        </Card>
+      </TabsContent>
+    </Tabs>
   );
 };
 
