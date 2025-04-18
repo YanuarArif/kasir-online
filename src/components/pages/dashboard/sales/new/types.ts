@@ -10,8 +10,6 @@ export const EnhancedSaleSchema = SaleSchema.extend({
   customerNPWP: z.string().optional(),
   paymentMethod: z.string().default("cash"),
   amountPaid: z.coerce.number().nonnegative().optional(),
-  printReceipt: z.boolean().default(true),
-  sendReceipt: z.boolean().default(false),
   notes: z.string().optional(),
 });
 

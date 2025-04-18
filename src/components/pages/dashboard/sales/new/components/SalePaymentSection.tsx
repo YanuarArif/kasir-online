@@ -20,9 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 
 interface SalePaymentSectionProps {
   control: Control<SaleFormValues>;
@@ -90,15 +88,26 @@ const SalePaymentSection: React.FC<SalePaymentSectionProps> = ({
               <FormLabel>Jumlah Dibayar</FormLabel>
               <FormControl>
                 <Input
-                  type="number"
+                  type="text"
                   placeholder="0"
                   {...field}
-                  min="0"
-                  step="any"
                   disabled={isPending}
                   onChange={(e) => {
-                    const value = parseFloat(e.target.value);
-                    field.onChange(isNaN(value) ? 0 : value);
+                    // Only allow numeric input (digits and decimal point)
+                    const value = e.target.value.replace(/[^0-9.]/g, "");
+
+                    // Prevent multiple decimal points
+                    const parts = value.split(".");
+                    const sanitizedValue =
+                      parts[0] +
+                      (parts.length > 1 ? "." + parts.slice(1).join("") : "");
+
+                    // Update the input value to show the sanitized value
+                    e.target.value = sanitizedValue;
+
+                    // Convert to number for the form state
+                    const numericValue = parseFloat(sanitizedValue);
+                    field.onChange(isNaN(numericValue) ? 0 : numericValue);
                   }}
                 />
               </FormControl>
@@ -122,57 +131,6 @@ const SalePaymentSection: React.FC<SalePaymentSectionProps> = ({
           </div>
         </div>
       )}
-
-      <Separator />
-
-      {/* Additional Options */}
-      <div className="space-y-4">
-        <h4 className="text-sm font-medium">Opsi Tambahan</h4>
-
-        <FormField
-          control={control}
-          name="printReceipt"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-              <div className="space-y-0.5">
-                <FormLabel className="text-base">Cetak Struk</FormLabel>
-                <FormDescription>
-                  Cetak struk setelah transaksi selesai
-                </FormDescription>
-              </div>
-              <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                  disabled={isPending}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={control}
-          name="sendReceipt"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-              <div className="space-y-0.5">
-                <FormLabel className="text-base">Kirim Struk</FormLabel>
-                <FormDescription>
-                  Kirim struk ke email pelanggan
-                </FormDescription>
-              </div>
-              <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                  disabled={isPending}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-      </div>
 
       <Separator />
 

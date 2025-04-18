@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
-import { SaleFormValues } from "../types";
+import React, { useState, useEffect } from "react";
+import { SaleFormValues, Customer } from "../types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Check, X, FileText, Printer, RotateCcw } from "lucide-react";
+import { getCustomersAction } from "@/actions/get-customers-action";
 
 interface SaleTransactionSummaryProps {
   formValues: SaleFormValues;
@@ -22,17 +23,47 @@ const SaleTransactionSummary: React.FC<SaleTransactionSummaryProps> = ({
   itemCount,
 }) => {
   const { customerId, paymentMethod, amountPaid } = formValues;
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [customerName, setCustomerName] = useState<string>("Pelanggan Umum");
 
-  // Mock customer data
-  const mockCustomers = [
-    { id: "cust1", name: "Pelanggan Umum" },
-    { id: "cust2", name: "PT Maju Jaya" },
-    { id: "cust3", name: "Toko Sejahtera" },
-  ];
+  // Fetch customers and update customer name when customerId changes
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        const result = await getCustomersAction();
+        if (result.success && result.customers) {
+          // Add default customer
+          const allCustomers = [
+            { id: "default", name: "Pelanggan Umum" },
+            ...result.customers.map((customer) => ({
+              id: customer.id,
+              name: customer.name,
+              phone: customer.phone || "-",
+              email: customer.email || "-",
+              address: customer.address || "-",
+              NIK: customer.NIK || "-",
+              NPWP: customer.NPWP || "-",
+            })),
+          ];
+          setCustomers(allCustomers);
 
-  // Get customer name
-  const customerName =
-    mockCustomers.find((c) => c.id === customerId)?.name || "Pelanggan Umum";
+          // Find the selected customer
+          const selectedCustomer = allCustomers.find(
+            (c) => c.id === customerId
+          );
+          if (selectedCustomer) {
+            setCustomerName(selectedCustomer.name);
+          } else {
+            setCustomerName("Pelanggan Umum");
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching customers:", error);
+      }
+    };
+
+    fetchCustomers();
+  }, [customerId]);
 
   // Payment methods
   const paymentMethods: Record<string, string> = {
