@@ -23,7 +23,7 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
   return (
     <div
       className={classNames(
-        "hidden shadow-md md:flex md:flex-col transition-all duration-300 ease-in-out h-[calc(100vh-4rem)] sticky top-16 overflow-hidden",
+        "hidden shadow-md md:flex md:flex-col transition-all duration-300 ease-in-out h-[calc(100vh-4rem)] fixed top-16 overflow-hidden z-20",
         isCollapsed ? "md:w-16" : "md:w-52" // Width depends on state
       )}
     >

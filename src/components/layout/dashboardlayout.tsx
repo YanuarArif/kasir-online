@@ -91,11 +91,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   // --- End Render Guard ---
 
   return (
-    <div className="h-screen flex flex-col bg-gray-100 dark:bg-gray-900 overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900">
       {/* Dashboard Navbar - Full width at top */}
       <DashboardNavbar pageTitle={pageTitle} setSidebarOpen={setSidebarOpen} />
 
-      <div className="flex flex-1 relative overflow-hidden w-full">
+      <div className="flex flex-1 relative w-full">
         {/* Mobile Sidebar */}
         <MobileSidebar
           sidebarOpen={sidebarOpen}
@@ -111,8 +111,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         {/* Main Content */}
         <div
           className={classNames(
-            "flex flex-1 flex-col transition-all duration-500 ease-in-out overflow-y-auto w-full p-2 pt-2",
-            isCollapsed ? "md:m-4" : "md:m-4" // Adjust left margin instead of padding
+            "flex flex-1 flex-col transition-all duration-500 ease-in-out overflow-y-auto w-full pl-4 pt-2",
+            isCollapsed ? "md:ml-16 md:m-4" : "md:ml-52 md:m-4" // Adjust left margin based on sidebar width
           )}
         >
           {/* Page Content */}
