@@ -12,12 +12,12 @@ import ActivityMenu from "./ActivityMenu";
 import NotificationMenu from "./NotificationMenu";
 
 interface DashboardNavbarProps {
-  pageTitle: string;
+  pageTitle?: string;
   setSidebarOpen: (open: boolean) => void;
 }
 
 const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
-  pageTitle,
+  pageTitle = "Dashboard",
   setSidebarOpen,
 }) => {
   const { data: session } = useSession();

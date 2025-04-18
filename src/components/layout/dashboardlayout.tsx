@@ -8,15 +8,11 @@ import { classNames } from "./dashboard/SidebarNavigation";
 
 interface DashboardLayoutProps {
   children: ReactNode;
-  pageTitle?: string;
 }
 
 const LG_BREAKPOINT = 1024; // Tailwind's default lg breakpoint
 
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({
-  children,
-  pageTitle = "Dashboard",
-}) => {
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState<boolean | undefined>(
     undefined
@@ -93,7 +89,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   return (
     <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900">
       {/* Dashboard Navbar - Full width at top */}
-      <DashboardNavbar pageTitle={pageTitle} setSidebarOpen={setSidebarOpen} />
+      <DashboardNavbar setSidebarOpen={setSidebarOpen} />
 
       <div className="flex flex-1 relative w-full">
         {/* Mobile Sidebar */}
