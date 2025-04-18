@@ -15,7 +15,7 @@ import {
   Supplier,
   EnhancedPurchaseSchema,
 } from "./types";
-import PurchaseFormTabs from "./components/PurchaseFormTabs";
+import CombinedPurchaseForm from "./components/CombinedPurchaseForm";
 import PurchaseTransactionSummary from "./components/PurchaseTransactionSummary";
 import { ArrowLeft, Check } from "lucide-react";
 
@@ -157,7 +157,7 @@ const EnhancedPurchasePage: React.FC<EnhancedPurchasePageProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Main Form Content */}
             <div className="lg:col-span-2">
-              <PurchaseFormTabs
+              <CombinedPurchaseForm
                 control={form.control}
                 isPending={isPending}
                 products={products}
