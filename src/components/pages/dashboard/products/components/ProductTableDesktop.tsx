@@ -124,6 +124,14 @@ export const ProductTableDesktop: React.FC<ProductTableDesktopProps> = ({
                 </div>
               </th>
             )}
+            {columnVisibility.stockStatus && (
+              <th
+                scope="col"
+                className="px-6 py-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+              >
+                <div className="flex items-center">Status Stok</div>
+              </th>
+            )}
             {columnVisibility.cost && (
               <th
                 scope="col"
@@ -193,6 +201,11 @@ export const ProductTableDesktop: React.FC<ProductTableDesktopProps> = ({
                   </td>
                 )}
                 {columnVisibility.stock && (
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
+                    <span className="font-medium">{product.stock}</span>
+                  </td>
+                )}
+                {columnVisibility.stockStatus && (
                   <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
                     {getStockStatusBadge(product.stock)}
                   </td>

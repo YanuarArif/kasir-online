@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import {
   MagnifyingGlassIcon,
@@ -23,6 +23,7 @@ interface ColumnVisibility {
   category: boolean;
   price: boolean;
   stock: boolean;
+  stockStatus: boolean;
   cost: boolean;
   sellPrice: boolean;
   discountPrice: boolean;
@@ -56,7 +57,10 @@ export const ProductActions: React.FC<ProductActionsProps> = ({
             <AdjustmentsHorizontalIcon className="mr-2 h-5 w-5" />
             Kolom yang ditampilkan
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
+          <DropdownMenuContent
+            className="w-56"
+            onCloseAutoFocus={(e) => e.preventDefault()}
+          >
             <DropdownMenuLabel>Pilih Kolom</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuCheckboxItem
@@ -64,6 +68,7 @@ export const ProductActions: React.FC<ProductActionsProps> = ({
               onCheckedChange={(checked) =>
                 setColumnVisibility((prev) => ({ ...prev, name: !!checked }))
               }
+              onSelect={(e) => e.preventDefault()}
             >
               Nama Produk
             </DropdownMenuCheckboxItem>
@@ -72,6 +77,7 @@ export const ProductActions: React.FC<ProductActionsProps> = ({
               onCheckedChange={(checked) =>
                 setColumnVisibility((prev) => ({ ...prev, sku: !!checked }))
               }
+              onSelect={(e) => e.preventDefault()}
             >
               Kode Produk
             </DropdownMenuCheckboxItem>
@@ -83,6 +89,7 @@ export const ProductActions: React.FC<ProductActionsProps> = ({
                   category: !!checked,
                 }))
               }
+              onSelect={(e) => e.preventDefault()}
             >
               Kategori Produk
             </DropdownMenuCheckboxItem>
@@ -91,6 +98,7 @@ export const ProductActions: React.FC<ProductActionsProps> = ({
               onCheckedChange={(checked) =>
                 setColumnVisibility((prev) => ({ ...prev, price: !!checked }))
               }
+              onSelect={(e) => e.preventDefault()}
             >
               Harga
             </DropdownMenuCheckboxItem>
@@ -99,14 +107,28 @@ export const ProductActions: React.FC<ProductActionsProps> = ({
               onCheckedChange={(checked) =>
                 setColumnVisibility((prev) => ({ ...prev, stock: !!checked }))
               }
+              onSelect={(e) => e.preventDefault()}
             >
               Total Stok
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              checked={columnVisibility.stockStatus}
+              onCheckedChange={(checked) =>
+                setColumnVisibility((prev) => ({
+                  ...prev,
+                  stockStatus: !!checked,
+                }))
+              }
+              onSelect={(e) => e.preventDefault()}
+            >
+              Status Stok
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               checked={columnVisibility.cost}
               onCheckedChange={(checked) =>
                 setColumnVisibility((prev) => ({ ...prev, cost: !!checked }))
               }
+              onSelect={(e) => e.preventDefault()}
             >
               Harga Beli
             </DropdownMenuCheckboxItem>
@@ -118,6 +140,7 @@ export const ProductActions: React.FC<ProductActionsProps> = ({
                   sellPrice: !!checked,
                 }))
               }
+              onSelect={(e) => e.preventDefault()}
             >
               Harga Jual
             </DropdownMenuCheckboxItem>
@@ -129,6 +152,7 @@ export const ProductActions: React.FC<ProductActionsProps> = ({
                   discountPrice: !!checked,
                 }))
               }
+              onSelect={(e) => e.preventDefault()}
             >
               Harga Diskon
             </DropdownMenuCheckboxItem>

@@ -30,6 +30,7 @@ export interface ColumnVisibility {
   category: boolean;
   price: boolean;
   stock: boolean;
+  stockStatus: boolean;
   cost: boolean;
   sellPrice: boolean;
   discountPrice: boolean;

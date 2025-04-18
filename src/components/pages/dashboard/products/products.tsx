@@ -44,17 +44,35 @@ const ProductsPage: NextPage<ProductsPageProps> = (props) => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [paginatedProducts, setPaginatedProducts] = useState<Product[]>([]);
 
-  // Column visibility state
-  const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({
-    name: true,
-    sku: true,
-    category: true,
-    price: true,
-    stock: true,
-    cost: true,
-    sellPrice: true,
-    discountPrice: true,
-  });
+  // Column visibility state with localStorage persistence
+  const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>(
+    () => {
+      // Try to get saved column visibility from localStorage
+      if (typeof window !== "undefined") {
+        const savedVisibility = localStorage.getItem("productColumnVisibility");
+        if (savedVisibility) {
+          try {
+            return JSON.parse(savedVisibility) as ColumnVisibility;
+          } catch (error) {
+            console.error("Failed to parse saved column visibility:", error);
+          }
+        }
+      }
+
+      // Default column visibility if nothing in localStorage
+      return {
+        name: true,
+        sku: true,
+        category: true,
+        price: true,
+        stock: true,
+        stockStatus: true,
+        cost: true,
+        sellPrice: true,
+        discountPrice: true,
+      };
+    }
+  );
 
   // Sorting state
   const [sortField, setSortField] = useState<string | null>(null);
@@ -177,6 +195,16 @@ const ProductsPage: NextPage<ProductsPageProps> = (props) => {
     const endIndex = startIndex + itemsPerPage;
     setPaginatedProducts(filteredProducts.slice(startIndex, endIndex));
   }, [filteredProducts, currentPage, itemsPerPage]);
+
+  // Save column visibility to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        "productColumnVisibility",
+        JSON.stringify(columnVisibility)
+      );
+    }
+  }, [columnVisibility]);
 
   // Function to get stock status badge
   const getStockStatusBadge = (stock: number) => {
