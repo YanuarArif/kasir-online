@@ -119,13 +119,18 @@ const PurchaseItemRow: React.FC<PurchaseItemRowProps> = ({
             </FormLabel>
             <FormControl>
               <Input
-                type="number"
-                min="0"
-                step="any"
+                type="text"
                 {...formField}
                 onChange={(e) => {
-                  const value = parseFloat(e.target.value);
-                  formField.onChange(value || 0);
+                  // Only allow numeric input (digits and decimal point)
+                  const value = e.target.value.replace(/[^0-9.]/g, "");
+                  // Prevent multiple decimal points
+                  const sanitizedValue = value.replace(/(\..*)\./g, "$1");
+                  // Update the input value with the sanitized value
+                  e.target.value = sanitizedValue;
+                  // Parse the sanitized value as a float for the form state
+                  const numericValue = parseFloat(sanitizedValue);
+                  formField.onChange(isNaN(numericValue) ? 0 : numericValue);
                 }}
                 disabled={isPending}
               />
