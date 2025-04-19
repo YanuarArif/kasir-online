@@ -42,6 +42,7 @@ export interface Service {
   repairNotes?: string;
   estimatedCost?: number;
   finalCost?: number;
+  warrantyPeriod?: number;
   status: ServiceStatus;
   receivedDate: string;
   estimatedCompletionDate?: string;

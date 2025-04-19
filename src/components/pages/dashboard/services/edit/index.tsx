@@ -49,7 +49,7 @@ const ServiceEditPage: React.FC<ServiceEditPageProps> = ({ service }) => {
       diagnosisNotes: service.diagnosisNotes || "",
       repairNotes: service.repairNotes || "",
       customerAddress: "",
-      warrantyPeriod: 0,
+      warrantyPeriod: service.warrantyPeriod || 0,
       priorityLevel: "MEDIUM",
       customerId: service.customerId || "",
       attachments: [],
@@ -87,7 +87,7 @@ const ServiceEditPage: React.FC<ServiceEditPageProps> = ({ service }) => {
   const onSubmit = (values: ServiceFormValues) => {
     startTransition(async () => {
       try {
-        // Extract only the fields that are in the original ServiceSchema
+        // Include all the fields from the EnhancedServiceSchema
         const serviceData = {
           serviceNumber: values.serviceNumber,
           customerName: values.customerName,
@@ -100,6 +100,11 @@ const ServiceEditPage: React.FC<ServiceEditPageProps> = ({ service }) => {
           problemDescription: values.problemDescription,
           estimatedCost: values.estimatedCost,
           estimatedCompletionDate: values.estimatedCompletionDate,
+          diagnosisNotes: values.diagnosisNotes,
+          repairNotes: values.repairNotes,
+          warrantyPeriod: values.warrantyPeriod,
+          priorityLevel: values.priorityLevel,
+          customerId: values.customerId,
         };
 
         const result = await updateService(service.id, serviceData);

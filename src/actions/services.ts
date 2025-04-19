@@ -7,12 +7,14 @@ import { getEffectiveUserId } from "@/lib/get-effective-user-id";
 import { DeviceType, ServiceStatus } from "@prisma/client";
 
 // Import the service schema from the components
-import { ServiceSchema } from "@/components/pages/dashboard/services/new/types";
+import { EnhancedServiceSchema } from "@/components/pages/dashboard/services/new/types";
 
 /**
  * Add a new service to the database
  */
-export const addService = async (values: z.infer<typeof ServiceSchema>) => {
+export const addService = async (
+  values: z.infer<typeof EnhancedServiceSchema>
+) => {
   // Get effective user ID (owner ID if employee, user's own ID otherwise)
   const effectiveUserId = await getEffectiveUserId();
 
@@ -22,7 +24,7 @@ export const addService = async (values: z.infer<typeof ServiceSchema>) => {
   const userId = effectiveUserId;
 
   // 1. Validate input server-side
-  const validatedFields = ServiceSchema.safeParse(values);
+  const validatedFields = EnhancedServiceSchema.safeParse(values);
 
   if (!validatedFields.success) {
     console.error(
@@ -44,6 +46,13 @@ export const addService = async (values: z.infer<typeof ServiceSchema>) => {
     problemDescription,
     estimatedCost,
     estimatedCompletionDate,
+    diagnosisNotes,
+    repairNotes,
+    warrantyPeriod,
+    // Other fields not used directly in the create operation
+    // priorityLevel,
+    // customerId,
+    // attachments,
   } = validatedFields.data;
 
   try {
@@ -59,7 +68,10 @@ export const addService = async (values: z.infer<typeof ServiceSchema>) => {
         deviceModel,
         deviceSerialNumber: deviceSerialNumber || null,
         problemDescription,
+        diagnosisNotes: diagnosisNotes || null,
+        repairNotes: repairNotes || null,
         estimatedCost: estimatedCost !== undefined ? estimatedCost : null,
+        warrantyPeriod: warrantyPeriod !== undefined ? warrantyPeriod : 0,
         estimatedCompletionDate: estimatedCompletionDate
           ? new Date(estimatedCompletionDate)
           : null,
@@ -99,7 +111,7 @@ export const addService = async (values: z.infer<typeof ServiceSchema>) => {
  */
 export const updateService = async (
   id: string,
-  values: z.infer<typeof ServiceSchema>
+  values: z.infer<typeof EnhancedServiceSchema>
 ) => {
   // Get effective user ID (owner ID if employee, user's own ID otherwise)
   const effectiveUserId = await getEffectiveUserId();
@@ -110,7 +122,7 @@ export const updateService = async (
   const userId = effectiveUserId;
 
   // 1. Validate input server-side
-  const validatedFields = ServiceSchema.safeParse(values);
+  const validatedFields = EnhancedServiceSchema.safeParse(values);
 
   if (!validatedFields.success) {
     console.error(
@@ -132,6 +144,9 @@ export const updateService = async (
     problemDescription,
     estimatedCost,
     estimatedCompletionDate,
+    diagnosisNotes,
+    repairNotes,
+    warrantyPeriod,
   } = validatedFields.data;
 
   try {
@@ -151,7 +166,10 @@ export const updateService = async (
         deviceModel,
         deviceSerialNumber: deviceSerialNumber || null,
         problemDescription,
+        diagnosisNotes: diagnosisNotes || null,
+        repairNotes: repairNotes || null,
         estimatedCost: estimatedCost !== undefined ? estimatedCost : null,
+        warrantyPeriod: warrantyPeriod !== undefined ? warrantyPeriod : 0,
         estimatedCompletionDate: estimatedCompletionDate
           ? new Date(estimatedCompletionDate)
           : null,

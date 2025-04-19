@@ -414,6 +414,7 @@ model Service {
   repairNotes             String?       @db.Text // Notes about the repair process
   estimatedCost           Decimal?      @db.Decimal(12, 2) // Estimated repair cost
   finalCost               Decimal?      @db.Decimal(12, 2) // Final repair cost
+  warrantyPeriod          Int?          @default(0) // Warranty period in days
   status                  ServiceStatus @default(PENDING)
   receivedDate            DateTime      @default(now()) // When the device was received
   estimatedCompletionDate DateTime? // Estimated completion date

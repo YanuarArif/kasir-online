@@ -99,6 +99,7 @@ export async function getServices(): Promise<Service[]> {
         ? service.estimatedCost.toNumber()
         : undefined,
       finalCost: service.finalCost ? service.finalCost.toNumber() : undefined,
+      warrantyPeriod: service.warrantyPeriod || 0,
       status: mapPrismaServiceStatus(service.status),
       receivedDate: service.receivedDate.toISOString(),
       estimatedCompletionDate: service.estimatedCompletionDate
@@ -201,6 +202,7 @@ export async function getServiceById(id: string): Promise<Service | null> {
         ? service.estimatedCost.toNumber()
         : undefined,
       finalCost: service.finalCost ? service.finalCost.toNumber() : undefined,
+      warrantyPeriod: service.warrantyPeriod || 0,
       status: mapPrismaServiceStatus(service.status),
       receivedDate: service.receivedDate.toISOString(),
       estimatedCompletionDate: service.estimatedCompletionDate
