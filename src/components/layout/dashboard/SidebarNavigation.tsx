@@ -4,17 +4,17 @@ import React from "react";
 import { useSession } from "next-auth/react";
 import { Role } from "@prisma/client";
 import {
-  Home,
-  BarChart,
   Truck,
   Package,
   Settings,
-  DollarSign,
   Users,
   Store,
   UserCog,
   Wrench,
   ClipboardList,
+  ChartColumnBig,
+  NotebookPen,
+  TicketPercent,
 } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NavItem from "./NavItem";
@@ -25,13 +25,13 @@ export const navigation = [
   {
     name: "Ringkasan",
     href: "/dashboard/summaries",
-    icon: Home,
+    icon: NotebookPen,
     roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
   },
   {
     name: "Penjualan",
     href: "/dashboard/sales",
-    icon: DollarSign,
+    icon: TicketPercent,
     roles: [Role.OWNER, Role.ADMIN, Role.CASHIER], // All roles can access
   },
   {
@@ -81,7 +81,7 @@ export const navigation = [
   {
     name: "Laporan",
     href: "/dashboard/reports",
-    icon: BarChart,
+    icon: ChartColumnBig,
     roles: [Role.OWNER, Role.ADMIN], // Only OWNER and ADMIN can access
   },
   {
