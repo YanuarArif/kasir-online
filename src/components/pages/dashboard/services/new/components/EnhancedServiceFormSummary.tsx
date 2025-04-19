@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ServiceFormValues, priorityLevelOptions } from "../types";
+import { ServiceFormValues } from "../types";
 import { formatDate } from "@/lib/utils";
 import { DeviceType, ServiceStatus } from "../../types";
 import { Separator } from "@/components/ui/separator";
@@ -23,7 +23,6 @@ import {
   Paperclip,
   ClipboardList,
 } from "lucide-react";
-import { useForm } from "react-hook-form";
 
 interface EnhancedServiceFormSummaryProps {
   formValues: ServiceFormValues;
@@ -56,19 +55,7 @@ const EnhancedServiceFormSummary: React.FC<EnhancedServiceFormSummaryProps> = ({
     }
   };
 
-  // Format priority level for display
-  const getPriorityLabel = (priority: string) => {
-    switch (priority) {
-      case "LOW":
-        return "Rendah";
-      case "MEDIUM":
-        return "Sedang";
-      case "HIGH":
-        return "Tinggi";
-      default:
-        return priority;
-    }
-  };
+  // Format priority level for display is handled by getPriorityBadge
 
   // Get priority badge color
   const getPriorityBadge = (priority: string) => {

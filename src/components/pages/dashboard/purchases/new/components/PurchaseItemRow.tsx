@@ -104,25 +104,25 @@ const PurchaseItemRow: React.FC<PurchaseItemRowProps> = ({
                 onChange={(e) => {
                   const value = parseInt(e.target.value);
                   formField.onChange(value || 1);
-                  
+
                   // Force recalculation of total immediately
                   const currentItems = form.getValues("items");
-                  
+
                   // Update the current item's quantity
                   if (currentItems[index]) {
                     currentItems[index].quantity = value || 1;
                   }
-                  
+
                   // Recalculate the total
                   const total = currentItems.reduce(
-                    (sum, item) => {
+                    (sum: number, item: any) => {
                       const quantity = item?.quantity ?? 0;
                       const cost = item?.costAtPurchase ?? 0;
                       return sum + quantity * cost;
                     },
                     0
                   );
-                  
+
                   // Update the total in the form
                   form.setValue("totalAmount", total);
                 }}
@@ -158,25 +158,27 @@ const PurchaseItemRow: React.FC<PurchaseItemRowProps> = ({
                   // Parse the sanitized value as a float for the form state
                   const numericValue = parseFloat(sanitizedValue);
                   formField.onChange(isNaN(numericValue) ? 0 : numericValue);
-                  
+
                   // Force recalculation of total immediately
                   const currentItems = form.getValues("items");
-                  
+
                   // Update the current item's costAtPurchase
                   if (currentItems[index]) {
-                    currentItems[index].costAtPurchase = isNaN(numericValue) ? 0 : numericValue;
+                    currentItems[index].costAtPurchase = isNaN(numericValue)
+                      ? 0
+                      : numericValue;
                   }
-                  
+
                   // Recalculate the total
                   const total = currentItems.reduce(
-                    (sum, item) => {
+                    (sum: number, item: any) => {
                       const quantity = item?.quantity ?? 0;
                       const cost = item?.costAtPurchase ?? 0;
                       return sum + quantity * cost;
                     },
                     0
                   );
-                  
+
                   // Update the total in the form
                   form.setValue("totalAmount", total);
                 }}
