@@ -56,6 +56,7 @@ const EnhancedPurchasePage: React.FC<EnhancedPurchasePageProps> = ({
   // Watch for changes in the items array to calculate the total
   const items = form.watch("items");
   const formValues = form.watch();
+  const totalAmountValue = form.watch("totalAmount");
 
   // Calculate total amount whenever items change
   useEffect(() => {
@@ -71,6 +72,11 @@ const EnhancedPurchasePage: React.FC<EnhancedPurchasePageProps> = ({
     setTotalAmount(total);
     form.setValue("totalAmount", total);
   }, [items, form]);
+
+  // Update totalAmount state when form value changes
+  useEffect(() => {
+    setTotalAmount(totalAmountValue);
+  }, [totalAmountValue]);
 
   // Handle product selection
   const handleProductChange = (index: number, productId: string) => {
