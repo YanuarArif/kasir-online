@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 
 import { EnhancedServiceSchema } from "./types";
 import { ServiceFormValues } from "./types";
-import ServiceFormTabs from "./components/ServiceFormTabs";
+import CombinedServiceForm from "./components/CombinedServiceForm";
 import { ArrowLeft, Check } from "lucide-react";
 import { DeviceType } from "../types";
 import ServiceFormSummary from "./components/ServiceFormSummary";
@@ -181,7 +181,7 @@ const AddServicePage: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Main Form Content */}
               <div className="lg:col-span-2">
-                <ServiceFormTabs
+                <CombinedServiceForm
                   control={form.control}
                   isPending={isPending}
                   handleAttachmentUpload={handleAttachmentUpload}

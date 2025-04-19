@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { updateService } from "@/actions/services";
 import { EnhancedServiceSchema } from "../new/types";
 import { ServiceFormValues } from "../new/types";
-import ServiceFormTabs from "../new/components/ServiceFormTabs";
+import CombinedServiceForm from "../new/components/CombinedServiceForm";
 import { ArrowLeft, Check } from "lucide-react";
 import ServiceFormSummary from "../new/components/ServiceFormSummary";
 import { Service } from "../types";
@@ -148,7 +148,7 @@ const ServiceEditPage: React.FC<ServiceEditPageProps> = ({ service }) => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Main Form Content */}
               <div className="lg:col-span-2">
-                <ServiceFormTabs
+                <CombinedServiceForm
                   control={form.control}
                   isPending={isPending}
                   handleAttachmentUpload={handleAttachmentUpload}
