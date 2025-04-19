@@ -110,6 +110,18 @@ export const ServiceTableDesktop: React.FC<ServiceTableDesktopProps> = ({
             </TableHead>
           )}
 
+          {/* Customer Phone */}
+          {columnVisibility.customerPhone && (
+            <TableHead
+              className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
+              onClick={() => handleSort("customerPhone")}
+            >
+              <div className="flex items-center">
+                Telepon {getSortIcon("customerPhone")}
+              </div>
+            </TableHead>
+          )}
+
           {/* Device Type */}
           {columnVisibility.deviceType && (
             <TableHead
@@ -142,6 +154,18 @@ export const ServiceTableDesktop: React.FC<ServiceTableDesktopProps> = ({
             >
               <div className="flex items-center">
                 Model {getSortIcon("deviceModel")}
+              </div>
+            </TableHead>
+          )}
+
+          {/* Device Serial Number */}
+          {columnVisibility.deviceSerialNumber && (
+            <TableHead
+              className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
+              onClick={() => handleSort("deviceSerialNumber")}
+            >
+              <div className="flex items-center">
+                Nomor Seri {getSortIcon("deviceSerialNumber")}
               </div>
             </TableHead>
           )}
@@ -182,6 +206,30 @@ export const ServiceTableDesktop: React.FC<ServiceTableDesktopProps> = ({
             </TableHead>
           )}
 
+          {/* Estimated Cost */}
+          {columnVisibility.estimatedCost && (
+            <TableHead
+              className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
+              onClick={() => handleSort("estimatedCost")}
+            >
+              <div className="flex items-center">
+                Estimasi Biaya {getSortIcon("estimatedCost")}
+              </div>
+            </TableHead>
+          )}
+
+          {/* Warranty Period */}
+          {columnVisibility.warrantyPeriod && (
+            <TableHead
+              className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
+              onClick={() => handleSort("warrantyPeriod")}
+            >
+              <div className="flex items-center">
+                Masa Garansi {getSortIcon("warrantyPeriod")}
+              </div>
+            </TableHead>
+          )}
+
           {/* Actions */}
           <TableHead className="w-[100px] text-right">Aksi</TableHead>
         </TableRow>
@@ -201,6 +249,11 @@ export const ServiceTableDesktop: React.FC<ServiceTableDesktopProps> = ({
               <TableCell>{service.customerName}</TableCell>
             )}
 
+            {/* Customer Phone */}
+            {columnVisibility.customerPhone && (
+              <TableCell>{service.customerPhone}</TableCell>
+            )}
+
             {/* Device Type */}
             {columnVisibility.deviceType && (
               <TableCell>{service.deviceType}</TableCell>
@@ -214,6 +267,11 @@ export const ServiceTableDesktop: React.FC<ServiceTableDesktopProps> = ({
             {/* Device Model */}
             {columnVisibility.deviceModel && (
               <TableCell>{service.deviceModel}</TableCell>
+            )}
+
+            {/* Device Serial Number */}
+            {columnVisibility.deviceSerialNumber && (
+              <TableCell>{service.deviceSerialNumber || "-"}</TableCell>
             )}
 
             {/* Status */}
@@ -233,6 +291,24 @@ export const ServiceTableDesktop: React.FC<ServiceTableDesktopProps> = ({
               <TableCell>
                 {service.estimatedCompletionDate
                   ? formatDate(service.estimatedCompletionDate)
+                  : "-"}
+              </TableCell>
+            )}
+
+            {/* Estimated Cost */}
+            {columnVisibility.estimatedCost && (
+              <TableCell>
+                {service.estimatedCost
+                  ? `Rp ${service.estimatedCost.toLocaleString("id-ID")}`
+                  : "-"}
+              </TableCell>
+            )}
+
+            {/* Warranty Period */}
+            {columnVisibility.warrantyPeriod && (
+              <TableCell>
+                {service.warrantyPeriod
+                  ? `${service.warrantyPeriod} hari`
                   : "-"}
               </TableCell>
             )}

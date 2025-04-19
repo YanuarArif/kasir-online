@@ -100,7 +100,11 @@ export const ServiceActions: React.FC<ServiceActionsProps> = ({
               <span className="hidden sm:inline">Kolom</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuContent
+            align="end"
+            className="w-48"
+            onCloseAutoFocus={(e) => e.preventDefault()}
+          >
             <DropdownMenuLabel>Tampilkan Kolom</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuCheckboxItem
@@ -112,6 +116,7 @@ export const ServiceActions: React.FC<ServiceActionsProps> = ({
                   serviceNumber: checked,
                 }))
               }
+              onSelect={(e) => e.preventDefault()}
             >
               No. Servis
             </DropdownMenuCheckboxItem>
@@ -124,8 +129,22 @@ export const ServiceActions: React.FC<ServiceActionsProps> = ({
                   customerName: checked,
                 }))
               }
+              onSelect={(e) => e.preventDefault()}
             >
               Nama Pelanggan
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              checked={columnVisibility.customerPhone}
+              className="cursor-pointer"
+              onCheckedChange={(checked) =>
+                setColumnVisibility((prev) => ({
+                  ...prev,
+                  customerPhone: checked,
+                }))
+              }
+              onSelect={(e) => e.preventDefault()}
+            >
+              Telepon Pelanggan
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               checked={columnVisibility.deviceType}
@@ -136,6 +155,7 @@ export const ServiceActions: React.FC<ServiceActionsProps> = ({
                   deviceType: checked,
                 }))
               }
+              onSelect={(e) => e.preventDefault()}
             >
               Tipe Perangkat
             </DropdownMenuCheckboxItem>
@@ -148,6 +168,7 @@ export const ServiceActions: React.FC<ServiceActionsProps> = ({
                   deviceBrand: checked,
                 }))
               }
+              onSelect={(e) => e.preventDefault()}
             >
               Merek
             </DropdownMenuCheckboxItem>
@@ -160,8 +181,22 @@ export const ServiceActions: React.FC<ServiceActionsProps> = ({
                   deviceModel: checked,
                 }))
               }
+              onSelect={(e) => e.preventDefault()}
             >
               Model
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              checked={columnVisibility.deviceSerialNumber}
+              className="cursor-pointer"
+              onCheckedChange={(checked) =>
+                setColumnVisibility((prev) => ({
+                  ...prev,
+                  deviceSerialNumber: checked,
+                }))
+              }
+              onSelect={(e) => e.preventDefault()}
+            >
+              Nomor Seri
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               checked={columnVisibility.status}
@@ -172,6 +207,7 @@ export const ServiceActions: React.FC<ServiceActionsProps> = ({
                   status: checked,
                 }))
               }
+              onSelect={(e) => e.preventDefault()}
             >
               Status
             </DropdownMenuCheckboxItem>
@@ -184,6 +220,7 @@ export const ServiceActions: React.FC<ServiceActionsProps> = ({
                   receivedDate: checked,
                 }))
               }
+              onSelect={(e) => e.preventDefault()}
             >
               Tanggal Masuk
             </DropdownMenuCheckboxItem>
@@ -196,8 +233,35 @@ export const ServiceActions: React.FC<ServiceActionsProps> = ({
                   estimatedCompletionDate: checked,
                 }))
               }
+              onSelect={(e) => e.preventDefault()}
             >
               Estimasi Selesai
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              checked={columnVisibility.estimatedCost}
+              className="cursor-pointer"
+              onCheckedChange={(checked) =>
+                setColumnVisibility((prev) => ({
+                  ...prev,
+                  estimatedCost: checked,
+                }))
+              }
+              onSelect={(e) => e.preventDefault()}
+            >
+              Estimasi Biaya
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              checked={columnVisibility.warrantyPeriod}
+              className="cursor-pointer"
+              onCheckedChange={(checked) =>
+                setColumnVisibility((prev) => ({
+                  ...prev,
+                  warrantyPeriod: checked,
+                }))
+              }
+              onSelect={(e) => e.preventDefault()}
+            >
+              Masa Garansi
             </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>

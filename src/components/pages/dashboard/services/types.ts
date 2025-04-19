@@ -66,10 +66,14 @@ export interface ServiceCounts {
 export interface ColumnVisibility {
   serviceNumber: boolean;
   customerName: boolean;
+  customerPhone: boolean;
   deviceType: boolean;
   deviceBrand: boolean;
   deviceModel: boolean;
+  deviceSerialNumber: boolean;
   status: boolean;
   receivedDate: boolean;
   estimatedCompletionDate: boolean;
+  estimatedCost: boolean;
+  warrantyPeriod: boolean;
 }

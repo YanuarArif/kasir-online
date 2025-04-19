@@ -44,17 +44,38 @@ const ServicesPage: React.FC<ServicesPageProps> = (props) => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [paginatedServices, setPaginatedServices] = useState<Service[]>([]);
 
-  // Column visibility state
-  const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({
-    serviceNumber: true,
-    customerName: true,
-    deviceType: true,
-    deviceBrand: true,
-    deviceModel: true,
-    status: true,
-    receivedDate: true,
-    estimatedCompletionDate: true,
-  });
+  // Column visibility state with localStorage persistence
+  const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>(
+    () => {
+      // Try to get saved column visibility from localStorage
+      if (typeof window !== "undefined") {
+        const savedVisibility = localStorage.getItem("serviceColumnVisibility");
+        if (savedVisibility) {
+          try {
+            return JSON.parse(savedVisibility) as ColumnVisibility;
+          } catch (error) {
+            console.error("Failed to parse saved column visibility:", error);
+          }
+        }
+      }
+
+      // Default column visibility if nothing in localStorage
+      return {
+        serviceNumber: true,
+        customerName: true,
+        customerPhone: true,
+        deviceType: true,
+        deviceBrand: true,
+        deviceModel: true,
+        deviceSerialNumber: false,
+        status: true,
+        receivedDate: true,
+        estimatedCompletionDate: true,
+        estimatedCost: false,
+        warrantyPeriod: false,
+      };
+    }
+  );
 
   // Sorting state
   const [sortField, setSortField] = useState<string | null>(null);
@@ -123,6 +144,10 @@ const ServicesPage: React.FC<ServicesPageProps> = (props) => {
             valueA = a.customerName.toLowerCase();
             valueB = b.customerName.toLowerCase();
             break;
+          case "customerPhone":
+            valueA = a.customerPhone.toLowerCase();
+            valueB = b.customerPhone.toLowerCase();
+            break;
           case "deviceType":
             valueA = a.deviceType.toLowerCase();
             valueB = b.deviceType.toLowerCase();
@@ -134,6 +159,10 @@ const ServicesPage: React.FC<ServicesPageProps> = (props) => {
           case "deviceModel":
             valueA = a.deviceModel.toLowerCase();
             valueB = b.deviceModel.toLowerCase();
+            break;
+          case "deviceSerialNumber":
+            valueA = (a.deviceSerialNumber || "").toLowerCase();
+            valueB = (b.deviceSerialNumber || "").toLowerCase();
             break;
           case "status":
             valueA = a.status;
@@ -150,6 +179,14 @@ const ServicesPage: React.FC<ServicesPageProps> = (props) => {
             valueB = b.estimatedCompletionDate
               ? new Date(b.estimatedCompletionDate).getTime()
               : 0;
+            break;
+          case "estimatedCost":
+            valueA = a.estimatedCost || 0;
+            valueB = b.estimatedCost || 0;
+            break;
+          case "warrantyPeriod":
+            valueA = a.warrantyPeriod || 0;
+            valueB = b.warrantyPeriod || 0;
             break;
           default:
             valueA = a[sortField as keyof Service] || "";
@@ -174,6 +211,16 @@ const ServicesPage: React.FC<ServicesPageProps> = (props) => {
     const endIndex = startIndex + itemsPerPage;
     setPaginatedServices(filteredServices.slice(startIndex, endIndex));
   }, [filteredServices, currentPage, itemsPerPage]);
+
+  // Save column visibility to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        "serviceColumnVisibility",
+        JSON.stringify(columnVisibility)
+      );
+    }
+  }, [columnVisibility]);
 
   // Function to get status badge
   const getStatusBadge = (status: ServiceStatus) => {
