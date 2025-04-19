@@ -66,10 +66,18 @@ const ProblemDetailsSection: React.FC<ProblemDetailsSectionProps> = ({
               <FormLabel>Estimasi Biaya (Rp)</FormLabel>
               <FormControl>
                 <Input
-                  type="number"
+                  type="text"
                   placeholder="0"
                   {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  onChange={(e) => {
+                    // Only allow numeric input (digits only)
+                    const value = e.target.value.replace(/[^0-9]/g, "");
+                    // Update the input value with the sanitized value
+                    e.target.value = value;
+                    // Parse the sanitized value as a number for the form state
+                    const numericValue = parseInt(value);
+                    field.onChange(isNaN(numericValue) ? 0 : numericValue);
+                  }}
                   disabled={isPending}
                 />
               </FormControl>

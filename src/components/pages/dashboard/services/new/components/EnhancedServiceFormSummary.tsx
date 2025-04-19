@@ -228,8 +228,8 @@ const EnhancedServiceFormSummary: React.FC<EnhancedServiceFormSummaryProps> = ({
   const completionPercentage = calculateCompletionPercentage();
 
   return (
-    <Card className="sticky top-4">
-      <CardHeader className="bg-gray-100 dark:bg-gray-800 pb-3">
+    <Card className="sticky top-4 pt-0">
+      <CardHeader className="bg-gray-100 pt-4 dark:bg-gray-800 pb-3">
         <div className="flex justify-between items-center">
           <CardTitle className="text-lg">Ringkasan Servis</CardTitle>
           {getStatusBadge()}
