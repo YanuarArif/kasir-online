@@ -17,7 +17,7 @@ import { ServiceFormValues } from "./types";
 import CombinedServiceForm from "./components/CombinedServiceForm";
 import { ArrowLeft, Check } from "lucide-react";
 import { DeviceType } from "../types";
-import ServiceFormSummary from "./components/ServiceFormSummary";
+import EnhancedServiceFormSummary from "./components/EnhancedServiceFormSummary";
 
 const AddServicePage: React.FC = () => {
   const router = useRouter();
@@ -194,7 +194,33 @@ const AddServicePage: React.FC = () => {
 
               {/* Summary Sidebar */}
               <div className="lg:col-span-1">
-                <ServiceFormSummary formValues={formValues} />
+                <EnhancedServiceFormSummary
+                  formValues={formValues}
+                  isPending={isPending}
+                  onReset={() => {
+                    form.reset({
+                      serviceNumber: generateServiceNumber(),
+                      customerName: "",
+                      customerPhone: "",
+                      customerEmail: "",
+                      deviceType: DeviceType.OTHER,
+                      deviceBrand: "",
+                      deviceModel: "",
+                      deviceSerialNumber: "",
+                      problemDescription: "",
+                      estimatedCost: 0,
+                      estimatedCompletionDate: "",
+                      diagnosisNotes: "",
+                      repairNotes: "",
+                      customerAddress: "",
+                      warrantyPeriod: 0,
+                      priorityLevel: "MEDIUM",
+                      customerId: "",
+                      attachments: [],
+                    });
+                    setAttachments([]);
+                  }}
+                />
               </div>
             </div>
 

@@ -14,7 +14,7 @@ import { EnhancedServiceSchema } from "../new/types";
 import { ServiceFormValues } from "../new/types";
 import CombinedServiceForm from "../new/components/CombinedServiceForm";
 import { ArrowLeft, Check } from "lucide-react";
-import ServiceFormSummary from "../new/components/ServiceFormSummary";
+import EnhancedServiceFormSummary from "../new/components/EnhancedServiceFormSummary";
 import { Service } from "../types";
 
 interface ServiceEditPageProps {
@@ -161,7 +161,10 @@ const ServiceEditPage: React.FC<ServiceEditPageProps> = ({ service }) => {
 
               {/* Summary Sidebar */}
               <div className="lg:col-span-1">
-                <ServiceFormSummary formValues={formValues} />
+                <EnhancedServiceFormSummary
+                  formValues={formValues}
+                  isPending={isPending}
+                />
 
                 <div className="mt-6">
                   <Button
