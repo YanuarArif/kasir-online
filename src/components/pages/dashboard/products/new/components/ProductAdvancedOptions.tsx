@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Control } from "react-hook-form";
 import {
   FormControl,
@@ -24,6 +24,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus, X } from "lucide-react";
+import { getCategories } from "@/actions/categories";
+import { toast } from "sonner";
+import AddCategoryDialog from "./AddCategoryDialog";
 
 interface ProductAdvancedOptionsProps {
   control: Control<ProductFormValues>;
@@ -34,14 +37,40 @@ const ProductAdvancedOptions: React.FC<ProductAdvancedOptionsProps> = ({
   control,
   isPending,
 }) => {
-  // Mock categories for demo
-  const categories = [
-    { id: "cat1", name: "Elektronik" },
-    { id: "cat2", name: "Pakaian" },
-    { id: "cat3", name: "Makanan" },
-    { id: "cat4", name: "Minuman" },
-    { id: "cat5", name: "Alat Tulis" },
-  ];
+  // State for categories
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+    []
+  );
+  const [isLoadingCategories, setIsLoadingCategories] = useState(false);
+
+  // Fetch categories on component mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      setIsLoadingCategories(true);
+      try {
+        const result = await getCategories();
+        if (result.error) {
+          toast.error(result.error);
+          return;
+        }
+        if (result.categories) {
+          setCategories(result.categories);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        toast.error("Gagal mengambil data kategori");
+      } finally {
+        setIsLoadingCategories(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // Handle category added
+  const handleCategoryAdded = (category: { id: string; name: string }) => {
+    setCategories((prev) => [...prev, category]);
+  };
 
   // State for tags input
   const [tagInput, setTagInput] = React.useState("");
@@ -87,24 +116,37 @@ const ProductAdvancedOptions: React.FC<ProductAdvancedOptionsProps> = ({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Kategori (Opsional)</FormLabel>
-              <Select
-                disabled={isPending}
-                onValueChange={field.onChange}
-                value={field.value}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Pilih kategori" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex items-center gap-2">
+                <div className="flex-1">
+                  <Select
+                    disabled={isPending || isLoadingCategories}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Pilih kategori" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {categories.length > 0 ? (
+                        categories.map((category) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.name}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <div className="p-2 text-sm text-muted-foreground">
+                          {isLoadingCategories
+                            ? "Memuat kategori..."
+                            : "Belum ada kategori"}
+                        </div>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <AddCategoryDialog onCategoryAdded={handleCategoryAdded} />
+              </div>
               <FormDescription>
                 Pilih kategori untuk memudahkan pencarian produk
               </FormDescription>

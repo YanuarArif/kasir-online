@@ -93,7 +93,7 @@ const EnhancedAddProductPage: React.FC = () => {
   const onSubmit = (values: ProductFormValues) => {
     startTransition(async () => {
       try {
-        // Extract only the fields that are in the original ProductSchema
+        // Include all necessary fields including categoryId
         const productData = {
           name: values.name,
           description: values.description,
@@ -102,6 +102,15 @@ const EnhancedAddProductPage: React.FC = () => {
           cost: values.cost,
           stock: values.stock,
           image: values.image,
+          categoryId: values.categoryId,
+          barcode: values.barcode,
+          taxRate: values.taxRate,
+          hasVariants: values.hasVariants,
+          trackInventory: values.trackInventory,
+          minStockLevel: values.minStockLevel,
+          weight: values.weight,
+          dimensions: values.dimensions,
+          tags: values.tags,
         };
 
         const result = await addProduct(productData);

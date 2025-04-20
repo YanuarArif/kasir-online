@@ -6,8 +6,11 @@ import { db } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth"; // Import auth to get session
 import { getEffectiveUserId } from "@/lib/get-effective-user-id";
+import { EnhancedProductSchema } from "@/components/pages/dashboard/products/new/types";
 
-export const addProduct = async (values: z.infer<typeof ProductSchema>) => {
+export const addProduct = async (
+  values: z.infer<typeof EnhancedProductSchema>
+) => {
   // Get effective user ID (owner ID if employee, user's own ID otherwise)
   const effectiveUserId = await getEffectiveUserId();
 
@@ -17,7 +20,7 @@ export const addProduct = async (values: z.infer<typeof ProductSchema>) => {
   const userId = effectiveUserId;
 
   // 1. Validate input server-side
-  const validatedFields = ProductSchema.safeParse(values);
+  const validatedFields = EnhancedProductSchema.safeParse(values);
 
   if (!validatedFields.success) {
     console.error(
@@ -27,7 +30,7 @@ export const addProduct = async (values: z.infer<typeof ProductSchema>) => {
     return { error: "Input tidak valid!" };
   }
 
-  const { name, description, sku, price, cost, stock, image } =
+  const { name, description, sku, price, cost, stock, image, categoryId } =
     validatedFields.data;
 
   try {
@@ -42,7 +45,7 @@ export const addProduct = async (values: z.infer<typeof ProductSchema>) => {
         stock,
         image,
         userId: userId, // Add the userId
-        // categoryId: null,
+        categoryId: categoryId || null, // Add categoryId if provided
       },
     });
 
@@ -73,7 +76,7 @@ export const addProduct = async (values: z.infer<typeof ProductSchema>) => {
 
 export const updateProduct = async (
   id: string,
-  values: z.infer<typeof ProductSchema>
+  values: z.infer<typeof EnhancedProductSchema>
 ) => {
   // Get effective user ID (owner ID if employee, user's own ID otherwise)
   const effectiveUserId = await getEffectiveUserId();
@@ -84,7 +87,7 @@ export const updateProduct = async (
   const userId = effectiveUserId;
 
   // 1. Validate input server-side
-  const validatedFields = ProductSchema.safeParse(values);
+  const validatedFields = EnhancedProductSchema.safeParse(values);
 
   if (!validatedFields.success) {
     console.error(
@@ -94,7 +97,7 @@ export const updateProduct = async (
     return { error: "Input tidak valid!" };
   }
 
-  const { name, description, sku, price, cost, stock, image } =
+  const { name, description, sku, price, cost, stock, image, categoryId } =
     validatedFields.data;
 
   try {
@@ -123,6 +126,7 @@ export const updateProduct = async (
         cost,
         stock,
         image,
+        categoryId: categoryId || null,
       },
     });
 
